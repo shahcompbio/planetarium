@@ -6,10 +6,12 @@ import * as serviceWorker from "./serviceWorker";
 
 import { ApolloProvider } from "react-apollo";
 import client from "./apollo.js";
+//import data2 from "./data2.js";
 
+const vikisData = window.vikisVar;
 ReactDOM.render(
   <ApolloProvider client={client}>
-    <App />
+    <App data={vikisData} />
   </ApolloProvider>,
   document.getElementById("root")
 );
