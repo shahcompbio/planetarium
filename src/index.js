@@ -6,8 +6,8 @@ import * as serviceWorker from "./serviceWorker";
 
 import { ApolloProvider } from "react-apollo";
 import client from "./apollo.js";
-const data = process.env.NODE_ENV === "development" ? [] : window.vikisVar;
-//import data2 from "./data2.js";
+const data = process.env.NODE_ENV === "development" ? [] : window.isablData;
+//import data from "./data2.js";
 
 ReactDOM.render(
   <ApolloProvider client={client}>
