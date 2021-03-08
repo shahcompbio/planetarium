@@ -14,7 +14,19 @@ import {
 } from "../DrawingUtils/utils.js";
 
 const Umap = ({ data, chartDim }) => {
-  const [{ xParam, yParam, clonotypeParam, cellIdParam }] = useDashboardState();
+  const [
+    {
+      xParam,
+      yParam,
+      cellIdParam,
+      sampleType,
+      clonotypeParam,
+      sampleTen,
+      topTen,
+      colors,
+      clonotypes
+    }
+  ] = useDashboardState();
 
   useEffect(() => {
     drawAll(data, "NDVL", chartDim);
@@ -42,7 +54,7 @@ const Umap = ({ data, chartDim }) => {
     context.globalAlpha = 1;
   }
 
-  function drawPoint(context, point, fill, isCountInsignificant, x, y) {
+  export function drawPoint(context, point, fill, isCountInsignificant, x, y) {
     const radius = isCountInsignificant ? 2 : point["radius"];
 
     context.beginPath();
@@ -69,7 +81,6 @@ const Umap = ({ data, chartDim }) => {
     topTenNumbering,
     selectedClonotype
   ) {
-    console.log(selectedClonotype);
     const maxValue = Math.max(...Object.entries(topTen).map(row => row[1]));
 
     const lineXFreq = d3
@@ -283,7 +294,7 @@ const Umap = ({ data, chartDim }) => {
         });
     }
   }
-  const clearAll = (context, chartDim) =>
+  export const clearAll = (context, chartDim) =>
     context.clearRect(
       0,
       0,
@@ -328,12 +339,6 @@ const Umap = ({ data, chartDim }) => {
     );
   }
   function drawAll(data, sampleType, chartDim) {
-    const topTen = Object.entries(
-      _.countBy(data.map(row => row[clonotypeParam]))
-    )
-      .sort(([, a], [, b]) => b - a)
-      .slice(0, 10);
-
     var canvas = d3.select("#canvas");
 
     var context = canvasInit(canvas, chartDim.width, chartDim.height);
@@ -370,9 +375,6 @@ const Umap = ({ data, chartDim }) => {
       .scaleLinear()
       .domain([yMin, yMax])
       .range([dim.y2, dim.y1]);
-
-    const clonotypes = _.groupBy(sampleData, clonotypeParam);
-
     const topTenNumbering = topTen.reduce((final, seq) => {
       const label =
         sampleType === "NDVL"
@@ -381,28 +383,6 @@ const Umap = ({ data, chartDim }) => {
       final[seq[0]] = label;
       return final;
     }, {});
-
-    const types = Object.keys(clonotypes);
-
-    const colourList = [
-      "#674172",
-      "#098dde",
-      "#fa832f",
-      "#0e5702",
-      "#c20c1e",
-      "#911eb4",
-      "#fc97bc",
-      "#469990",
-      "#b5762a",
-      "#5aebed",
-      "#8f8f3f",
-      "#ed1a1a"
-    ];
-    var colors = d3
-      .scaleOrdinal()
-      .domain([...types])
-      .range([...colourList]);
-
     reDraw(context, x, y, dim, sampleData, sampleTen, colors, topTenNumbering);
 
     var legend = d3.select("#legend");

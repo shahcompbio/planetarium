@@ -1,4 +1,4 @@
 import Umap from "../UMAP/Umap.js";
-
-const componentList = { UMAP: Umap };
+import Heatmap from "../Heatmap/Heatmap.js";
+const componentList = { UMAP: Umap, HEATMAP: Heatmap };
 export default componentList;
