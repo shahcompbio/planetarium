@@ -11,6 +11,7 @@
     "d3-collection": "^1.0.7",
     "graphql": "^14.1.1",
     "graphql-tag": "^2.10.1",
+    "gulp": "^4.0.2",
     "lodash": "^4.17.21",
     "react": "^16.8.4",
     "react-apollo": "^2.5.2",
@@ -20,9 +21,9 @@
     "rewire": "^5.0.0"
   },
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "node build && gulp",
-    "test": "react-app-rewired test"
+    "start": "react-scripts start",
+    "build": "node build",
+    "test": "react-scripts test"
   },
   "eslintConfig": {
     "extends": "react-app"
