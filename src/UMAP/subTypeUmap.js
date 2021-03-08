@@ -1,19 +1,11 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect } from "react";
 import * as d3 from "d3";
-import * as d3Collection from "d3-collection";
-import * as d3Array from "d3-array";
-import _ from "lodash";
 
 import { useDashboardState } from "../PlotState/dashboardState";
-import { drawPoint, clearAll } from "./Umap.js";
-import {
-  canvasInit,
-  drawAxisLabels,
-  drawAxisTicks,
-  drawAxis
-} from "../DrawingUtils/utils.js";
-
-const subTypeUmap = ({ data, chartDim }) => {
+//import { drawPoint, clearAll } from "./Umap.js";
+import { canvasInit, drawAxis } from "../DrawingUtils/utils.js";
+const subtypeFontSize = 11;
+const SubtypeUmap = ({ data, chartDim }) => {
   const [
     {
       xParam,
@@ -28,8 +20,37 @@ const subTypeUmap = ({ data, chartDim }) => {
     }
   ] = useDashboardState();
   useEffect(() => {
-    drawAll(data, "NDVL", chartDim);
+    drawAll(data, chartDim);
   }, [data]);
+
+  function drawAll(data, chartDim) {
+    var canvas = d3.select("#canvas");
+
+    var context = canvasInit(canvas, chartDim.width, chartDim.height);
+
+    context.fillStyle = "white";
+    context.fillRect(0, 0, chartDim.width, chartDim.height);
+
+    const yData = data.map(d => parseFloat(d[yParam]));
+    const xData = data.map(d => parseFloat(d[xParam]));
+
+    const yMin = Math.min(...yData);
+    const yMax = Math.max(...yData);
+    const xMin = Math.min(...xData);
+    const xMax = Math.max(...xData);
+
+    // X axis
+    var x = d3
+      .scaleLinear()
+      .domain([xMin, xMax])
+      .range([chartDim["chart"]["x1"], chartDim["chart"]["x2"]]);
+
+    // Y axis
+    var y = d3
+      .scaleLinear()
+      .domain([yMin, yMax])
+      .range([chartDim["chart"]["y1"], chartDim["chart"]["y2"]]);
+  }
   function filterOutliers(coords, quantiles) {
     const sortedCollection = coords.slice().sort((a, b) => a - b); //copy array fast and sort
     const size = sortedCollection.length;
@@ -132,7 +153,7 @@ const subTypeUmap = ({ data, chartDim }) => {
     context.stroke();
     context.save();
 
-    if (markers[title]) {
+    /*  if (markers[title]) {
       context.fillStyle = "white";
       context.fillRect(
         x(boxCords.left) - 2,
@@ -151,7 +172,7 @@ const subTypeUmap = ({ data, chartDim }) => {
         context.fill();
         context.stroke();
       });
-    }
+    }*/
   }
   function getBoundingBox(data) {
     return data.reduce((final, point) => {
@@ -197,3 +218,5 @@ const subTypeUmap = ({ data, chartDim }) => {
     </div>
   );
 };
+
+export default SubtypeUmap;
