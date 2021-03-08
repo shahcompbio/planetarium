@@ -54,7 +54,7 @@ const Umap = ({ data, chartDim }) => {
     context.globalAlpha = 1;
   }
 
-   const drawPoint(context, point, fill, isCountInsignificant, x, y) {
+  function drawPoint(context, point, fill, isCountInsignificant, x, y) {
     const radius = isCountInsignificant ? 2 : point["radius"];
 
     context.beginPath();
@@ -294,7 +294,7 @@ const Umap = ({ data, chartDim }) => {
         });
     }
   }
-   const clearAll = (context, chartDim) =>
+  const clearAll = (context, chartDim) =>
     context.clearRect(
       0,
       0,
