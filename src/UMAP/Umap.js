@@ -1,31 +1,14 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect } from "react";
 import * as d3 from "d3";
-import * as d3Collection from "d3-collection";
 import * as d3Array from "d3-array";
-import _ from "lodash";
 
 import { useDashboardState } from "../PlotState/dashboardState";
 
-import {
-  canvasInit,
-  drawAxisLabels,
-  drawAxisTicks,
-  drawAxis
-} from "../DrawingUtils/utils.js";
+import { canvasInit, drawAxis } from "../DrawingUtils/utils.js";
 
 const Umap = ({ data, chartDim }) => {
   const [
-    {
-      xParam,
-      yParam,
-      cellIdParam,
-      sampleType,
-      clonotypeParam,
-      sampleTen,
-      topTen,
-      colors,
-      clonotypes
-    }
+    { xParam, yParam, cellIdParam, clonotypeParam, topTen, colors }
   ] = useDashboardState();
 
   useEffect(() => {
@@ -198,9 +181,6 @@ const Umap = ({ data, chartDim }) => {
     context.strokeStyle = "black";
 
     const merge = nestedSamples.map((clonotype, i) => {
-      const type = clonotype["key"];
-      const values = clonotype["value"];
-
       const xBins = d3Array
         .bin()
         .value(d => d[xParam])

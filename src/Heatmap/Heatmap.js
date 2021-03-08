@@ -1,40 +1,13 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect } from "react";
 import * as d3 from "d3";
-import * as d3Collection from "d3-collection";
-import * as d3Array from "d3-array";
-import * as d3Tsv from "d3-dsv";
-import _ from "lodash";
+
 import { useDashboardState } from "../PlotState/dashboardState";
 
-import {
-  canvasInit,
-  drawAxisLabels,
-  drawAxisTicks,
-  drawAxis
-} from "../DrawingUtils/utils.js";
-const removeSubtypes = {
-  C13: true,
-  CD4: true,
-  NK: true,
-  "Cycling NK": true,
-  "Cycling CD4": true,
-  Treg: true,
-  C15: true,
-  C12: true
-};
+import { canvasInit } from "../DrawingUtils/utils.js";
+
 const Heatmap = ({ data, chartDim }) => {
   const [
-    {
-      xParam,
-      yParam,
-      cellIdParam,
-      sampleType,
-      clonotypeParam,
-      sampleTen,
-      topTenNumbering,
-      colors,
-      clonotypes
-    }
+    { clonotypeParam, sampleTen, topTenNumbering, colors }
   ] = useDashboardState();
   const subtypeParam = "seurat_clusters";
 
@@ -59,32 +32,11 @@ const Heatmap = ({ data, chartDim }) => {
       final = allSamples;
       return final;
     }, {});
-    /*  const clonotypes = _.groupBy(data, clonotypeParam);
-    const types = Object.keys(clonotypes);
-    const colourList = [
-      "#674172",
-      "#098dde",
-      "#fa832f",
-      "#0e5702",
-      "#c20c1e",
-      "#911eb4",
-      "#fc97bc",
-      "#469990",
-      "#b5762a",
-      "#5aebed",
-      "#8f8f3f",
-      "#ed1a1a"
-    ];
-    var colors = d3
-      .scaleOrdinal()
-      .domain([...types])
-      .range([...colourList]);*/
 
     drawHeatmap(context, chartDim, data, subTypes);
   }
 
   function drawHeatmap(context, allDim, data, subTypes) {
-    const currSample = "NDVL";
     const dimensions = allDim;
     const allSubtypes = Object.keys(subTypes);
 
@@ -121,11 +73,6 @@ const Heatmap = ({ data, chartDim }) => {
       .domain(allSubtypes)
       .range([dimensions["chart"]["x1"], dimensions["chart"]["x2"] - 50]);
 
-    const yAxis = d3
-      .scaleLinear()
-      .domain([...Object.keys(sampleTen)])
-      .range([dimensions["chart"]["y1"], dimensions["chart"]["y2"]]);
-
     const freqColouring = d3
       .scaleLinear()
       .range(["#ffec8b", "#d91e18"])
@@ -159,9 +106,6 @@ const Heatmap = ({ data, chartDim }) => {
         sequenceLength * heatmapRowSpace) /
       sequenceLength;
     const startingY = dimensions["chart"]["y1"];
-    const sortedKeys = Object.entries(sampleTen)
-      .sort((a, b) => a - b)
-      .map(entry => entry[0]);
 
     const alphaIndexing = Object.entries(topTenNumbering)
       .map(entry => entry[1])
@@ -179,8 +123,7 @@ const Heatmap = ({ data, chartDim }) => {
         const yPos =
           startingY + heatmapHeight * index + heatmapRowSpace * index;
         context.fillStyle = colors(sequence);
-        //subtypeColours(sequence);
-        //context.fillStyle = "#000000";
+
         context.fillText(
           topTenNumbering[sequence] + " - " + sequence,
           dimensions["chart"]["x2"] - 50,
@@ -189,7 +132,6 @@ const Heatmap = ({ data, chartDim }) => {
         const seqSubtypes = subtypeStats[sequence];
 
         allSubtypes.map(subtype => {
-          //  context.globalAlpha = 0.8;
           context.font = "20px";
           if (seqSubtypes.hasOwnProperty(subtype)) {
             context.fillStyle = freqColouring(subtypeStats[sequence][subtype]);
