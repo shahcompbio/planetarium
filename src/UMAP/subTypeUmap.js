@@ -1,30 +1,21 @@
 import React, { useEffect } from "react";
 import * as d3 from "d3";
+import _ from "lodash";
 
 import { useDashboardState } from "../PlotState/dashboardState";
-//import { drawPoint, clearAll } from "./Umap.js";
+import { drawPoint, clearAll } from "./Umap.js";
 import { canvasInit, drawAxis } from "../DrawingUtils/utils.js";
-const subtypeFontSize = 11;
+
 const SubtypeUmap = ({ data, chartDim }) => {
-  const [
-    {
-      xParam,
-      yParam,
-      cellIdParam,
-      sampleType,
-      clonotypeParam,
-      sampleTen,
-      topTen,
-      colors,
-      clonotypes
-    }
-  ] = useDashboardState();
+  const [{ xParam, yParam, subtypeParam }] = useDashboardState();
   useEffect(() => {
-    drawAll(data, chartDim);
+    if (data.length > 0) {
+      drawAll(data, chartDim);
+    }
   }, [data]);
 
   function drawAll(data, chartDim) {
-    var canvas = d3.select("#canvas");
+    var canvas = d3.select("#subTypeUmapCanvas");
 
     var context = canvasInit(canvas, chartDim.width, chartDim.height);
 
@@ -48,8 +39,163 @@ const SubtypeUmap = ({ data, chartDim }) => {
     // Y axis
     var y = d3
       .scaleLinear()
-      .domain([yMin, yMax])
+      .domain([yMax, yMin])
       .range([chartDim["chart"]["y1"], chartDim["chart"]["y2"]]);
+    drawAxis(context, x, y, chartDim["chart"]);
+    drawPoints(data, chartDim, context, x, y);
+  }
+  function drawPoints(data, chartDim, context, x, y, selectedSubtype) {
+    const subTypes = _.groupBy(data, subtypeParam);
+
+    const types = Object.keys(subTypes).map(type => type.replace(/\s/g, ""));
+    var colors = d3
+      .scaleOrdinal()
+      .domain([...types])
+      .range([
+        "#5E4FA2",
+        "#3288BD",
+        "#66C2A5",
+        "#ABDDA4",
+        "#E6F598",
+        "#FFFFBF",
+        "#FEE08B",
+        "#FDAE61",
+        "#F46D43",
+        "#D53E4F",
+        "#9E0142"
+      ]);
+
+    context.beginPath();
+    context.lineWidth = 1;
+    context.strokeStyle = "black";
+
+    data.forEach(point => {
+      const type = point[subtypeParam].replace(/\s/g, "");
+      const fill =
+        selectedSubtype && selectedSubtype !== type
+          ? "#e8e8e8"
+          : colors(point[subtypeParam]);
+      drawPoint(context, point, fill, true, x, y, xParam, yParam);
+    });
+
+    appendSubtypeLabels(subTypes, x, y, yParam, xParam, context, colors);
+    appendLegend(colors, types, context, x, y);
+  }
+  function appendSubtypeLabels(
+    subTypes,
+    x,
+    y,
+    yParam,
+    xParam,
+    context,
+    colors
+  ) {
+    var boundingBox = {};
+    const allBoxes = Object.keys(subTypes).map(subtype => {
+      const type = subtype.replace(/\s/g, "");
+      const ySubtypeData = subTypes[subtype].map(d => x(parseFloat(d[yParam])));
+      const xSubtypeData = subTypes[subtype].map(d => y(parseFloat(d[xParam])));
+
+      const xDataNoOutliers = filterOutliers(xSubtypeData, [50, 75]);
+      const yDataNoOutliers = filterOutliers(ySubtypeData, [50, 75]);
+
+      const intersection = _.intersectionBy(
+        xDataNoOutliers,
+        yDataNoOutliers,
+        "index"
+      ).reduce((final, curr) => {
+        final["i-" + curr["index"]] = curr["value"];
+        return final;
+      }, {});
+
+      const remainingPoints = subTypes[subtype].filter(
+        (d, i) => intersection["i-" + i]
+      );
+
+      return {
+        type: type,
+        subtype: subtype,
+        box: getBoundingBox(remainingPoints)
+      };
+    });
+    const avgBoxSize =
+      allBoxes
+        .map(box => x(box["box"]["right"]) - x(box["box"]["left"]))
+        .reduce((a, b) => a + b) / allBoxes.length;
+
+    //if the bounding box is larger than 1.5 the  avg do not add label
+    allBoxes.map(box => {
+      //    if (
+      //      !(x(box["box"]["right"]) - x(box["box"]["left"]) * 1.5 > avgBoxSize)
+      //    ) {
+      drawBoundingBox(context, box, x, y, colors);
+      //    }
+    });
+  }
+  function reDraw(data, chartDim, context, x, y, selectedSubtype) {
+    drawAxis(context, x, y, chartDim["chart"]);
+    drawPoints(data, chartDim, context, x, y, selectedSubtype);
+  }
+  function appendLegend(colors, subTypes, context, x, y) {
+    var legend = d3.select("#subTypeUmapLegend");
+    legend = legend.append("g");
+    legend
+      .selectAll("circle")
+      .data(subTypes)
+      .enter()
+      .append("circle")
+      .attr("r", 6)
+      .attr("cx", function(d) {
+        return chartDim["legend"].x1 + 5;
+      })
+      .attr("cy", function(d, i) {
+        return i * 20 + chartDim["legend"].y1 + 30;
+      })
+      .attr("fill", function(d) {
+        return colors(d[0]);
+      })
+      .attr("cursor", "pointer")
+      .on("mouseover", function(d) {
+        clearAll(context, chartDim);
+        context.beginPath();
+        reDraw(data, chartDim, context, x, y, d[0]);
+      })
+      .on("mouseout", function(event, d) {
+        clearAll(context, chartDim);
+        context.beginPath();
+        reDraw(data, chartDim, context, x, y);
+      });
+
+    legend
+      .selectAll("text")
+      .data(subTypes)
+      .enter()
+      .append("text")
+      .attr("x", function(d) {
+        return chartDim["legend"].x1 + 20;
+      })
+      .attr("y", function(d, i) {
+        return i * 20 + chartDim["legend"].y1 + 31;
+      })
+      .attr("dy", ".35em")
+      .text(function(d) {
+        return d;
+      })
+      .attr("font-weight", "700")
+      .attr("fill", function(d) {
+        return colors(d[0]);
+      })
+      .attr("cursor", "pointer")
+      .on("mouseover", function(d) {
+        clearAll(context, chartDim);
+        context.beginPath();
+        reDraw(data, chartDim, context, x, y, d[0]);
+      })
+      .on("mouseout", function(event, d) {
+        clearAll(context, chartDim);
+        context.beginPath();
+        reDraw(data, chartDim, context, x, y);
+      });
   }
   function filterOutliers(coords, quantiles) {
     const sortedCollection = coords.slice().sort((a, b) => a - b); //copy array fast and sort
@@ -95,10 +241,12 @@ const SubtypeUmap = ({ data, chartDim }) => {
         ? x(boxCords.right) - x(boxCords.left)
         : x(boxCords.left) - x(boxCords.right);
     const height = x(boxCords.bottom) - x(boxCords.top);
-    context.font = "normal bold 13px Droid";
-    //    context.fillText(title, x(boxCords.left), y(boxCords.top) + height / 2);
+    const subtypeFontSize = title.length === 1 ? 18 : 13;
+    context.font = "normal bold " + subtypeFontSize + "px Droid";
 
     const textWidth = context.measureText(title).width + 2;
+
+    const textHeight = context.measureText(title);
 
     context.fillStyle = "white";
     context.globalAlpha = 1;
@@ -108,21 +256,29 @@ const SubtypeUmap = ({ data, chartDim }) => {
         x(boxCords.left) - 2,
         y(boxCords.top) + height / 2 - 10,
         textWidth / 2,
-        14
+        subtypeFontSize
       );
       context.fillRect(
         x(boxCords.left) - 2,
         y(boxCords.top) + height / 2 - 10 + subtypeFontSize,
         textWidth / 2,
-        14
+        subtypeFontSize
       );
     } else {
       context.fillRect(
-        x(boxCords.left) - 2,
-        y(boxCords.top) + height / 2 - 10,
+        x(boxCords.left) + width / 2,
+        y(boxCords.top) - height / 2 - 14,
         textWidth,
-        14
+        subtypeFontSize
       );
+      /*context.fillStyle = "black";
+      context.globalAlpha = 0.5;
+      context.fillRect(
+        x(boxCords.left),
+        y(boxCords.top) - height,
+        width,
+        height
+      );*/
     }
     context.fill();
     context.save();
@@ -130,7 +286,7 @@ const SubtypeUmap = ({ data, chartDim }) => {
     context.globalAlpha = 1;
     context.fillStyle = "black";
 
-    context.font = "normal bold " + subtypeFontSize + "px Droid";
+    //  context.font = "normal bold " + subtypeFontSize + "px Droid";
     //iff titlee is too long, 2 lines
     if (title.indexOf("/") !== -1) {
       const splitTitle = title.split("/");
@@ -146,33 +302,16 @@ const SubtypeUmap = ({ data, chartDim }) => {
         y(boxCords.top) + height / 2 + subtypeFontSize
       );
     } else {
-      context.fillText(title, x(boxCords.left), y(boxCords.top) + height / 2);
+      context.fillText(
+        title,
+        x(boxCords.left) + width / 2,
+        y(boxCords.top) - height / 2
+      );
     }
 
     context.fill();
     context.stroke();
     context.save();
-
-    /*  if (markers[title]) {
-      context.fillStyle = "white";
-      context.fillRect(
-        x(boxCords.left) - 2,
-        y(boxCords.top) + height / 2 - 10 + subtypeFontSize,
-        40,
-        geneFontSize * markers[title].length + 2
-      );
-
-      context.fillStyle = "grey";
-      context.font = "normal bold " + geneFontSize + "px Droid";
-      context.fill();
-      markers[title].map((gene, index) => {
-        const yCord =
-          y(boxCords.top) + height / 2 + geneFontSize * index + subtypeFontSize;
-        context.fillText(gene, x(boxCords.left), yCord);
-        context.fill();
-        context.stroke();
-      });
-    }*/
   }
   function getBoundingBox(data) {
     return data.reduce((final, point) => {
@@ -212,7 +351,7 @@ const SubtypeUmap = ({ data, chartDim }) => {
           }}
         >
           <canvas id="subTypeUmapCanvas" />
-          <svg id="legend" style={{ float: "right", width: 600 }} />
+          <svg id="subTypeUmapLegend" style={{ float: "right", width: 600 }} />
         </div>
       </div>
     </div>

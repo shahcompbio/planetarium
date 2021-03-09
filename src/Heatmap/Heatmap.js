@@ -7,12 +7,13 @@ import { canvasInit } from "../DrawingUtils/utils.js";
 
 const Heatmap = ({ data, chartDim }) => {
   const [
-    { clonotypeParam, sampleTen, topTenNumbering, colors }
+    { clonotypeParam, sampleTen, topTenNumbering, colors, subtypeParam }
   ] = useDashboardState();
-  const subtypeParam = "seurat_clusters";
 
   useEffect(() => {
-    drawAll(data, chartDim);
+    if (data.length > 0) {
+      drawAll(data, chartDim);
+    }
   }, [data]);
 
   function drawAll(data, chartDim) {
@@ -113,7 +114,6 @@ const Heatmap = ({ data, chartDim }) => {
 
     Object.keys(subtypeStats)
       .sort((a, b) => {
-        //  console.log(topTenNumbering[a]);
         return (
           alphaIndexing.indexOf(topTenNumbering[a]) -
           alphaIndexing.indexOf(topTenNumbering[b])

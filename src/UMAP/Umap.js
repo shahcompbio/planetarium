@@ -5,14 +5,35 @@ import * as d3Array from "d3-array";
 import { useDashboardState } from "../PlotState/dashboardState";
 
 import { canvasInit, drawAxis } from "../DrawingUtils/utils.js";
+export const clearAll = (context, chartDim) =>
+  context.clearRect(0, 0, chartDim["chart"].x2 + 30, chartDim["chart"].y2 + 30);
+export function drawPoint(
+  context,
+  point,
+  fill,
+  isCountInsignificant,
+  x,
+  y,
+  xParam,
+  yParam
+) {
+  const radius = isCountInsignificant ? 2 : point["radius"];
 
+  context.beginPath();
+  context.arc(x(point[xParam]), y(point[yParam]), radius, 0, Math.PI * 2, true);
+
+  context.fillStyle = fill;
+  context.fill();
+}
 const Umap = ({ data, chartDim }) => {
   const [
     { xParam, yParam, cellIdParam, clonotypeParam, topTen, colors }
   ] = useDashboardState();
 
   useEffect(() => {
-    drawAll(data, "NDVL", chartDim);
+    if (data.length > 0) {
+      drawAll(data, "NDVL", chartDim);
+    }
   }, [data]);
 
   function drawOutline(context, x, y, data, colors) {
@@ -37,22 +58,6 @@ const Umap = ({ data, chartDim }) => {
     context.globalAlpha = 1;
   }
 
-  function drawPoint(context, point, fill, isCountInsignificant, x, y) {
-    const radius = isCountInsignificant ? 2 : point["radius"];
-
-    context.beginPath();
-    context.arc(
-      x(point[xParam]),
-      y(point[yParam]),
-      radius,
-      0,
-      Math.PI * 2,
-      true
-    );
-
-    context.fillStyle = fill;
-    context.fill();
-  }
   function drawLineGraph(
     context,
     x,
@@ -260,7 +265,16 @@ const Umap = ({ data, chartDim }) => {
     sortedmerge.map(point => {
       const fill = selectedClonotype ? "grey" : colors(point[clonotypeParam]);
       context.globalAlpha = selectedClonotype ? 0.5 : 1;
-      drawPoint(context, point, fill, isCountInsignificant, x, y);
+      drawPoint(
+        context,
+        point,
+        fill,
+        isCountInsignificant,
+        x,
+        y,
+        xParam,
+        yParam
+      );
     });
 
     context.globalAlpha = 1;
@@ -270,17 +284,19 @@ const Umap = ({ data, chartDim }) => {
         .filter(row => row[clonotypeParam] === selectedClonotype)
         .map(point => {
           const fill = colors(point[clonotypeParam]);
-          drawPoint(context, point, fill, isCountInsignificant, x, y);
+          drawPoint(
+            context,
+            point,
+            fill,
+            isCountInsignificant,
+            x,
+            y,
+            xParam,
+            yParam
+          );
         });
     }
   }
-  const clearAll = (context, chartDim) =>
-    context.clearRect(
-      0,
-      0,
-      chartDim["chart"].x2 + 30,
-      chartDim["chart"].y2 + 30
-    );
 
   function reDraw(
     context,
@@ -319,7 +335,7 @@ const Umap = ({ data, chartDim }) => {
     );
   }
   function drawAll(data, sampleType, chartDim) {
-    var canvas = d3.select("#canvas");
+    var canvas = d3.select("#umapCanvas");
 
     var context = canvasInit(canvas, chartDim.width, chartDim.height);
 
@@ -365,7 +381,7 @@ const Umap = ({ data, chartDim }) => {
     }, {});
     reDraw(context, x, y, dim, sampleData, sampleTen, colors, topTenNumbering);
 
-    var legend = d3.select("#legend");
+    var legend = d3.select("#umapLegend");
     legend = legend.append("g");
     legend
       .selectAll("circle")
@@ -486,8 +502,8 @@ const Umap = ({ data, chartDim }) => {
             display: "flex"
           }}
         >
-          <canvas id="canvas" />
-          <svg id="legend" style={{ float: "right", width: 600 }} />
+          <canvas id="umapCanvas" />
+          <svg id="umapLegend" style={{ float: "right", width: 600 }} />
         </div>
       </div>
     </div>

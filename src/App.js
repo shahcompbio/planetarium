@@ -1,16 +1,26 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import logo from "./logo.svg";
 import Layout from "./Layout/Layout.js";
 import "./App.css";
 import _ from "lodash";
 import * as d3 from "d3";
-
+import dataSource from "./VDJ_ANALYSIS_8425_metadata.tsv";
 import dashboardReducer, {
   initialState
 } from "./PlotState/dashboardReducer.js";
 import { DashboardProvider } from "./PlotState/dashboardState.js";
 
-const App = ({ data }) => {
+const App = ({}) => {
+  const [selectedSubtype, setSelectedSubtype] = useState(null);
+  const [selectedClonotype, setSelectedClonotype] = useState(null);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    d3.tsv(dataSource).then(data => {
+      setData(data);
+    });
+  }, []);
+
   //data manipulations
   const topTen = Object.entries(
     _.countBy(data.map(row => row[initialState["clonotypeParam"]]))
@@ -69,6 +79,7 @@ const App = ({ data }) => {
         reducer={dashboardReducer}
       >
         <div className="App">
+          <Layout chartName={"SUBTYPEUMAP"} data={data} />
           <Layout chartName={"UMAP"} data={data} />
           <Layout chartName={"HEATMAP"} data={data} />
         </div>
