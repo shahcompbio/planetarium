@@ -81,7 +81,7 @@ const LayoutWrapper = ({ data }) => {
             data={data}
             selectedSubtype={selectedSubtype}
             selectedClonotype={selectedClonotype}
-            setSelectedSubtype={subtype => setSelectedSubtype(subType)}
+            setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
             setSelectedClonotype={clonotype => setSelectedClonotype(clonotype)}
           />
           <Layout
@@ -89,7 +89,7 @@ const LayoutWrapper = ({ data }) => {
             data={data}
             selectedSubtype={selectedSubtype}
             selectedClonotype={selectedClonotype}
-            setSelectedSubtype={subtype => setSelectedSubtype(subType)}
+            setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
             setSelectedClonotype={clonotype => setSelectedClonotype(clonotype)}
           />
           <Layout
@@ -97,7 +97,7 @@ const LayoutWrapper = ({ data }) => {
             data={data}
             selectedSubtype={selectedSubtype}
             selectedClonotype={selectedClonotype}
-            setSelectedSubtype={subtype => setSelectedSubtype(subType)}
+            setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
             setSelectedClonotype={clonotype => setSelectedClonotype(clonotype)}
           />
         </div>
