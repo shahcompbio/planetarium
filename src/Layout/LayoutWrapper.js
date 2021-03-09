@@ -12,11 +12,13 @@ import {
 } from "../PlotState/dashboardState.js";
 
 const LayoutWrapper = ({ data }) => {
+  const { metadata, probabilities } = data;
+  console.log(probabilities);
   const [{}, dispatch] = useDashboardState();
   const [selectedSubtype, setSelectedSubtype] = useState(null);
   const [selectedClonotype, setSelectedClonotype] = useState(null);
   const topTen = Object.entries(
-    _.countBy(data.map(row => row[initialState["clonotypeParam"]]))
+    _.countBy(metadata.map(row => row[initialState["clonotypeParam"]]))
   )
     .sort(([, a], [, b]) => b - a)
     .slice(0, 10);
@@ -26,7 +28,7 @@ const LayoutWrapper = ({ data }) => {
     return final;
   }, {});
 
-  const sampleData = data.filter(row =>
+  const sampleData = metadata.filter(row =>
     sampleTen.hasOwnProperty(row[initialState["clonotypeParam"]])
   );
   const topTenNumbering = Object.keys(sampleTen).reduce((final, seq, index) => {
@@ -58,7 +60,7 @@ const LayoutWrapper = ({ data }) => {
     .range([...colourList]);
 
   useEffect(() => {
-    if (data.length > 0) {
+    if (metadata.length > 0) {
       dispatch({
         type: "OVERRIDE",
         value: {
@@ -71,14 +73,20 @@ const LayoutWrapper = ({ data }) => {
         }
       });
     }
-  }, [data]);
+  }, [metadata]);
   return (
     <div>
-      {data.length > 0 ? (
+      {metadata.length > 0 ? (
         <div>
           <Layout
             chartName={"SUBTYPEUMAP"}
-            data={data}
+            data={metadata}
+            selectedSubtype={selectedSubtype}
+            setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
+          />
+          <Layout
+            chartName={"HEATMAP"}
+            data={probabilities}
             selectedSubtype={selectedSubtype}
             selectedClonotype={selectedClonotype}
             setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
@@ -86,15 +94,7 @@ const LayoutWrapper = ({ data }) => {
           />
           <Layout
             chartName={"UMAP"}
-            data={data}
-            selectedSubtype={selectedSubtype}
-            selectedClonotype={selectedClonotype}
-            setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
-            setSelectedClonotype={clonotype => setSelectedClonotype(clonotype)}
-          />
-          <Layout
-            chartName={"HEATMAP"}
-            data={data}
+            data={metadata}
             selectedSubtype={selectedSubtype}
             selectedClonotype={selectedClonotype}
             setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
@@ -105,4 +105,5 @@ const LayoutWrapper = ({ data }) => {
     </div>
   );
 };
+
 export default LayoutWrapper;

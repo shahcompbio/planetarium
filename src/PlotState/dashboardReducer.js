@@ -1,7 +1,7 @@
 const initialState = {
   xParam: "UMAP_1",
   yParam: "UMAP_2",
-  clonotypeParam: "clonotype",
+  clonotypeParam: "cdr3s_aa",
   cellIdParam: "cell_id",
   subtypeParam: "subtype"
 };
