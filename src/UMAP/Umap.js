@@ -31,10 +31,12 @@ const Umap = ({ data, chartDim }) => {
   ] = useDashboardState();
 
   useEffect(() => {
-    if (data.length > 0) {
+    if (data.length > 0 && colors) {
+      console.log(data);
+      console.log(topTen);
       drawAll(data, "NDVL", chartDim);
     }
-  }, [data]);
+  }, [colors]);
 
   function drawOutline(context, x, y, data, colors) {
     context.beginPath();
@@ -119,7 +121,6 @@ const Umap = ({ data, chartDim }) => {
         nestedSamples[keys.indexOf(selectedClonotype)]
       ];
     }
-
     nestedSamples.reduce((final, clonotype) => {
       const xBins = d3Array
         .bin()
@@ -336,7 +337,7 @@ const Umap = ({ data, chartDim }) => {
   }
   function drawAll(data, sampleType, chartDim) {
     var canvas = d3.select("#umapCanvas");
-
+    console.log(data);
     var context = canvasInit(canvas, chartDim.width, chartDim.height);
 
     context.fillStyle = "white";
@@ -358,7 +359,7 @@ const Umap = ({ data, chartDim }) => {
     const sampleData = data.filter(row =>
       sampleTen.hasOwnProperty(row[clonotypeParam])
     );
-
+    console.log(topTen);
     const dim = chartDim["chart"];
     // X axis
     var x = d3

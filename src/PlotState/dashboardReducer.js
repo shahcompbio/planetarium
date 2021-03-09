@@ -7,10 +7,12 @@ const initialState = {
 };
 
 const dashboardReducer = (state, action) => {
+  console.log(action);
   switch (action.type) {
     case "OVERRIDE": {
       return {
-        ...state
+        ...state,
+        ...action.value
       };
     }
     default:

@@ -11,10 +11,12 @@ const Heatmap = ({ data, chartDim }) => {
   ] = useDashboardState();
 
   useEffect(() => {
-    if (data.length > 0) {
+    if (data.length > 0 && colors) {
+      console.log(colors);
+      console.log(clonotypeParam);
       drawAll(data, chartDim);
     }
-  }, [data]);
+  }, [colors]);
 
   function drawAll(data, chartDim) {
     var canvas = d3.select("#heatmapCanvas");
