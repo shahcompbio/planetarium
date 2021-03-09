@@ -9,5 +9,4 @@ import data from "./data/api.js";
 
 ReactDOM.render(<App data={data} />, document.getElementById("root"));
 
-console.log(window);
 serviceWorker.unregister();
