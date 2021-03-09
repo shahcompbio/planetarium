@@ -8,7 +8,6 @@
     "d3-collection": "^1.0.7",
     "lodash": "^4.17.21",
     "react": "^16.8.4",
-    "react-app-rewired": "^2.1.8",
     "react-dom": "^16.8.4",
     "react-scripts": "2.1.8",
     "rewire": "^5.0.0"
