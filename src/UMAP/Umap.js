@@ -25,7 +25,14 @@ export function drawPoint(
   context.fillStyle = fill;
   context.fill();
 }
-const Umap = ({ data, chartDim }) => {
+const Umap = ({
+  data,
+  chartDim,
+  selectedSubtype,
+  selectedClonotype,
+  setSelectedSubtype,
+  setSelectedClonotype
+}) => {
   const [
     { xParam, yParam, cellIdParam, clonotypeParam, topTen, colors }
   ] = useDashboardState();

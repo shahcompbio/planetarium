@@ -6,7 +6,14 @@ import { useDashboardState } from "../PlotState/dashboardState";
 import { drawPoint, clearAll } from "./Umap.js";
 import { canvasInit, drawAxis } from "../DrawingUtils/utils.js";
 
-const SubtypeUmap = ({ data, chartDim }) => {
+const SubtypeUmap = ({
+  data,
+  chartDim,
+  selectedSubtype,
+  selectedClonotype,
+  setSelectedSubtype,
+  setSelectedClonotype
+}) => {
   const [{ xParam, yParam, subtypeParam }] = useDashboardState();
   useEffect(() => {
     if (data.length > 0) {

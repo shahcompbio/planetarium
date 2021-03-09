@@ -5,7 +5,14 @@ import { useDashboardState } from "../PlotState/dashboardState";
 
 import { canvasInit } from "../DrawingUtils/utils.js";
 
-const Heatmap = ({ data, chartDim }) => {
+const Heatmap = ({
+  data,
+  chartDim,
+  selectedSubtype,
+  selectedClonotype,
+  setSelectedSubtype,
+  setSelectedClonotype
+}) => {
   const [
     { clonotypeParam, sampleTen, topTenNumbering, colors, subtypeParam }
   ] = useDashboardState();
