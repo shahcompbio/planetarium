@@ -5,15 +5,25 @@ import { useDashboardState } from "../PlotState/dashboardState";
 
 import { canvasInit } from "../DrawingUtils/utils.js";
 
-const Heatmap = ({ data, chartDim }) => {
+const Heatmap = ({
+  data,
+  chartDim,
+  selectedSubtype,
+  selectedClonotype,
+  setSelectedSubtype,
+  setSelectedClonotype
+}) => {
   const [
-    { clonotypeParam, sampleTen, topTenNumbering, colors }
+    { clonotypeParam, sampleTen, topTenNumbering, colors, subtypeParam }
   ] = useDashboardState();
-  const subtypeParam = "seurat_clusters";
 
   useEffect(() => {
-    drawAll(data, chartDim);
-  }, [data]);
+    if (data.length > 0 && colors) {
+      console.log(colors);
+      console.log(clonotypeParam);
+      drawAll(data, chartDim);
+    }
+  }, [colors]);
 
   function drawAll(data, chartDim) {
     var canvas = d3.select("#heatmapCanvas");
@@ -113,7 +123,6 @@ const Heatmap = ({ data, chartDim }) => {
 
     Object.keys(subtypeStats)
       .sort((a, b) => {
-        //  console.log(topTenNumbering[a]);
         return (
           alphaIndexing.indexOf(topTenNumbering[a]) -
           alphaIndexing.indexOf(topTenNumbering[b])
