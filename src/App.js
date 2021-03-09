@@ -4,7 +4,8 @@ import LayoutWrapper from "./Layout/LayoutWrapper.js";
 import "./App.css";
 import _ from "lodash";
 import * as d3 from "d3";
-import dataSource from "./VDJ_ANALYSIS_8425_metadata.tsv";
+import metadataSource from "./metadata.tsv";
+import probabilitiesSource from "./probabilities.tsv";
 import dashboardReducer, {
   initialState
 } from "./PlotState/dashboardReducer.js";
@@ -13,12 +14,17 @@ import { DashboardProvider } from "./PlotState/dashboardState.js";
 const App = ({}) => {
   const [selectedSubtype, setSelectedSubtype] = useState(null);
   const [selectedClonotype, setSelectedClonotype] = useState(null);
-  const [data, setData] = useState([]);
+  const [metadata, setMetadata] = useState([]);
+  const [probabilities, setProbabilities] = useState([]);
 
   useEffect(() => {
-    d3.tsv(dataSource).then(data => {
-      setData(data);
-    });
+    Promise.all([d3.tsv(metadataSource), d3.tsv(probabilitiesSource)]).then(
+      data => {
+        console.log(data[1]);
+        setMetadata(data[0]);
+        setProbabilities(data[1]);
+      }
+    );
   }, []);
 
   return (
@@ -30,7 +36,9 @@ const App = ({}) => {
         reducer={dashboardReducer}
       >
         <div className="App">
-          <LayoutWrapper data={data} />
+          <LayoutWrapper
+            data={{ metadata: metadata, probabilities: probabilities }}
+          />
         </div>
       </DashboardProvider>
     </div>

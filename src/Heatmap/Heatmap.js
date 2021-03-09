@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import * as d3 from "d3";
 
 import { useDashboardState } from "../PlotState/dashboardState";
 
 import { canvasInit } from "../DrawingUtils/utils.js";
-
+const clearAll = (context, chartDim) =>
+  context.clearRect(0, 0, chartDim["chart"].x2, chartDim["chart"].y2);
 const Heatmap = ({
   data,
   chartDim,
@@ -16,16 +17,45 @@ const Heatmap = ({
   const [
     { clonotypeParam, sampleTen, topTenNumbering, colors, subtypeParam }
   ] = useDashboardState();
+  const [context, saveContext] = useState(null);
+  console.log(topTenNumbering);
+  console.log(data);
+  console.log(sampleTen);
+  const subTypes = data.reduce((final, current) => {
+    var allSamples = final;
+    const subtype = current[subtypeParam];
+    allSamples[subtype] = final.hasOwnProperty(subtype)
+      ? allSamples[subtype] + 1
+      : 1;
+    final = allSamples;
+    return final;
+  }, {});
+
+  useEffect(() => {
+    if (context) {
+      drawHeatmap(context, chartDim, data, subTypes);
+    }
+  }, [context]);
 
   useEffect(() => {
     if (data.length > 0 && colors) {
-      console.log(colors);
-      console.log(clonotypeParam);
-      drawAll(data, chartDim);
+      init(data, chartDim);
     }
-  }, [colors]);
+  }, [data, colors]);
 
-  function drawAll(data, chartDim) {
+  useEffect(() => {
+    if (context) {
+      if (selectedSubtype !== null) {
+        clearAll(context, chartDim);
+        drawHeatmap(context, chartDim, data, selectedSubtype);
+      } else {
+        clearAll(context, chartDim);
+        drawHeatmap(context, chartDim, data);
+      }
+    }
+  }, [selectedSubtype, context]);
+
+  function init(data, chartDim) {
     var canvas = d3.select("#heatmapCanvas");
 
     var context = canvasInit(canvas, chartDim.width, chartDim.height);
@@ -33,23 +63,13 @@ const Heatmap = ({
     context.fillStyle = "white";
     context.fillRect(0, 0, chartDim.width, chartDim.height);
 
-    const subTypes = data.reduce((final, current) => {
-      var allSamples = final;
-      const subtype = current[subtypeParam];
-      allSamples[subtype] = final.hasOwnProperty(subtype)
-        ? allSamples[subtype] + 1
-        : 1;
-      final = allSamples;
-      return final;
-    }, {});
-
-    drawHeatmap(context, chartDim, data, subTypes);
+    saveContext(context);
   }
 
-  function drawHeatmap(context, allDim, data, subTypes) {
+  function drawHeatmap(context, allDim, data, selectedSubtype) {
     const dimensions = allDim;
     const allSubtypes = Object.keys(subTypes);
-
+    console.log(allSubtypes);
     var largestFreq = 0;
     const subtypeStats = data.reduce(
       (final, current) => {
@@ -141,6 +161,12 @@ const Heatmap = ({
         const seqSubtypes = subtypeStats[sequence];
 
         allSubtypes.map(subtype => {
+          context.globalAlpha =
+            selectedSubtype === null
+              ? selectedSubtype === subtype
+                ? 1
+                : 0.2
+              : 1;
           context.font = "20px";
           if (seqSubtypes.hasOwnProperty(subtype)) {
             context.fillStyle = freqColouring(subtypeStats[sequence][subtype]);
@@ -153,7 +179,6 @@ const Heatmap = ({
             heatmapWidth - 3,
             heatmapHeight
           );
-          //context.globalAlpha = 1;
           if (seqSubtypes.hasOwnProperty(subtype)) {
             context.fillStyle = "black";
             const freq = subtypeStats[sequence][subtype];

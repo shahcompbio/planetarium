@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import * as d3 from "d3";
 import _ from "lodash";
 
@@ -15,63 +15,89 @@ const SubtypeUmap = ({
   setSelectedClonotype
 }) => {
   const [{ xParam, yParam, subtypeParam }] = useDashboardState();
+  const [drawReady, setDrawReady] = useState(false);
+  const [context, saveContext] = useState(null);
+
+  const yData = data.map(d => parseFloat(d[yParam]));
+  const xData = data.map(d => parseFloat(d[xParam]));
+
+  const yMin = Math.min(...yData);
+  const yMax = Math.max(...yData);
+  const xMin = Math.min(...xData);
+  const xMax = Math.max(...xData);
+
+  // X axis
+  const x = d3
+    .scaleLinear()
+    .domain([xMin, xMax])
+    .range([chartDim["chart"]["x1"], chartDim["chart"]["x2"]]);
+
+  // Y axis
+  const y = d3
+    .scaleLinear()
+    .domain([yMax, yMin])
+    .range([chartDim["chart"]["y1"], chartDim["chart"]["y2"]]);
+
+  const subTypes = _.groupBy(data, subtypeParam);
+
+  const types = Object.keys(subTypes).map(type => type.replace(/\s/g, ""));
+  var colors = d3
+    .scaleOrdinal()
+    .domain([...types])
+    .range([
+      "#5E4FA2",
+      "#3288BD",
+      "#66C2A5",
+      "#ABDDA4",
+      "#E6F598",
+      "#FFFFBF",
+      "#FEE08B",
+      "#FDAE61",
+      "#F46D43",
+      "#D53E4F",
+      "#9E0142"
+    ]);
   useEffect(() => {
     if (data.length > 0) {
-      drawAll(data, chartDim);
+      init(data, chartDim);
     }
   }, [data]);
 
-  function drawAll(data, chartDim) {
+  useEffect(() => {
+    if (context) {
+      if (selectedSubtype !== null) {
+        clearAll(context, chartDim);
+        context.beginPath();
+        reDraw(data, chartDim, context, x, y, selectedSubtype);
+      } else {
+        clearAll(context, chartDim);
+        context.beginPath();
+        reDraw(data, chartDim, context, x, y);
+      }
+    }
+  }, [selectedSubtype, context]);
+
+  useEffect(() => {
+    if (context !== null) {
+      drawAxis(context, x, y, chartDim["chart"]);
+      drawPoints(data, chartDim, context, x, y);
+      appendSubtypeLabels(subTypes, x, y, yParam, xParam, context, colors);
+      appendLegend(colors, types, context, x, y, setSelectedSubtype);
+    }
+  }, [drawReady]);
+
+  function init(data, chartDim) {
     var canvas = d3.select("#subTypeUmapCanvas");
 
-    var context = canvasInit(canvas, chartDim.width, chartDim.height);
+    var currContext = canvasInit(canvas, chartDim.width, chartDim.height);
 
-    context.fillStyle = "white";
-    context.fillRect(0, 0, chartDim.width, chartDim.height);
-
-    const yData = data.map(d => parseFloat(d[yParam]));
-    const xData = data.map(d => parseFloat(d[xParam]));
-
-    const yMin = Math.min(...yData);
-    const yMax = Math.max(...yData);
-    const xMin = Math.min(...xData);
-    const xMax = Math.max(...xData);
-
-    // X axis
-    var x = d3
-      .scaleLinear()
-      .domain([xMin, xMax])
-      .range([chartDim["chart"]["x1"], chartDim["chart"]["x2"]]);
-
-    // Y axis
-    var y = d3
-      .scaleLinear()
-      .domain([yMax, yMin])
-      .range([chartDim["chart"]["y1"], chartDim["chart"]["y2"]]);
-    drawAxis(context, x, y, chartDim["chart"]);
-    drawPoints(data, chartDim, context, x, y);
+    currContext.fillStyle = "white";
+    currContext.fillRect(0, 0, chartDim.width, chartDim.height);
+    saveContext(currContext);
+    setDrawReady(true);
   }
+
   function drawPoints(data, chartDim, context, x, y, selectedSubtype) {
-    const subTypes = _.groupBy(data, subtypeParam);
-
-    const types = Object.keys(subTypes).map(type => type.replace(/\s/g, ""));
-    var colors = d3
-      .scaleOrdinal()
-      .domain([...types])
-      .range([
-        "#5E4FA2",
-        "#3288BD",
-        "#66C2A5",
-        "#ABDDA4",
-        "#E6F598",
-        "#FFFFBF",
-        "#FEE08B",
-        "#FDAE61",
-        "#F46D43",
-        "#D53E4F",
-        "#9E0142"
-      ]);
-
     context.beginPath();
     context.lineWidth = 1;
     context.strokeStyle = "black";
@@ -84,9 +110,6 @@ const SubtypeUmap = ({
           : colors(point[subtypeParam]);
       drawPoint(context, point, fill, true, x, y, xParam, yParam);
     });
-
-    appendSubtypeLabels(subTypes, x, y, yParam, xParam, context, colors);
-    appendLegend(colors, types, context, x, y);
   }
   function appendSubtypeLabels(
     subTypes,
@@ -142,8 +165,9 @@ const SubtypeUmap = ({
   function reDraw(data, chartDim, context, x, y, selectedSubtype) {
     drawAxis(context, x, y, chartDim["chart"]);
     drawPoints(data, chartDim, context, x, y, selectedSubtype);
+    appendSubtypeLabels(subTypes, x, y, yParam, xParam, context, colors);
   }
-  function appendLegend(colors, subTypes, context, x, y) {
+  function appendLegend(colors, subTypes, context, x, y, setSelectedSubtype) {
     var legend = d3.select("#subTypeUmapLegend");
     legend = legend.append("g");
     legend
@@ -163,14 +187,10 @@ const SubtypeUmap = ({
       })
       .attr("cursor", "pointer")
       .on("mouseover", function(d) {
-        clearAll(context, chartDim);
-        context.beginPath();
-        reDraw(data, chartDim, context, x, y, d[0]);
+        setSelectedSubtype(d[0]);
       })
       .on("mouseout", function(event, d) {
-        clearAll(context, chartDim);
-        context.beginPath();
-        reDraw(data, chartDim, context, x, y);
+        setSelectedSubtype(null);
       });
 
     legend
@@ -194,14 +214,10 @@ const SubtypeUmap = ({
       })
       .attr("cursor", "pointer")
       .on("mouseover", function(d) {
-        clearAll(context, chartDim);
-        context.beginPath();
-        reDraw(data, chartDim, context, x, y, d[0]);
+        setSelectedSubtype(d[0]);
       })
       .on("mouseout", function(event, d) {
-        clearAll(context, chartDim);
-        context.beginPath();
-        reDraw(data, chartDim, context, x, y);
+        setSelectedSubtype(null);
       });
   }
   function filterOutliers(coords, quantiles) {

@@ -39,9 +39,7 @@ const Umap = ({
 
   useEffect(() => {
     if (data.length > 0 && colors) {
-      console.log(data);
-      console.log(topTen);
-      drawAll(data, "NDVL", chartDim);
+      init(data, "NDVL", chartDim);
     }
   }, [colors]);
 
@@ -342,9 +340,8 @@ const Umap = ({
       selectedClonotype
     );
   }
-  function drawAll(data, sampleType, chartDim) {
+  function init(data, sampleType, chartDim) {
     var canvas = d3.select("#umapCanvas");
-    console.log(data);
     var context = canvasInit(canvas, chartDim.width, chartDim.height);
 
     context.fillStyle = "white";
@@ -366,7 +363,7 @@ const Umap = ({
     const sampleData = data.filter(row =>
       sampleTen.hasOwnProperty(row[clonotypeParam])
     );
-    console.log(topTen);
+
     const dim = chartDim["chart"];
     // X axis
     var x = d3
