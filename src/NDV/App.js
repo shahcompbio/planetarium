@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
-import logo from "./logo.svg";
-import LayoutWrapper from "./Layout/LayoutWrapper.js";
+import LayoutWrapper from "../Layout/LayoutWrapper.js";
 import "./App.css";
 import _ from "lodash";
 import * as d3 from "d3";
-import metadataSource from "./metadata.tsv";
-import probabilitiesSource from "./probabilities.tsv";
+import metadataSource from "./data/metadata.tsv";
+import probabilitiesSource from "./data/probabilities.tsv";
 import dashboardReducer, {
-  initialState
-} from "./PlotState/dashboardReducer.js";
-import { DashboardProvider } from "./PlotState/dashboardState.js";
+  initialState,
+} from "../PlotState/dashboardReducer.js";
+import { DashboardProvider } from "../PlotState/dashboardState.js";
 
 const App = ({}) => {
   const [selectedSubtype, setSelectedSubtype] = useState(null);
@@ -19,7 +18,7 @@ const App = ({}) => {
 
   useEffect(() => {
     Promise.all([d3.tsv(metadataSource), d3.tsv(probabilitiesSource)]).then(
-      data => {
+      (data) => {
         console.log(data[1]);
         setMetadata(data[0]);
         setProbabilities(data[1]);
@@ -31,7 +30,7 @@ const App = ({}) => {
     <div className="App">
       <DashboardProvider
         initialState={{
-          ...initialState
+          ...initialState,
         }}
         reducer={dashboardReducer}
       >
