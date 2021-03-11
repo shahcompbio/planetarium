@@ -10,7 +10,7 @@ const NDV = ({ data }) => {
   const [selectedSubtype, setSelectedSubtype] = useState(null);
   const [selectedClonotype, setSelectedClonotype] = useState(null);
 
-  const { metadata, probabilities } = data;
+  const { metadata, probabilities, degs } = data;
 
   const topTen = Object.entries(
     _.countBy(metadata.map(row => row[initialState["clonotypeParam"]]))
@@ -70,8 +70,50 @@ const NDV = ({ data }) => {
       >
         <div>
           <Layout
+            chartName={"TABLE"}
+            data={degs}
+            dim={{
+              chart: {
+                x1: 50,
+                y1: 50,
+                x2: 600,
+                y2: 200
+              },
+              height: 300,
+              width: 650
+            }}
+          />
+          <Layout
+            chartName={"HISTOGRAM"}
+            data={probabilities}
+            dim={{
+              chart: {
+                x1: 50,
+                y1: 50,
+                x2: 600,
+                y2: 200
+              },
+              height: 300,
+              width: 650
+            }}
+            selectedSubtype={selectedSubtype}
+            selectedClonotype={selectedClonotype}
+            setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
+            setSelectedClonotype={clonotype => setSelectedClonotype(clonotype)}
+          />
+          <Layout
             chartName={"BARPLOT"}
             data={probabilities}
+            dim={{
+              chart: {
+                x1: 50,
+                y1: 50,
+                x2: 600,
+                y2: 200
+              },
+              height: 300,
+              width: 600
+            }}
             selectedSubtype={selectedSubtype}
             selectedClonotype={selectedClonotype}
             setSelectedSubtype={subtype => setSelectedSubtype(subtype)}

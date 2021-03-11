@@ -3,11 +3,12 @@ const initialState = {
   yParam: "UMAP_2",
   clonotypeParam: "cdr3s_aa",
   cellIdParam: "cell_id",
-  subtypeParam: "subtype"
+  subtypeParam: "subtype",
+  logXParam: "log10_probability",
+  logYParam: "logProbability"
 };
 
 const dashboardReducer = (state, action) => {
-  console.log(action);
   switch (action.type) {
     case "OVERRIDE": {
       return {

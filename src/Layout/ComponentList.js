@@ -2,11 +2,14 @@ import Umap from "../UMAP/Umap.js";
 import Heatmap from "../Heatmap/Heatmap.js";
 import SubTypeUmap from "../UMAP/SubtypeUmap.js";
 import Barplot from "../Barplot/Barplot.js";
-
+import Histogram from "../Barplot/Histogram.js";
+import Table from "../Table/Table.js";
 const componentList = {
   UMAP: Umap,
   HEATMAP: Heatmap,
   SUBTYPEUMAP: SubTypeUmap,
-  BARPLOT: Barplot
+  BARPLOT: Barplot,
+  HISTOGRAM: Histogram,
+  TABLE: Table
 };
 export default componentList;
