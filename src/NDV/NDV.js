@@ -13,7 +13,7 @@ const NDV = ({ data }) => {
   const { metadata, probabilities } = data;
 
   const topTen = Object.entries(
-    _.countBy(metadata.map((row) => row[initialState["clonotypeParam"]]))
+    _.countBy(metadata.map(row => row[initialState["clonotypeParam"]]))
   )
     .sort(([, a], [, b]) => b - a)
     .slice(0, 10);
@@ -23,7 +23,7 @@ const NDV = ({ data }) => {
     return final;
   }, {});
 
-  const sampleData = metadata.filter((row) =>
+  const sampleData = metadata.filter(row =>
     sampleTen.hasOwnProperty(row[initialState["clonotypeParam"]])
   );
   const topTenNumbering = Object.keys(sampleTen).reduce((final, seq, index) => {
@@ -47,7 +47,7 @@ const NDV = ({ data }) => {
     "#b5762a",
     "#5aebed",
     "#8f8f3f",
-    "#ed1a1a",
+    "#ed1a1a"
   ];
   var colors = d3
     .scaleOrdinal()
@@ -64,36 +64,40 @@ const NDV = ({ data }) => {
           topTenNumbering: topTenNumbering,
           topTen: topTen,
           colors: colors,
-          clonotypes: clonotypes,
+          clonotypes: clonotypes
         }}
         reducer={dashboardReducer}
       >
         <div>
           <Layout
+            chartName={"BARPLOT"}
+            data={probabilities}
+            selectedSubtype={selectedSubtype}
+            selectedClonotype={selectedClonotype}
+            setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
+            setSelectedClonotype={clonotype => setSelectedClonotype(clonotype)}
+          />
+          <Layout
             chartName={"SUBTYPEUMAP"}
             data={metadata}
             selectedSubtype={selectedSubtype}
-            setSelectedSubtype={(subtype) => setSelectedSubtype(subtype)}
+            setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
           />
           <Layout
             chartName={"HEATMAP"}
             data={probabilities}
             selectedSubtype={selectedSubtype}
             selectedClonotype={selectedClonotype}
-            setSelectedSubtype={(subtype) => setSelectedSubtype(subtype)}
-            setSelectedClonotype={(clonotype) =>
-              setSelectedClonotype(clonotype)
-            }
+            setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
+            setSelectedClonotype={clonotype => setSelectedClonotype(clonotype)}
           />
           <Layout
             chartName={"UMAP"}
             data={metadata}
             selectedSubtype={selectedSubtype}
             selectedClonotype={selectedClonotype}
-            setSelectedSubtype={(subtype) => setSelectedSubtype(subtype)}
-            setSelectedClonotype={(clonotype) =>
-              setSelectedClonotype(clonotype)
-            }
+            setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
+            setSelectedClonotype={clonotype => setSelectedClonotype(clonotype)}
           />
         </div>
       </DashboardProvider>

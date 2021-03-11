@@ -9,8 +9,8 @@ let chartDim = {
   chart: {
     x1: margin.left,
     y1: margin.top,
-    x2: margin.left + chartHeight,
-    y2: margin.top + chartWidth
+    x2: margin.left + chartWidth,
+    y2: margin.top + chartHeight
   },
   legend: {
     x1: margin.left,

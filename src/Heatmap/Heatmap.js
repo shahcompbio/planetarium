@@ -18,9 +18,7 @@ const Heatmap = ({
     { clonotypeParam, sampleTen, topTenNumbering, colors, subtypeParam }
   ] = useDashboardState();
   const [context, saveContext] = useState(null);
-  console.log(topTenNumbering);
-  console.log(data);
-  console.log(sampleTen);
+
   const subTypes = data.reduce((final, current) => {
     var allSamples = final;
     const subtype = current[subtypeParam];
@@ -69,7 +67,7 @@ const Heatmap = ({
   function drawHeatmap(context, allDim, data, selectedSubtype) {
     const dimensions = allDim;
     const allSubtypes = Object.keys(subTypes);
-    console.log(allSubtypes);
+
     var largestFreq = 0;
     const subtypeStats = data.reduce(
       (final, current) => {
