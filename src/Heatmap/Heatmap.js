@@ -12,13 +12,12 @@ const Heatmap = ({
   selectedSubtype,
   selectedClonotype,
   setSelectedSubtype,
-  setSelectedClonotype
+  setSelectedClonotype,
 }) => {
   const [
-    { clonotypeParam, sampleTen, topTenNumbering, colors, subtypeParam }
+    { clonotypeParam, sampleTen, topTenNumbering, colors, subtypeParam },
   ] = useDashboardState();
   const [context, saveContext] = useState(null);
-
   const subTypes = data.reduce((final, current) => {
     var allSamples = final;
     const subtype = current[subtypeParam];
@@ -67,7 +66,6 @@ const Heatmap = ({
   function drawHeatmap(context, allDim, data, selectedSubtype) {
     const dimensions = allDim;
     const allSubtypes = Object.keys(subTypes);
-
     var largestFreq = 0;
     const subtypeStats = data.reduce(
       (final, current) => {
@@ -93,7 +91,7 @@ const Heatmap = ({
           .reduce((final, entry) => {
             final[entry] = {};
             return final;
-          }, {})
+          }, {}),
       }
     );
     const xAxis = d3
@@ -136,7 +134,7 @@ const Heatmap = ({
     const startingY = dimensions["chart"]["y1"];
 
     const alphaIndexing = Object.entries(topTenNumbering)
-      .map(entry => entry[1])
+      .map((entry) => entry[1])
       .sort();
 
     Object.keys(subtypeStats)
@@ -158,7 +156,7 @@ const Heatmap = ({
         );
         const seqSubtypes = subtypeStats[sequence];
 
-        allSubtypes.map(subtype => {
+        allSubtypes.map((subtype) => {
           context.globalAlpha =
             selectedSubtype === null
               ? selectedSubtype === subtype
@@ -197,7 +195,7 @@ const Heatmap = ({
           style={{
             position: "absolute",
             pointerEvents: "all",
-            display: "flex"
+            display: "flex",
           }}
         >
           <canvas id="heatmapCanvas" />
