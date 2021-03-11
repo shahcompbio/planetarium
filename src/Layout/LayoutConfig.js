@@ -2,7 +2,7 @@ const chartHeight = 550;
 const chartWidth = 550;
 
 let margin = { top: 100, right: 10, bottom: 50, left: 20 };
-let chartDim = {
+const chartDim = {
   margin: margin,
   width: 650,
   height: 700,

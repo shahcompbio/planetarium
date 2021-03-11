@@ -40,7 +40,7 @@ const SubtypeUmap = ({
 
   const subTypes = _.groupBy(data, subtypeParam);
 
-  const types = Object.keys(subTypes).map(type => type.replace(/\s/g, ""));
+  const types = Object.keys(subTypes);
   var colors = d3
     .scaleOrdinal()
     .domain([...types])
@@ -48,9 +48,6 @@ const SubtypeUmap = ({
       "#5E4FA2",
       "#3288BD",
       "#66C2A5",
-      "#ABDDA4",
-      "#E6F598",
-      "#FFFFBF",
       "#FEE08B",
       "#FDAE61",
       "#F46D43",
@@ -103,7 +100,7 @@ const SubtypeUmap = ({
     context.strokeStyle = "black";
 
     data.forEach(point => {
-      const type = point[subtypeParam].replace(/\s/g, "");
+      const type = point[subtypeParam];
       const fill =
         selectedSubtype && selectedSubtype !== type
           ? "#e8e8e8"
@@ -183,11 +180,11 @@ const SubtypeUmap = ({
         return i * 20 + chartDim["legend"].y1 + 30;
       })
       .attr("fill", function(d) {
-        return colors(d[0]);
+        return colors(d);
       })
       .attr("cursor", "pointer")
       .on("mouseover", function(d) {
-        setSelectedSubtype(d[0]);
+        setSelectedSubtype(d);
       })
       .on("mouseout", function(event, d) {
         setSelectedSubtype(null);
@@ -210,11 +207,11 @@ const SubtypeUmap = ({
       })
       .attr("font-weight", "700")
       .attr("fill", function(d) {
-        return colors(d[0]);
+        return colors(d);
       })
       .attr("cursor", "pointer")
       .on("mouseover", function(d) {
-        setSelectedSubtype(d[0]);
+        setSelectedSubtype(d);
       })
       .on("mouseout", function(event, d) {
         setSelectedSubtype(null);

@@ -15,9 +15,12 @@ metadata = metadata.to_dict('records')
 probabilities = pd.read_csv(os.path.join(data_dir, "probabilities.tsv"), sep="\t")
 probabilities = probabilities.to_dict("records")
 
+probabilities = pd.read_csv(os.path.join(data_dir, "degs.tsv"), sep="\t")
+probabilities = probabilities.to_dict("degs")
 data = {
     "metadata": metadata,
-    "probabilities": probabilities
+    "probabilities": probabilities,
+    "degs": degs
 }
 
 data = json.dumps(data, indent=4)

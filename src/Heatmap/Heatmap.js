@@ -5,7 +5,8 @@ import { useDashboardState } from "../PlotState/dashboardState";
 
 import { canvasInit } from "../DrawingUtils/utils.js";
 const clearAll = (context, chartDim) =>
-  context.clearRect(0, 0, chartDim["chart"].x2, chartDim["chart"].y2);
+  context.clearRect(0, 0, chartDim["chart"].x2, chartDim["chart"].y2 - 50);
+
 const Heatmap = ({
   data,
   chartDim,
@@ -28,9 +29,18 @@ const Heatmap = ({
     return final;
   }, {});
 
+  const allSubtypes = Object.keys(subTypes);
+  const xAxis = d3
+    .scaleBand()
+    .domain(allSubtypes)
+    .range([chartDim["chart"]["x1"], chartDim["chart"]["x2"] - 50]);
+  const heatmapWidth =
+    (chartDim["chart"]["x2"] - chartDim["chart"]["x1"] - 50) /
+    allSubtypes.length;
   useEffect(() => {
     if (context) {
       drawHeatmap(context, chartDim, data, subTypes);
+      drawLabels(context);
     }
   }, [context]);
 
@@ -44,14 +54,32 @@ const Heatmap = ({
     if (context) {
       if (selectedSubtype !== null) {
         clearAll(context, chartDim);
+        drawLabels(context);
         drawHeatmap(context, chartDim, data, selectedSubtype);
       } else {
         clearAll(context, chartDim);
+        drawLabels(context);
         drawHeatmap(context, chartDim, data);
       }
     }
   }, [selectedSubtype, context]);
+  function drawLabels(context) {
+    context.beginPath();
+    context.globalAlpha = 1;
+    context.fillStyle = "#000000";
 
+    allSubtypes.forEach(function(d, index) {
+      context.save();
+      context.translate(
+        xAxis(d) + heatmapWidth / 2,
+        chartDim["chart"]["y1"] - 5
+      );
+      context.rotate((322 * Math.PI) / 180);
+      context.fillText(d, 0, 0);
+      context.restore();
+      context.fill();
+    });
+  }
   function init(data, chartDim) {
     var canvas = d3.select("#heatmapCanvas");
 
@@ -94,36 +122,12 @@ const Heatmap = ({
           }, {}),
       }
     );
-    const xAxis = d3
-      .scaleBand()
-      .domain(allSubtypes)
-      .range([dimensions["chart"]["x1"], dimensions["chart"]["x2"] - 50]);
 
     const freqColouring = d3
       .scaleLinear()
       .range(["#ffec8b", "#d91e18"])
       .domain([0, 96]);
 
-    const heatmapWidth =
-      (dimensions["chart"]["x2"] - dimensions["chart"]["x1"] - 50) /
-      allSubtypes.length;
-
-    //  if (currSample === "NDVL") {
-    //add labels once
-    context.beginPath();
-    context.fillStyle = "#000000";
-
-    allSubtypes.forEach(function(d, index) {
-      context.save();
-      context.translate(
-        xAxis(d) + heatmapWidth / 2,
-        dimensions["chart"]["y1"] - 5
-      );
-      context.rotate((322 * Math.PI) / 180);
-      context.fillText(d, 0, 0);
-      context.restore();
-    });
-    //  }
     const sequenceLength = Object.keys(subtypeStats).length;
     const heatmapRowSpace = 3;
     const heatmapHeight =
@@ -148,7 +152,7 @@ const Heatmap = ({
         const yPos =
           startingY + heatmapHeight * index + heatmapRowSpace * index;
         context.fillStyle = colors(sequence);
-
+        context.globalAlpha = 1;
         context.fillText(
           topTenNumbering[sequence] + " - " + sequence,
           dimensions["chart"]["x2"] - 50,
@@ -158,7 +162,7 @@ const Heatmap = ({
 
         allSubtypes.map((subtype) => {
           context.globalAlpha =
-            selectedSubtype === null
+            selectedSubtype !== null && selectedSubtype !== undefined
               ? selectedSubtype === subtype
                 ? 1
                 : 0.2

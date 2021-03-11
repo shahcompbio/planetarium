@@ -12,7 +12,7 @@ const Barplot = ({ data, chartDim }) => {
   ] = useDashboardState();
   const [drawReady, setDrawReady] = useState(false);
   const [context, saveContext] = useState(null);
-
+  const barWidth = 50;
   const groupedData = _.groupBy(data, subtypeParam);
   const subtypes = Object.keys(groupedData);
   const stackedBarData = subtypes.reduce((final, subtype) => {
@@ -79,7 +79,7 @@ const Barplot = ({ data, chartDim }) => {
         context.fillRect(
           x(subtype),
           y(height + currentHeight),
-          50,
+          barWidth,
           y(0) - y(height)
         );
         currentHeight += height;
@@ -97,18 +97,35 @@ const Barplot = ({ data, chartDim }) => {
       //  drawAxis(context, x, y, chartDim["chart"]);
       drawBars(context);
       drawAxisLabels(context);
+      drawYAxisLabels(context);
       drawLegend();
     }
   }, [drawReady]);
+
+  function drawYAxisLabels(context) {
+    context.fillStyle = "black";
+    context.textAlign = "right";
+    context.lineWidth = 1;
+    context.textBaseline = "middle";
+    const ticks = y.ticks(10);
+
+    context.beginPath();
+    ticks.forEach(function(d) {
+      context.moveTo(chartDim["margin"]["left"] + 17, y(d));
+      context.lineTo(chartDim["margin"]["left"] + 27, y(d));
+      context.fillText(d, chartDim["margin"]["left"] + 15, y(d));
+      context.stroke();
+    });
+  }
   function drawAxisLabels(context) {
     context.beginPath();
-
     context.globalAlpha = 1;
     context.lineWidth = 1;
     context.fillStyle = "black";
+    context.textAlign = "right";
     subtypes.map(subtype => {
       context.save();
-      context.translate(x(subtype), y(0));
+      context.translate(x(subtype) + barWidth / 2, y(0) + 7);
       context.rotate((322 * Math.PI) / 180);
       context.fillText(subtype, 0, 0);
       context.stroke();
@@ -129,7 +146,13 @@ const Barplot = ({ data, chartDim }) => {
   function drawLegend() {}
   return (
     <div>
-      <div style={{ width: 600, height: 700, position: "relative" }}>
+      <div
+        style={{
+          width: chartDim["width"],
+          height: chartDim["height"],
+          position: "relative"
+        }}
+      >
         <div
           id="barchart"
           style={{
