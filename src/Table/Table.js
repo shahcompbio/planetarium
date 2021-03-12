@@ -17,20 +17,31 @@ const Table = ({ data, chartDim, selectedSubtype }) => {
   const dataSource = selectedSubtype
     ? data.filter(row => row[subtypeParam] === selectedSubtype)
     : data;
+
   return (
     <div style={{ height: chartDim["height"], overflow: "auto" }}>
       <table style={{ height: chartDim["height"] }}>
-        <tr>
-          {columns.map(column => (
-            <th>{column}</th>
-          ))}
-        </tr>
+        <thead style={{ position: "sticky" }}>
+          <tr>
+            {columns.map(column => (
+              <th
+                style={{ background: "white", position: "sticky", top: 0 }}
+                key={column}
+              >
+                {column}
+              </th>
+            ))}
+          </tr>
+        </thead>
         {dataSource.map(row => {
           return (
-            <tr>
+            <tr key={row["gene"] + row["log_fc"] + "tr"}>
               {columns.map(column => {
                 return (
-                  <td style={{ fontSize: 12, textAlign: "left" }}>
+                  <td
+                    key={row[column] + row["log_fc"]}
+                    style={{ fontSize: 12, textAlign: "left" }}
+                  >
                     {row[column]}
                   </td>
                 );

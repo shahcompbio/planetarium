@@ -37,8 +37,8 @@ const Histogram = ({ data, chartDim }) => {
     .range([chartDim["chart"]["y2"], chartDim["chart"]["y1"]]);
 
   function drawBars(context, data) {
-    context.fillStyle = "#2574a9";
-    context.strokeStyle = "#2c3e50";
+    context.fillStyle = "#6bb9f0";
+    context.strokeStyle = "#5c97bf";
     buckets.map(bar => {
       const yPos = y(bar.length / data.length);
       context.fillRect(

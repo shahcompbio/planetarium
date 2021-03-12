@@ -185,10 +185,10 @@ const SubtypeUmap = ({
       .attr("width", fontSize.legendSquare)
       .attr("height", fontSize.legendSquare)
       .attr("x", function(d) {
-        return chartDim["legend"]["x1"] + 5;
+        return chartDim["legend"]["x1"];
       })
       .attr("y", function(d, i) {
-        return i * 20 + chartDim["legend"].y1 + 30;
+        return chartDim["legend"].y2 - i * 20 - 35;
       })
       .attr("fill", function(d) {
         return colors(d);
@@ -207,10 +207,10 @@ const SubtypeUmap = ({
       .enter()
       .append("text")
       .attr("x", function(d) {
-        return chartDim["legend"].x1 + 20;
+        return chartDim["legend"].x1 + 15;
       })
       .attr("y", function(d, i) {
-        return i * 20 + chartDim["legend"].y1 + 35;
+        return chartDim["legend"].y2 - i * 20 + 5 - 35;
       })
       .attr("dy", ".35em")
       .text(function(d) {
@@ -218,9 +218,10 @@ const SubtypeUmap = ({
       })
       .attr("font", "Helvetica")
       .attr("font-size", fontSize.legendFontSize)
-      .attr("font-weight", "700")
+      .attr("font-weight", "500")
       .attr("fill", function(d) {
-        return colors(d);
+        return "#000000";
+        //return colors(d);
       })
       .attr("cursor", "pointer")
       .on("mouseover", function(d) {
@@ -302,7 +303,7 @@ const SubtypeUmap = ({
     } else {
       context.fillRect(
         x(boxCords.left) + width / 2,
-        y(boxCords.top) - height / 2 - 14,
+        y(boxCords.top) - height / 2 - 12,
         textWidth,
         subtypeFontSize + 2
       );
@@ -371,7 +372,13 @@ const SubtypeUmap = ({
   }
   return (
     <div>
-      <div style={{ width: 600, height: 700, position: "relative" }}>
+      <div
+        style={{
+          width: chartDim["width"] + chartDim["legend"]["x1"],
+          height: chartDim["height"],
+          position: "relative"
+        }}
+      >
         <div
           id="subTypeUmap"
           style={{
@@ -381,7 +388,7 @@ const SubtypeUmap = ({
           }}
         >
           <canvas id="subTypeUmapCanvas" />
-          <svg id="subTypeUmapLegend" style={{ float: "right", width: 600 }} />
+          <svg id="subTypeUmapLegend" style={{ float: "right" }} />
         </div>
       </div>
     </div>
