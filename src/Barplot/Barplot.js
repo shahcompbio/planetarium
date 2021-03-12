@@ -4,12 +4,21 @@ import * as d3Array from "d3-array";
 import _ from "lodash";
 import { useDashboardState } from "../PlotState/dashboardState";
 
-import { canvasInit, drawAxis } from "../DrawingUtils/utils.js";
+import { canvasInit, drawAxis, changeFontSize } from "../DrawingUtils/utils.js";
 
 const Barplot = ({ data, chartDim }) => {
   const [
-    { xParam, yParam, cellIdParam, clonotypeParam, topTen, subtypeParam }
+    {
+      xParam,
+      yParam,
+      cellIdParam,
+      clonotypeParam,
+      topTen,
+      subtypeParam,
+      fontSize
+    }
   ] = useDashboardState();
+
   const [drawReady, setDrawReady] = useState(false);
   const [context, saveContext] = useState(null);
   const barWidth = 50;
@@ -33,12 +42,13 @@ const Barplot = ({ data, chartDim }) => {
   const x = d3
     .scaleBand()
     .domain(subtypes)
-    .range([chartDim["chart"]["x1"], chartDim["chart"]["x2"]]);
+    .range([chartDim["chart"]["x1"], chartDim["chart"]["x2"] - 30]);
   // Y axis
   const y = d3
     .scaleLinear()
     .domain([100, 0])
     .range([chartDim["chart"]["y1"], chartDim["chart"]["y2"]]);
+
   var colors = d3
     .scaleOrdinal()
     .domain([...Array.from(Array(10).keys())])
@@ -87,6 +97,35 @@ const Barplot = ({ data, chartDim }) => {
       });
     });
   }
+  function drawLegend(context) {
+    changeFontSize(context, fontSize.legendFontSize);
+    [...Array.from(Array(10).keys())]
+      .sort((a, b) => b - a)
+      .map((key, index) => {
+        context.fillStyle = colors(key);
+        context.fillRect(
+          chartDim["chart"]["x2"] - 40,
+          chartDim["chart"]["y1"] + index * 14 + index * 2,
+          9,
+          9
+        );
+        context.fillStyle = "#000000";
+        const legendText = key + 1 >= 10 ? "≥10" : key + 1;
+        context.fillText(
+          legendText,
+          chartDim["chart"]["x2"] - 25,
+          chartDim["chart"]["y1"] + index * 14 + index * 2 + 8
+        );
+        context.fill();
+      });
+
+    context.fillRect(
+      chartDim["chart"]["x2"] + 20,
+      chartDim["chart"]["y1"],
+      5,
+      5
+    );
+  }
   useEffect(() => {
     if (data.length > 0) {
       init(data, chartDim);
@@ -95,10 +134,10 @@ const Barplot = ({ data, chartDim }) => {
   useEffect(() => {
     if (drawReady) {
       //  drawAxis(context, x, y, chartDim["chart"]);
+      drawLegend(context);
       drawBars(context);
       drawAxisLabels(context);
       drawYAxisLabels(context);
-      drawLegend();
     }
   }, [drawReady]);
 
@@ -111,8 +150,9 @@ const Barplot = ({ data, chartDim }) => {
 
     context.beginPath();
     ticks.forEach(function(d) {
-      context.moveTo(chartDim["margin"]["left"] + 17, y(d));
-      context.lineTo(chartDim["margin"]["left"] + 27, y(d));
+      changeFontSize(context, fontSize["tickLabelFontSize"]);
+      //  context.moveTo(chartDim["margin"]["left"] + 17, y(d));
+      //  context.lineTo(chartDim["margin"]["left"] + 27, y(d));
       context.fillText(d, chartDim["margin"]["left"] + 15, y(d));
       context.stroke();
     });
@@ -123,18 +163,24 @@ const Barplot = ({ data, chartDim }) => {
     context.lineWidth = 1;
     context.fillStyle = "black";
     context.textAlign = "right";
+
+    changeFontSize(context, fontSize["axisLabelFontSize"]);
     subtypes.map(subtype => {
       context.save();
       context.translate(x(subtype) + barWidth / 2, y(0) + 7);
       context.rotate((322 * Math.PI) / 180);
-      context.fillText(subtype, 0, 0);
+      if (subtype.indexOf("/") !== -1) {
+        context.fillText(subtype.split("/")[0] + "/", -5, 0);
+        context.fillText(subtype.split("/")[1], -5, 10);
+      } else {
+        context.fillText(subtype, -5, 5);
+      }
       context.stroke();
       context.restore();
     });
   }
   function init(data, chartDim) {
     var canvas = d3.select("#barplotCanvas");
-
     var currContext = canvasInit(canvas, chartDim.width, chartDim.height);
 
     currContext.fillStyle = "white";
@@ -143,7 +189,6 @@ const Barplot = ({ data, chartDim }) => {
     setDrawReady(true);
   }
 
-  function drawLegend() {}
   return (
     <div>
       <div

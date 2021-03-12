@@ -4,10 +4,10 @@ import * as d3Array from "d3-array";
 import _ from "lodash";
 import { useDashboardState } from "../PlotState/dashboardState";
 
-import { canvasInit, drawAxis } from "../DrawingUtils/utils.js";
+import { canvasInit, drawAxis, changeFontSize } from "../DrawingUtils/utils.js";
 
 const Histogram = ({ data, chartDim }) => {
-  const [{ logXParam, logYParam }] = useDashboardState();
+  const [{ logXParam, logYParam, fontSize }] = useDashboardState();
   const [drawReady, setDrawReady] = useState(false);
   const [context, saveContext] = useState(null);
 
@@ -63,24 +63,57 @@ const Histogram = ({ data, chartDim }) => {
   }, [data]);
   useEffect(() => {
     if (drawReady) {
-      drawBars(context, data);
       drawAxisLabels(context);
-      drawLegend();
+      drawBars(context, data);
     }
   }, [drawReady]);
 
   function drawAxisLabels(context) {
+    const format = tick => (tick === 0 ? "0" : d3.format(".2f")(tick));
     context.beginPath();
     context.globalAlpha = 1;
-    context.lineWidth = 1;
+    //context.lineWidth = 1;
     context.fillStyle = "black";
     context.textAlign = "right";
+    const xMinValue = x(xMin) - 10;
+    changeFontSize(context, fontSize["tickLabelFontSize"]);
     x.ticks(10).map(tick => {
       context.fillText(tick, x(tick), y(0) + 15);
     });
+    changeFontSize(context, fontSize["axisLabelFontSize"]);
+    context.fillText(
+      logXParam,
+      (chartDim["chart"]["x2"] - chartDim["chart"]["x1"]) / 2,
+      chartDim["chart"]["y2"] + 30
+    );
+
+    context.restore();
     y.ticks(10).map(tick => {
-      context.fillText(tick, x(xMin), y(tick));
+      context.globalAlpha = 1;
+      changeFontSize(context, fontSize["tickLabelFontSize"]);
+      context.fillText(format(tick), xMinValue, y(tick) + 3);
+      context.fill();
+      context.save();
+      //  context.strokeStyle = "rgba(0, 0, 0, 0.5)";
+      context.globalAlpha = 0.2;
+      context.lineWidth = 0.5;
+      context.beginPath();
+      context.moveTo(xMinValue + 3, y(tick));
+      context.lineTo(x(xMax), y(tick));
+      context.stroke();
+      context.restore();
     });
+
+    context.globalAlpha = 1;
+    context.save();
+    context.rotate((270 * Math.PI) / 180);
+    changeFontSize(context, fontSize["axisLabelFontSize"]);
+    context.fillText(
+      "Probability",
+      -(chartDim["chart"]["y2"] - chartDim["chart"]["y1"]) / 2 - 15,
+      12
+    );
+    context.restore();
   }
   function init(data, chartDim) {
     var canvas = d3.select("#histogramCanvas");

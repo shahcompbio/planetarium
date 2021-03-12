@@ -55,3 +55,5 @@ export function drawAxisTicks(context, x, y, dim) {
     context.fillText(d > 1000 ? tickFormat(d) : d, dim.x1 - 30, y(d));
   });
 }
+export const changeFontSize = (context, fontSize) =>
+  (context.font = context.font.replace(/\d+px/, fontSize + "px"));
