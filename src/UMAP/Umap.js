@@ -543,7 +543,7 @@ const Umap = ({
               position: "absolute"
             }}
           >
-            <p style={{ fontSize: 12, marginLeft: -20 }}>Radius Adjustment</p>
+            <p style={{ fontSize: 12, marginLeft: -100 }}>Radius Adjustment</p>
             <input
               type="range"
               min="1"
@@ -551,7 +551,7 @@ const Umap = ({
               step="0.5"
               value={radiusAdjust}
               onChange={event => setRadius(event.target.value)}
-              style={{ direction: "rtl" }}
+              style={{ direction: "rtl", marginLeft: -100 }}
             />
           </div>
         </div>

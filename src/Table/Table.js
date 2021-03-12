@@ -23,7 +23,7 @@ const Table = ({ data, chartDim, selectedSubtype }) => {
       style={{
         height: chartDim["height"],
         overflow: "auto",
-        marginLeft: 50,
+        marginLeft: 0,
         marginTop: 70
       }}
     >
