@@ -190,7 +190,6 @@ const Heatmap = ({
   ) {
     const dimensions = allDim;
     const allSubtypes = Object.keys(subTypes);
-
     const freqColouring = d3
       .scaleLinear()
       .range(["#ffec8b", "#d91e18"])
