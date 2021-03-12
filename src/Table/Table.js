@@ -9,13 +9,15 @@ import { canvasInit, drawAxis } from "../DrawingUtils/utils.js";
 
 const Table = ({ data, chartDim, selectedSubtype }) => {
   const [
-    { xParam, yParam, cellIdParam, clonotypeParam, topTen, subtypeParam }
+    { xParam, yParam, cellIdParam, clonotypeParam, topTen, subtypeParam },
   ] = useDashboardState();
 
+  console.log(data);
   const [selectedRows, setSelectedRows] = useState(null);
-  const { columns } = data;
+  // const { columns } = data;
+  const columns = Object.keys(data[0]);
   const dataSource = selectedSubtype
-    ? data.filter(row => row[subtypeParam] === selectedSubtype)
+    ? data.filter((row) => row[subtypeParam] === selectedSubtype)
     : data;
 
   return (
@@ -23,14 +25,14 @@ const Table = ({ data, chartDim, selectedSubtype }) => {
       style={{
         height: chartDim["height"],
         overflow: "auto",
-        marginLeft: 0,
-        marginTop: 70
+        marginLeft: 50,
+        marginTop: 70,
       }}
     >
       <table style={{ height: chartDim["height"] }}>
         <thead style={{ position: "sticky" }}>
           <tr>
-            {columns.map(column => (
+            {columns.map((column) => (
               <th
                 style={{ background: "white", position: "sticky", top: 0 }}
                 key={column}
@@ -40,10 +42,10 @@ const Table = ({ data, chartDim, selectedSubtype }) => {
             ))}
           </tr>
         </thead>
-        {dataSource.map(row => {
+        {dataSource.map((row) => {
           return (
             <tr key={row["gene"] + row["log_fc"] + "tr"}>
-              {columns.map(column => {
+              {columns.map((column) => {
                 return (
                   <td
                     key={row[column] + row["log_fc"]}

@@ -15,8 +15,9 @@ metadata = metadata.to_dict('records')
 probabilities = pd.read_csv(os.path.join(data_dir, "probabilities.tsv"), sep="\t")
 probabilities = probabilities.to_dict("records")
 
-probabilities = pd.read_csv(os.path.join(data_dir, "degs.tsv"), sep="\t")
-probabilities = probabilities.to_dict("degs")
+degs = pd.read_csv(os.path.join(data_dir, "degs.tsv"), sep="\t")
+degs = degs.to_dict("records")
+
 data = {
     "metadata": metadata,
     "probabilities": probabilities,
