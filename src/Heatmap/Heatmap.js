@@ -5,7 +5,12 @@ import { useDashboardState } from "../PlotState/dashboardState";
 
 import { canvasInit, changeFontSize } from "../DrawingUtils/utils.js";
 const clearAll = (context, chartDim) =>
-  context.clearRect(0, 0, chartDim["chart"].x2, chartDim["chart"].y2 - 50);
+  context.clearRect(
+    0,
+    0,
+    chartDim["chart"].x2 + 100,
+    chartDim["chart"].y2 + 50
+  );
 
 const Heatmap = ({
   data,
@@ -47,6 +52,35 @@ const Heatmap = ({
   const heatmapWidth =
     (chartDim["chart"]["x2"] - chartDim["chart"]["x1"] - 50) /
     allSubtypes.length;
+  var largestFreq = 0;
+  const subtypeStats = data.reduce(
+    (final, current) => {
+      const seq = current[clonotypeParam];
+      if (final[seq]) {
+        const subtype = current[subtypeParam];
+
+        if (final[seq].hasOwnProperty(subtype)) {
+          final[seq][subtype] = final[seq][subtype] + 1;
+        } else {
+          final[seq][subtype] = 1;
+        }
+        largestFreq =
+          final[seq][subtype] > largestFreq ? final[seq][subtype] : largestFreq;
+      }
+      return final;
+    },
+    {
+      ...Object.keys(sampleTen)
+        .sort(([, a], [, b]) => b - a)
+        .reduce((final, entry) => {
+          final[entry] = {};
+          return final;
+        }, {})
+    }
+  );
+  const alphaIndexing = Object.entries(topTenNumbering)
+    .map(entry => entry[1])
+    .sort((a, b) => a - b);
 
   useEffect(() => {
     if (context) {
@@ -63,23 +97,32 @@ const Heatmap = ({
 
   useEffect(() => {
     if (context) {
-      if (selectedSubtype !== null) {
+      console.log(selectedClonotype);
+      if (selectedSubtype !== null || selectedClonotype !== null) {
         clearAll(context, chartDim);
         drawLabels(context);
-        drawHeatmap(context, chartDim, data, selectedSubtype);
+        drawHeatmap(
+          context,
+          chartDim,
+          data,
+          selectedSubtype,
+          selectedClonotype
+        );
       } else {
         clearAll(context, chartDim);
         drawLabels(context);
         drawHeatmap(context, chartDim, data);
       }
     }
-  }, [selectedSubtype, context]);
+  }, [selectedSubtype, selectedClonotype, context]);
+
   function drawLabels(context) {
     context.beginPath();
     context.globalAlpha = 1;
     context.fillStyle = "#000000";
+    context.font = "normal " + fontSize.axisLabelFontSize + "px Helvetica";
 
-    changeFontSize(context, fontSize.axisLabelFontSize);
+    //  changeFontSize(context, fontSize.axisLabelFontSize);
     allSubtypes.forEach(function(d, index) {
       context.save();
       context.translate(
@@ -96,6 +139,37 @@ const Heatmap = ({
       context.restore();
       context.fill();
     });
+    const startingY = chartDim["chart"]["y1"];
+
+    const sequenceLength = Object.keys(subtypeStats).length;
+    const heatmapRowSpace = 3;
+    const heatmapHeight =
+      (chartDim["chart"]["y2"] -
+        chartDim["chart"]["y1"] -
+        sequenceLength * heatmapRowSpace) /
+      sequenceLength;
+
+    Object.keys(subtypeStats)
+      .sort((a, b) => {
+        return (
+          alphaIndexing.indexOf(topTenNumbering[a]) -
+          alphaIndexing.indexOf(topTenNumbering[b])
+        );
+      })
+      .map((sequence, index) => {
+        const yPos =
+          startingY + heatmapHeight * index + heatmapRowSpace * index;
+        context.fillStyle = colors(sequence);
+        context.globalAlpha = 1;
+
+        context.font = "bold " + fontSize.axisLabelFontSize + "px Helvetica";
+
+        context.fillText(
+          topTenNumbering[sequence] + " - " + sequence,
+          chartDim["chart"]["x2"] - 50,
+          yPos + (3 * heatmapHeight) / 4
+        );
+      });
   }
   function init(data, chartDim) {
     var canvas = d3.select("#heatmapCanvas");
@@ -108,38 +182,15 @@ const Heatmap = ({
     saveContext(context);
   }
 
-  function drawHeatmap(context, allDim, data, selectedSubtype) {
+  function drawHeatmap(
+    context,
+    allDim,
+    data,
+    selectedSubtype,
+    selectedClonotype
+  ) {
     const dimensions = allDim;
     const allSubtypes = Object.keys(subTypes);
-
-    var largestFreq = 0;
-    const subtypeStats = data.reduce(
-      (final, current) => {
-        const seq = current[clonotypeParam];
-        if (final[seq]) {
-          const subtype = current[subtypeParam];
-
-          if (final[seq].hasOwnProperty(subtype)) {
-            final[seq][subtype] = final[seq][subtype] + 1;
-          } else {
-            final[seq][subtype] = 1;
-          }
-          largestFreq =
-            final[seq][subtype] > largestFreq
-              ? final[seq][subtype]
-              : largestFreq;
-        }
-        return final;
-      },
-      {
-        ...Object.keys(sampleTen)
-          .sort(([, a], [, b]) => b - a)
-          .reduce((final, entry) => {
-            final[entry] = {};
-            return final;
-          }, {})
-      }
-    );
 
     const freqColouring = d3
       .scaleLinear()
@@ -155,10 +206,6 @@ const Heatmap = ({
       sequenceLength;
     const startingY = dimensions["chart"]["y1"];
 
-    const alphaIndexing = Object.entries(topTenNumbering)
-      .map(entry => entry[1])
-      .sort();
-
     Object.keys(subtypeStats)
       .sort((a, b) => {
         return (
@@ -169,23 +216,15 @@ const Heatmap = ({
       .map((sequence, index) => {
         const yPos =
           startingY + heatmapHeight * index + heatmapRowSpace * index;
-        context.fillStyle = colors(sequence);
-        context.globalAlpha = 1;
-        changeFontSize(context, fontSize.axisLabelFontSize);
-        context.font = "bold " + fontSize.axisLabelFontSize + "px Helvetica";
 
-        context.fillText(
-          topTenNumbering[sequence] + " - " + sequence,
-          dimensions["chart"]["x2"] - 50,
-          yPos + (3 * heatmapHeight) / 4
-        );
         context.font = "normal " + fontSize.axisLabelFontSize + "px Helvetica";
 
         const seqSubtypes = subtypeStats[sequence];
         allSubtypes.map(subtype => {
           context.globalAlpha =
-            selectedSubtype !== null && selectedSubtype !== undefined
-              ? selectedSubtype === subtype
+            (selectedSubtype !== null || selectedClonotype !== null) &&
+            (selectedSubtype !== undefined || selectedClonotype !== undefined)
+              ? selectedSubtype === subtype || selectedClonotype === sequence
                 ? 1
                 : 0.2
               : 1;
@@ -217,7 +256,13 @@ const Heatmap = ({
   }
   return (
     <div>
-      <div style={{ width: 600, height: 700, position: "relative" }}>
+      <div
+        style={{
+          width: chartDim["width"],
+          height: chartDim["height"],
+          position: "relative"
+        }}
+      >
         <div
           id="heatmap"
           style={{

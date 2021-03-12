@@ -13,9 +13,9 @@ const chartDim = {
     y2: margin.top + chartHeight
   },
   legend: {
-    x1: margin.left,
-    y1: margin.top,
-    x2: margin.left + chartWidth,
+    x1: 10,
+    y1: 20,
+    x2: 70,
     y2: margin.top + chartHeight
   }
 };

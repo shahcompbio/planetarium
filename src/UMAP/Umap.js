@@ -101,7 +101,38 @@ const Umap = ({
       drawLegend(context);
     }
   }, [radiusAdjust]);
-
+  useEffect(() => {
+    if (context) {
+      if (selectedClonotype !== null) {
+        clearAll(context, chartDim);
+        context.beginPath();
+        reDraw(
+          context,
+          x,
+          y,
+          dim,
+          sampleData,
+          sampleTen,
+          colors,
+          topTenNumbering,
+          selectedClonotype
+        );
+      } else {
+        clearAll(context, chartDim);
+        context.beginPath();
+        reDraw(
+          context,
+          x,
+          y,
+          dim,
+          sampleData,
+          sampleTen,
+          colors,
+          topTenNumbering
+        );
+      }
+    }
+  }, [selectedClonotype, context]);
   function drawOutline(context, x, y, data, colors) {
     context.beginPath();
     context.lineWidth = 1;
@@ -419,33 +450,10 @@ const Umap = ({
         return colors(d[0]);
       })
       .on("mouseover", function(d, i) {
-        clearAll(context, chartDim);
-        context.beginPath();
-        reDraw(
-          context,
-          x,
-          y,
-          dim,
-          sampleData,
-          sampleTen,
-          colors,
-          topTenNumbering,
-          d[0]
-        );
+        setSelectedClonotype(d[0]);
       })
       .on("mouseout", function(event, d) {
-        clearAll(context, chartDim);
-        context.beginPath();
-        reDraw(
-          context,
-          x,
-          y,
-          dim,
-          sampleData,
-          sampleTen,
-          colors,
-          topTenNumbering
-        );
+        setSelectedClonotype(null);
       });
 
     legend
@@ -471,33 +479,10 @@ const Umap = ({
       })
       .attr("cursor", "pointer")
       .on("mouseover", function(d) {
-        clearAll(context, chartDim);
-        context.beginPath();
-        reDraw(
-          context,
-          x,
-          y,
-          dim,
-          sampleData,
-          sampleTen,
-          colors,
-          topTenNumbering,
-          d[0]
-        );
+        setSelectedClonotype(d[0]);
       })
       .on("mouseout", function(event, d) {
-        clearAll(context, chartDim);
-        context.beginPath();
-        reDraw(
-          context,
-          x,
-          y,
-          dim,
-          sampleData,
-          sampleTen,
-          colors,
-          topTenNumbering
-        );
+        setSelectedClonotype(null);
       });
   }
   function init(data, sampleType, chartDim) {
@@ -533,7 +518,13 @@ const Umap = ({
 
   return (
     <div>
-      <div style={{ width: 600, height: 700, position: "relative" }}>
+      <div
+        style={{
+          width: chartDim["width"],
+          height: chartDim["height"],
+          position: "relative"
+        }}
+      >
         <div
           id="scatterplot"
           style={{

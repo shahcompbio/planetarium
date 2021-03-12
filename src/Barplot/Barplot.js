@@ -65,6 +65,7 @@ const Barplot = ({ data, chartDim }) => {
       "#D53E4F",
       "#9E0142"
     ]);
+
   function drawBars(context) {
     context.beginPath();
     context.lineWidth = 1;
