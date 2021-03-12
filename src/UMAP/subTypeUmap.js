@@ -14,7 +14,7 @@ const SubtypeUmap = ({
   setSelectedSubtype,
   setSelectedClonotype
 }) => {
-  const [{ xParam, yParam, subtypeParam }] = useDashboardState();
+  const [{ xParam, yParam, subtypeParam, fontSize }] = useDashboardState();
   const [drawReady, setDrawReady] = useState(false);
   const [context, saveContext] = useState(null);
 
@@ -115,7 +115,8 @@ const SubtypeUmap = ({
     yParam,
     xParam,
     context,
-    colors
+    colors,
+    selectedSubtype
   ) {
     var boundingBox = {};
     const allBoxes = Object.keys(subTypes).map(subtype => {
@@ -155,28 +156,38 @@ const SubtypeUmap = ({
       //    if (
       //      !(x(box["box"]["right"]) - x(box["box"]["left"]) * 1.5 > avgBoxSize)
       //    ) {
-      drawBoundingBox(context, box, x, y, colors);
+      drawBoundingBox(context, box, x, y, colors, selectedSubtype);
       //    }
     });
   }
   function reDraw(data, chartDim, context, x, y, selectedSubtype) {
     drawAxis(context, x, y, chartDim["chart"]);
     drawPoints(data, chartDim, context, x, y, selectedSubtype);
-    appendSubtypeLabels(subTypes, x, y, yParam, xParam, context, colors);
+    appendSubtypeLabels(
+      subTypes,
+      x,
+      y,
+      yParam,
+      xParam,
+      context,
+      colors,
+      selectedSubtype
+    );
   }
   function appendLegend(colors, subTypes, context, x, y, setSelectedSubtype) {
     var legend = d3.select("#subTypeUmapLegend");
     legend = legend.append("g");
     legend
-      .selectAll("circle")
+      .selectAll("rect")
       .data(subTypes)
       .enter()
-      .append("circle")
-      .attr("r", 6)
-      .attr("cx", function(d) {
-        return chartDim["legend"].x1 + 5;
+      .append("rect")
+      .attr("width", fontSize.legendSquare)
+      .attr("height", fontSize.legendSquare)
+      .attr("x", function(d) {
+        return chartDim["legend"]["x1"] + 5;
       })
-      .attr("cy", function(d, i) {
+      .attr("y", function(d, i) {
         return i * 20 + chartDim["legend"].y1 + 30;
       })
       .attr("fill", function(d) {
@@ -199,12 +210,14 @@ const SubtypeUmap = ({
         return chartDim["legend"].x1 + 20;
       })
       .attr("y", function(d, i) {
-        return i * 20 + chartDim["legend"].y1 + 31;
+        return i * 20 + chartDim["legend"].y1 + 35;
       })
       .attr("dy", ".35em")
       .text(function(d) {
         return d;
       })
+      .attr("font", "Helvetica")
+      .attr("font-size", fontSize.legendFontSize)
       .attr("font-weight", "700")
       .attr("fill", function(d) {
         return colors(d);
@@ -246,7 +259,7 @@ const SubtypeUmap = ({
       );
     }
   }
-  function drawBoundingBox(context, box, x, y, colors) {
+  function drawBoundingBox(context, box, x, y, colors, selectedSubtype) {
     const type = box["type"];
     const title = box["subtype"];
     const boxCords = box["box"];
@@ -261,8 +274,8 @@ const SubtypeUmap = ({
         ? x(boxCords.right) - x(boxCords.left)
         : x(boxCords.left) - x(boxCords.right);
     const height = x(boxCords.bottom) - x(boxCords.top);
-    const subtypeFontSize = title.length === 1 ? 18 : 13;
-    context.font = "normal bold " + subtypeFontSize + "px Droid";
+    const subtypeFontSize = title.length === 1 ? 18 : 12;
+    context.font = "500 " + subtypeFontSize + "px Helvetica";
 
     const textWidth = context.measureText(title).width + 2;
 
@@ -272,16 +285,18 @@ const SubtypeUmap = ({
     context.globalAlpha = 1;
 
     if (title.indexOf("/") !== -1) {
+      const firstTextWidth = context.measureText(title.split("/")[0]).width + 4;
       context.fillRect(
         x(boxCords.left) - 2,
         y(boxCords.top) + height / 2 - 10,
-        textWidth / 2,
+        firstTextWidth,
         subtypeFontSize
       );
+      const secondTextWidth = context.measureText(title.split("/")[1]).width;
       context.fillRect(
         x(boxCords.left) - 2,
         y(boxCords.top) + height / 2 - 10 + subtypeFontSize,
-        textWidth / 2,
+        secondTextWidth,
         subtypeFontSize
       );
     } else {
@@ -289,25 +304,19 @@ const SubtypeUmap = ({
         x(boxCords.left) + width / 2,
         y(boxCords.top) - height / 2 - 14,
         textWidth,
-        subtypeFontSize
+        subtypeFontSize + 2
       );
-      /*context.fillStyle = "black";
-      context.globalAlpha = 0.5;
-      context.fillRect(
-        x(boxCords.left),
-        y(boxCords.top) - height,
-        width,
-        height
-      );*/
     }
     context.fill();
     context.save();
 
-    context.globalAlpha = 1;
+    context.globalAlpha = selectedSubtype
+      ? selectedSubtype === title
+        ? 1
+        : 0.2
+      : 1;
     context.fillStyle = "black";
 
-    //  context.font = "normal bold " + subtypeFontSize + "px Droid";
-    //iff titlee is too long, 2 lines
     if (title.indexOf("/") !== -1) {
       const splitTitle = title.split("/");
 
@@ -331,6 +340,7 @@ const SubtypeUmap = ({
 
     context.fill();
     context.stroke();
+    context.globalAlpha = 1;
     context.save();
   }
   function getBoundingBox(data) {

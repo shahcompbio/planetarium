@@ -3,7 +3,7 @@ import * as d3 from "d3";
 
 import { useDashboardState } from "../PlotState/dashboardState";
 
-import { canvasInit } from "../DrawingUtils/utils.js";
+import { canvasInit, changeFontSize } from "../DrawingUtils/utils.js";
 const clearAll = (context, chartDim) =>
   context.clearRect(0, 0, chartDim["chart"].x2, chartDim["chart"].y2 - 50);
 
@@ -16,7 +16,14 @@ const Heatmap = ({
   setSelectedClonotype
 }) => {
   const [
-    { clonotypeParam, sampleTen, topTenNumbering, colors, subtypeParam }
+    {
+      clonotypeParam,
+      sampleTen,
+      topTenNumbering,
+      colors,
+      subtypeParam,
+      fontSize
+    }
   ] = useDashboardState();
   const [context, saveContext] = useState(null);
 
@@ -31,13 +38,16 @@ const Heatmap = ({
   }, {});
 
   const allSubtypes = Object.keys(subTypes);
+
   const xAxis = d3
     .scaleBand()
     .domain(allSubtypes)
     .range([chartDim["chart"]["x1"], chartDim["chart"]["x2"] - 50]);
+
   const heatmapWidth =
     (chartDim["chart"]["x2"] - chartDim["chart"]["x1"] - 50) /
     allSubtypes.length;
+
   useEffect(() => {
     if (context) {
       drawHeatmap(context, chartDim, data, subTypes);
@@ -69,6 +79,7 @@ const Heatmap = ({
     context.globalAlpha = 1;
     context.fillStyle = "#000000";
 
+    changeFontSize(context, fontSize.axisLabelFontSize);
     allSubtypes.forEach(function(d, index) {
       context.save();
       context.translate(
@@ -76,7 +87,12 @@ const Heatmap = ({
         chartDim["chart"]["y1"] - 5
       );
       context.rotate((322 * Math.PI) / 180);
-      context.fillText(d, 0, 0);
+      if (d.indexOf("/") !== -1) {
+        context.fillText(d.split("/")[0] + "/", 5, 0);
+        context.fillText(d.split("/")[1], 5, 10);
+      } else {
+        context.fillText(d, 5, 5);
+      }
       context.restore();
       context.fill();
     });
@@ -155,13 +171,17 @@ const Heatmap = ({
           startingY + heatmapHeight * index + heatmapRowSpace * index;
         context.fillStyle = colors(sequence);
         context.globalAlpha = 1;
+        changeFontSize(context, fontSize.axisLabelFontSize);
+        context.font = "bold " + fontSize.axisLabelFontSize + "px Helvetica";
+
         context.fillText(
           topTenNumbering[sequence] + " - " + sequence,
           dimensions["chart"]["x2"] - 50,
           yPos + (3 * heatmapHeight) / 4
         );
-        const seqSubtypes = subtypeStats[sequence];
+        context.font = "normal " + fontSize.axisLabelFontSize + "px Helvetica";
 
+        const seqSubtypes = subtypeStats[sequence];
         allSubtypes.map(subtype => {
           context.globalAlpha =
             selectedSubtype !== null && selectedSubtype !== undefined
@@ -169,18 +189,20 @@ const Heatmap = ({
                 ? 1
                 : 0.2
               : 1;
-          context.font = "20px";
+
           if (seqSubtypes.hasOwnProperty(subtype)) {
             context.fillStyle = freqColouring(subtypeStats[sequence][subtype]);
           } else {
             context.fillStyle = "#eeeeee";
           }
+
           context.fillRect(
             xAxis(subtype),
             yPos,
             heatmapWidth - 3,
             heatmapHeight
           );
+
           if (seqSubtypes.hasOwnProperty(subtype)) {
             context.fillStyle = "black";
             const freq = subtypeStats[sequence][subtype];
@@ -205,7 +227,6 @@ const Heatmap = ({
           }}
         >
           <canvas id="heatmapCanvas" />
-          <svg id="legend" style={{ float: "right", width: 600 }} />
         </div>
       </div>
     </div>

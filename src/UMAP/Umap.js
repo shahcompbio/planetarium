@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import * as d3 from "d3";
 import * as d3Array from "d3-array";
 
@@ -6,7 +6,7 @@ import { useDashboardState } from "../PlotState/dashboardState";
 
 import { canvasInit, drawAxis } from "../DrawingUtils/utils.js";
 export const clearAll = (context, chartDim) =>
-  context.clearRect(0, 0, chartDim["chart"].x2 + 30, chartDim["chart"].y2 + 30);
+  context.clearRect(0, 0, chartDim["chart"].x2 + 50, chartDim["chart"].y2 + 80);
 export function drawPoint(
   context,
   point,
@@ -34,14 +34,73 @@ const Umap = ({
   setSelectedClonotype
 }) => {
   const [
-    { xParam, yParam, cellIdParam, clonotypeParam, topTen, colors }
+    { xParam, yParam, cellIdParam, clonotypeParam, fontSize, topTen, colors }
   ] = useDashboardState();
+  const [context, saveContext] = useState(null);
 
+  const [radiusAdjust, setRadius] = useState(3);
+  const yData = data.map(d => parseFloat(d[yParam]));
+  const xData = data.map(d => parseFloat(d[xParam]));
+
+  const yMin = Math.min(...yData);
+  const yMax = Math.max(...yData);
+  const xMin = Math.min(...xData);
+  const xMax = Math.max(...xData);
+
+  const sampleTen = topTen.reduce((final, curr) => {
+    final[curr[0]] = curr[1];
+    return final;
+  }, {});
+
+  const sampleData = data.filter(row =>
+    sampleTen.hasOwnProperty(row[clonotypeParam])
+  );
+
+  const dim = chartDim["chart"];
+  // X axis
+  var x = d3
+    .scaleLinear()
+    .domain([xMin, xMax])
+    .range([dim.x1, dim.x2]);
+
+  // Y axis
+  var y = d3
+    .scaleLinear()
+    .domain([yMin, yMax])
+    .range([dim.y2, dim.y1]);
+  const topTenNumbering = topTen.reduce((final, seq) => {
+    const label =
+      "NDVL" === "NDVL"
+        ? "L" + (Object.keys(final).length + 1)
+        : "R" + (Object.keys(final).length + 1);
+    final[seq[0]] = label;
+    return final;
+  }, {});
   useEffect(() => {
     if (data.length > 0 && colors) {
       init(data, "NDVL", chartDim);
     }
   }, [colors]);
+
+  useEffect(() => {
+    if (context) {
+      clearAll(context, chartDim);
+      d3.select("#umapLegend")
+        .selectAll("*")
+        .remove();
+      reDraw(
+        context,
+        x,
+        y,
+        dim,
+        sampleData,
+        sampleTen,
+        colors,
+        topTenNumbering
+      );
+      drawLegend(context);
+    }
+  }, [radiusAdjust]);
 
   function drawOutline(context, x, y, data, colors) {
     context.beginPath();
@@ -261,7 +320,7 @@ const Umap = ({
       .filter(point => point.hasOwnProperty(cellIdParam))
       .map(point => ({
         ...point,
-        radius: (point["xRadius"] + point["yRadius"]) / 3
+        radius: (point["xRadius"] + point["yRadius"]) / radiusAdjust
       }))
       .sort((a, b) => b.radius - a.radius);
 
@@ -340,65 +399,21 @@ const Umap = ({
       selectedClonotype
     );
   }
-  function init(data, sampleType, chartDim) {
-    var canvas = d3.select("#umapCanvas");
-    var context = canvasInit(canvas, chartDim.width, chartDim.height);
-
-    context.fillStyle = "white";
-    context.fillRect(0, 0, chartDim.width, chartDim.height);
-
-    const yData = data.map(d => parseFloat(d[yParam]));
-    const xData = data.map(d => parseFloat(d[xParam]));
-
-    const yMin = Math.min(...yData);
-    const yMax = Math.max(...yData);
-    const xMin = Math.min(...xData);
-    const xMax = Math.max(...xData);
-
-    const sampleTen = topTen.reduce((final, curr) => {
-      final[curr[0]] = curr[1];
-      return final;
-    }, {});
-
-    const sampleData = data.filter(row =>
-      sampleTen.hasOwnProperty(row[clonotypeParam])
-    );
-
-    const dim = chartDim["chart"];
-    // X axis
-    var x = d3
-      .scaleLinear()
-      .domain([xMin, xMax])
-      .range([dim.x1, dim.x2]);
-
-    // Y axis
-    var y = d3
-      .scaleLinear()
-      .domain([yMin, yMax])
-      .range([dim.y2, dim.y1]);
-    const topTenNumbering = topTen.reduce((final, seq) => {
-      const label =
-        sampleType === "NDVL"
-          ? "L" + (Object.keys(final).length + 1)
-          : "R" + (Object.keys(final).length + 1);
-      final[seq[0]] = label;
-      return final;
-    }, {});
-    reDraw(context, x, y, dim, sampleData, sampleTen, colors, topTenNumbering);
-
+  function drawLegend(context) {
     var legend = d3.select("#umapLegend");
     legend = legend.append("g");
     legend
-      .selectAll("circle")
+      .selectAll("rect")
       .data(topTen)
       .enter()
-      .append("circle")
-      .attr("r", 6)
-      .attr("cx", function(d) {
+      .append("rect")
+      .attr("width", fontSize.legendSquare)
+      .attr("height", fontSize.legendSquare)
+      .attr("x", function(d) {
         return chartDim["legend"].x1 + 5;
       })
-      .attr("cy", function(d, i) {
-        return i * 20 + chartDim["legend"].y1 + 30;
+      .attr("y", function(d, i) {
+        return i * 20 + chartDim["legend"].y1 + 25;
       })
       .attr("fill", function(d) {
         return colors(d[0]);
@@ -432,6 +447,7 @@ const Umap = ({
           topTenNumbering
         );
       });
+
     legend
       .selectAll("text")
       .data(topTen)
@@ -449,6 +465,7 @@ const Umap = ({
         //  return d["key"];
       })
       .attr("font-weight", "700")
+      .attr("font-size", fontSize.legendFontSize + "px")
       .attr("fill", function(d) {
         return colors(d[0]);
       })
@@ -482,8 +499,26 @@ const Umap = ({
           topTenNumbering
         );
       });
+  }
+  function init(data, sampleType, chartDim) {
+    var canvas = d3.select("#umapCanvas");
+    var currContext = canvasInit(canvas, chartDim.width, chartDim.height);
 
-    legend
+    currContext.fillStyle = "white";
+    currContext.fillRect(0, 0, chartDim.width, chartDim.height);
+    saveContext(currContext);
+    reDraw(
+      currContext,
+      x,
+      y,
+      dim,
+      sampleData,
+      sampleTen,
+      colors,
+      topTenNumbering
+    );
+    drawLegend(currContext);
+    /*legend
       .append("g")
       .append("text")
       .attr("x", function(d) {
@@ -493,7 +528,7 @@ const Umap = ({
         return chartDim["legend"].y1 + 15;
       })
       .attr("font-size", 20)
-      .text(sampleType);
+      .text(sampleType);*/
   }
 
   return (
@@ -509,6 +544,24 @@ const Umap = ({
         >
           <canvas id="umapCanvas" />
           <svg id="umapLegend" style={{ float: "right", width: 600 }} />
+          <div
+            style={{
+              float: "right",
+              left: "670px",
+              top: "60%",
+              position: "absolute"
+            }}
+          >
+            <p style={{ fontSize: 12 }}>Radius Adjustment</p>
+            <input
+              type="range"
+              min="1"
+              max="13"
+              step="0.5"
+              value={radiusAdjust}
+              onChange={event => setRadius(event.target.value)}
+            />
+          </div>
         </div>
       </div>
     </div>

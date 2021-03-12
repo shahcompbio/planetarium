@@ -5,7 +5,14 @@ const initialState = {
   cellIdParam: "cell_id",
   subtypeParam: "subtype",
   logXParam: "log10_probability",
-  logYParam: "logProbability"
+  logYParam: "logProbability",
+  fontSize: {
+    axisLabelFontSize: 12,
+    tickLabelFontSize: 10,
+    legendFontSize: 12,
+    titleFontSize: 18,
+    legendSquare: 9
+  }
 };
 
 const dashboardReducer = (state, action) => {

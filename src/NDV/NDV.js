@@ -127,6 +127,16 @@ const NDV = ({ data }) => {
           />
           <Layout
             chartName={"HEATMAP"}
+            dim={{
+              chart: {
+                x1: 50,
+                x2: 500,
+                y1: 100,
+                y2: 500
+              },
+              height: 700,
+              width: 750
+            }}
             data={probabilities}
             selectedSubtype={selectedSubtype}
             selectedClonotype={selectedClonotype}
