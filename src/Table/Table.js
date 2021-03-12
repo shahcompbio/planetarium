@@ -19,7 +19,14 @@ const Table = ({ data, chartDim, selectedSubtype }) => {
     : data;
 
   return (
-    <div style={{ height: chartDim["height"], overflow: "auto" }}>
+    <div
+      style={{
+        height: chartDim["height"],
+        overflow: "auto",
+        marginLeft: 50,
+        marginTop: 70
+      }}
+    >
       <table style={{ height: chartDim["height"] }}>
         <thead style={{ position: "sticky" }}>
           <tr>

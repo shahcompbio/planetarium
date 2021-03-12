@@ -85,7 +85,7 @@ const Heatmap = ({
   useEffect(() => {
     if (context) {
       drawHeatmap(context, chartDim, data, subTypes);
-      drawLabels(context);
+      drawLabels(context, selectedClonotype);
     }
   }, [context]);
 
@@ -97,10 +97,9 @@ const Heatmap = ({
 
   useEffect(() => {
     if (context) {
-      console.log(selectedClonotype);
       if (selectedSubtype !== null || selectedClonotype !== null) {
         clearAll(context, chartDim);
-        drawLabels(context);
+        drawLabels(context, selectedClonotype);
         drawHeatmap(
           context,
           chartDim,
@@ -116,7 +115,7 @@ const Heatmap = ({
     }
   }, [selectedSubtype, selectedClonotype, context]);
 
-  function drawLabels(context) {
+  function drawLabels(context, selectedClonotype) {
     context.beginPath();
     context.globalAlpha = 1;
     context.fillStyle = "#000000";
@@ -160,7 +159,12 @@ const Heatmap = ({
         const yPos =
           startingY + heatmapHeight * index + heatmapRowSpace * index;
         context.fillStyle = colors(sequence);
-        context.globalAlpha = 1;
+        context.globalAlpha =
+          selectedClonotype !== null && selectedClonotype !== undefined
+            ? selectedClonotype === sequence
+              ? 1
+              : 0.2
+            : 1;
 
         context.font = "bold " + fontSize.axisLabelFontSize + "px Helvetica";
 
@@ -244,6 +248,12 @@ const Heatmap = ({
 
           if (seqSubtypes.hasOwnProperty(subtype)) {
             context.fillStyle = "black";
+            context.globalAlpha =
+              selectedSubtype !== null && selectedSubtype !== undefined
+                ? selectedSubtype === subtype
+                  ? 1
+                  : 0.2
+                : 1;
             const freq = subtypeStats[sequence][subtype];
             const freqTextX =
               freq > 9

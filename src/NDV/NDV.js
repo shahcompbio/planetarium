@@ -9,7 +9,7 @@ import { DashboardProvider } from "../PlotState/dashboardState";
 const NDV = ({ data }) => {
   const [selectedSubtype, setSelectedSubtype] = useState(null);
   const [selectedClonotype, setSelectedClonotype] = useState(null);
-  console.log(selectedClonotype);
+
   const { metadata, probabilities, degs } = data;
 
   const topTen = Object.entries(
@@ -71,11 +71,69 @@ const NDV = ({ data }) => {
         <div>
           <div style={{ display: "flex" }}>
             <Layout
+              chartName={"UMAP"}
+              data={metadata}
+              selectedSubtype={selectedSubtype}
+              selectedClonotype={selectedClonotype}
+              setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
+              setSelectedClonotype={clonotype =>
+                setSelectedClonotype(clonotype)
+              }
+            />
+            <Layout
+              chartName={"SUBTYPEUMAP"}
+              data={metadata}
+              selectedSubtype={selectedSubtype}
+              setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
+              setSelectedClonotype={clonotype =>
+                setSelectedClonotype(clonotype)
+              }
+            />
+          </div>
+          <div style={{ display: "flex" }}>
+            <Layout
+              chartName={"HEATMAP"}
+              dim={{
+                chart: {
+                  x1: 50,
+                  x2: 500,
+                  y1: 100,
+                  y2: 500
+                },
+                height: 500,
+                width: 750
+              }}
+              data={probabilities}
+              selectedSubtype={selectedSubtype}
+              selectedClonotype={selectedClonotype}
+              setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
+              setSelectedClonotype={clonotype =>
+                setSelectedClonotype(clonotype)
+              }
+            />
+            <Layout
+              chartName={"TABLE"}
+              data={degs}
+              selectedSubtype={selectedSubtype}
+              dim={{
+                chart: {
+                  x1: 50,
+                  y1: 50,
+                  x2: 600,
+                  y2: 200
+                },
+                height: 400,
+                width: 650
+              }}
+            />
+          </div>
+          <div style={{ display: "flex" }}>
+            <Layout
               chartName={"HISTOGRAM"}
               data={probabilities}
               dim={{
                 chart: {
-                  x1: 50,
+                  x1: 100,
                   y1: 50,
                   x2: 600,
                   y2: 200
@@ -103,64 +161,6 @@ const NDV = ({ data }) => {
                 height: 300,
                 width: 600
               }}
-              selectedSubtype={selectedSubtype}
-              selectedClonotype={selectedClonotype}
-              setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
-              setSelectedClonotype={clonotype =>
-                setSelectedClonotype(clonotype)
-              }
-            />
-          </div>
-          <div style={{ display: "flex" }}>
-            <Layout
-              chartName={"SUBTYPEUMAP"}
-              data={metadata}
-              selectedSubtype={selectedSubtype}
-              setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
-              setSelectedClonotype={clonotype =>
-                setSelectedClonotype(clonotype)
-              }
-            />
-            <Layout
-              chartName={"TABLE"}
-              data={degs}
-              selectedSubtype={selectedSubtype}
-              dim={{
-                chart: {
-                  x1: 50,
-                  y1: 50,
-                  x2: 600,
-                  y2: 200
-                },
-                height: 300,
-                width: 650
-              }}
-            />
-          </div>
-          <div style={{ display: "flex" }}>
-            <Layout
-              chartName={"HEATMAP"}
-              dim={{
-                chart: {
-                  x1: 50,
-                  x2: 500,
-                  y1: 100,
-                  y2: 500
-                },
-                height: 700,
-                width: 750
-              }}
-              data={probabilities}
-              selectedSubtype={selectedSubtype}
-              selectedClonotype={selectedClonotype}
-              setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
-              setSelectedClonotype={clonotype =>
-                setSelectedClonotype(clonotype)
-              }
-            />
-            <Layout
-              chartName={"UMAP"}
-              data={metadata}
               selectedSubtype={selectedSubtype}
               selectedClonotype={selectedClonotype}
               setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
