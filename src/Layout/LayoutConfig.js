@@ -1,10 +1,10 @@
-const chartHeight = 550;
-const chartWidth = 550;
+const chartHeight = 500;
+const chartWidth = 500;
 
 let margin = { top: 100, right: 10, bottom: 50, left: 20 };
 const chartDim = {
   margin: margin,
-  width: 650,
+  width: 550,
   height: 700,
   chart: {
     x1: margin.left,
