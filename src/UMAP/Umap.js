@@ -444,7 +444,7 @@ const Umap = ({
         return chartDim["legend"].x1 + 5;
       })
       .attr("y", function(d, i) {
-        return i * 20 + chartDim["legend"].y1 + 25;
+        return i * 20 + chartDim["legend"].y1 + 70;
       })
       .attr("fill", function(d) {
         return colors(d[0]);
@@ -465,7 +465,7 @@ const Umap = ({
         return chartDim["legend"].x1 + 20;
       })
       .attr("y", function(d, i) {
-        return i * 20 + chartDim["legend"].y1 + 31;
+        return i * 20 + chartDim["legend"].y1 + 75;
       })
       .attr("dy", ".35em")
       .text(function(d) {
@@ -520,7 +520,7 @@ const Umap = ({
     <div>
       <div
         style={{
-          width: chartDim["width"],
+          width: chartDim["width"] + 250,
           height: chartDim["height"],
           position: "relative"
         }}
@@ -534,16 +534,16 @@ const Umap = ({
           }}
         >
           <canvas id="umapCanvas" />
-          <svg id="umapLegend" style={{ float: "right", width: 600 }} />
+          <svg id="umapLegend" style={{ float: "right" }} />
           <div
             style={{
               float: "right",
               left: "670px",
-              top: "60%",
+              top: "50%",
               position: "absolute"
             }}
           >
-            <p style={{ fontSize: 12 }}>Radius Adjustment</p>
+            <p style={{ fontSize: 12, marginLeft: -20 }}>Radius Adjustment</p>
             <input
               type="range"
               min="1"
@@ -551,6 +551,7 @@ const Umap = ({
               step="0.5"
               value={radiusAdjust}
               onChange={event => setRadius(event.target.value)}
+              style={{ direction: "rtl" }}
             />
           </div>
         </div>

@@ -185,10 +185,10 @@ const SubtypeUmap = ({
       .attr("width", fontSize.legendSquare)
       .attr("height", fontSize.legendSquare)
       .attr("x", function(d) {
-        return chartDim["legend"]["x1"];
+        return chartDim["legend"]["x1"] - 10;
       })
       .attr("y", function(d, i) {
-        return chartDim["legend"].y2 - i * 20 - 35;
+        return chartDim["legend"].y1 + i * 20 + 65;
       })
       .attr("fill", function(d) {
         return colors(d);
@@ -207,10 +207,10 @@ const SubtypeUmap = ({
       .enter()
       .append("text")
       .attr("x", function(d) {
-        return chartDim["legend"].x1 + 15;
+        return chartDim["legend"].x1 + 5;
       })
       .attr("y", function(d, i) {
-        return chartDim["legend"].y2 - i * 20 + 5 - 35;
+        return chartDim["legend"].y1 + i * 20 + 68;
       })
       .attr("dy", ".35em")
       .text(function(d) {

@@ -83,7 +83,8 @@ const Histogram = ({ data, chartDim }) => {
     changeFontSize(context, fontSize["axisLabelFontSize"]);
     context.fillText(
       logXParam,
-      (chartDim["chart"]["x2"] - chartDim["chart"]["x1"]) / 2,
+      (chartDim["chart"]["x2"] - chartDim["chart"]["x1"]) / 2 +
+        chartDim["chart"]["x1"],
       chartDim["chart"]["y2"] + 30
     );
 
@@ -111,7 +112,7 @@ const Histogram = ({ data, chartDim }) => {
     context.fillText(
       "Probability",
       -(chartDim["chart"]["y2"] - chartDim["chart"]["y1"]) / 2 - 15,
-      12
+      chartDim["chart"]["x1"] - 35
     );
     context.restore();
   }
