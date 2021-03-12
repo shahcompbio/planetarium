@@ -17,7 +17,6 @@ const Table = ({ data, chartDim, selectedSubtype }) => {
   const dataSource = selectedSubtype
     ? data.filter(row => row[subtypeParam] === selectedSubtype)
     : data;
-  console.log(selectedSubtype);
   return (
     <div style={{ height: chartDim["height"], overflow: "auto" }}>
       <table style={{ height: chartDim["height"] }}>
@@ -30,7 +29,11 @@ const Table = ({ data, chartDim, selectedSubtype }) => {
           return (
             <tr>
               {columns.map(column => {
-                return <td>{row[column]}</td>;
+                return (
+                  <td style={{ fontSize: 12, textAlign: "left" }}>
+                    {row[column]}
+                  </td>
+                );
               })}
             </tr>
           );
