@@ -1,16 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import * as d3 from "d3";
 
 import { useDashboardState } from "../PlotState/dashboardState";
 
-import { canvasInit, changeFontSize } from "../DrawingUtils/utils.js";
-const clearAll = (context, chartDim) =>
-  context.clearRect(
-    0,
-    0,
-    chartDim["chart"].x2 + 100,
-    chartDim["chart"].y2 + 50
-  );
+import { useCanvas } from "../components/utils/useCanvas";
 
 const Heatmap = ({
   data,
@@ -30,7 +23,7 @@ const Heatmap = ({
       fontSize,
     },
   ] = useDashboardState();
-  const [context, saveContext] = useState(null);
+
   const subTypes = data.reduce((final, current) => {
     var allSamples = final;
     const subtype = current[subtypeParam];
@@ -77,42 +70,21 @@ const Heatmap = ({
         }, {}),
     }
   );
+
   const alphaIndexing = Object.entries(topTenNumbering)
     .map((entry) => entry[1])
     .sort((a, b) => a - b);
 
-  useEffect(() => {
-    if (context) {
-      drawHeatmap(context, chartDim, data, subTypes);
+  const ref = useCanvas(
+    (canvas) => {
+      const context = canvas.getContext("2d");
       drawLabels(context, selectedClonotype);
-    }
-  }, [context]);
-
-  useEffect(() => {
-    if (data.length > 0 && colors) {
-      init(data, chartDim);
-    }
-  }, [data, colors]);
-
-  useEffect(() => {
-    if (context) {
-      if (selectedSubtype !== null || selectedClonotype !== null) {
-        clearAll(context, chartDim);
-        drawLabels(context, selectedClonotype);
-        drawHeatmap(
-          context,
-          chartDim,
-          data,
-          selectedSubtype,
-          selectedClonotype
-        );
-      } else {
-        clearAll(context, chartDim);
-        drawLabels(context);
-        drawHeatmap(context, chartDim, data);
-      }
-    }
-  }, [selectedSubtype, selectedClonotype, context]);
+      drawHeatmap(context, chartDim, data, selectedSubtype, selectedClonotype);
+    },
+    chartDim["width"],
+    chartDim["height"],
+    [selectedSubtype, selectedClonotype]
+  );
 
   function drawLabels(context, selectedClonotype) {
     context.beginPath();
@@ -120,7 +92,6 @@ const Heatmap = ({
     context.fillStyle = "#000000";
     context.font = "normal " + fontSize.axisLabelFontSize + "px Helvetica";
 
-    //  changeFontSize(context, fontSize.axisLabelFontSize);
     allSubtypes.forEach(function(d, index) {
       context.save();
       context.translate(
@@ -173,16 +144,6 @@ const Heatmap = ({
           yPos + (3 * heatmapHeight) / 4
         );
       });
-  }
-  function init(data, chartDim) {
-    var canvas = d3.select("#heatmapCanvas");
-
-    var context = canvasInit(canvas, chartDim.width, chartDim.height);
-
-    context.fillStyle = "white";
-    context.fillRect(0, 0, chartDim.width, chartDim.height);
-
-    saveContext(context);
   }
 
   function drawHeatmap(
@@ -279,7 +240,7 @@ const Heatmap = ({
             display: "flex",
           }}
         >
-          <canvas id="heatmapCanvas" />
+          <canvas ref={ref} />
         </div>
       </div>
     </div>
