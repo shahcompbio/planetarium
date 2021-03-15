@@ -1,16 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Layout from "../Layout/Layout";
 import _ from "lodash";
 import * as d3 from "d3";
 import "./App.css";
 import dashboardReducer, { initialState } from "../PlotState/dashboardReducer";
 import { DashboardProvider } from "../PlotState/dashboardState";
+import Modal from "react-bootstrap/Modal";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Overlay from "react-bootstrap/Overlay";
+import Button from "react-bootstrap/Button";
 
 const NDV = ({ data }) => {
   const [selectedSubtype, setSelectedSubtype] = useState(null);
   const [selectedClonotype, setSelectedClonotype] = useState(null);
 
   const { metadata, probabilities, degs } = data;
+  const target = useRef(null);
 
   const topTen = Object.entries(
     _.countBy(metadata.map(row => row[initialState["clonotypeParam"]]))
@@ -69,6 +74,10 @@ const NDV = ({ data }) => {
         reducer={dashboardReducer}
       >
         <div>
+          <div ref={target}>Click me!</div>
+
+          <Popup />
+
           <div style={{ display: "flex" }}>
             <Layout
               chartName={"UMAP"}
@@ -174,5 +183,16 @@ const NDV = ({ data }) => {
     </div>
   );
 };
-
+const Popup = props => (
+  <div class="fixed-top">
+    <div class="card" style="width: 18rem;">
+      <div class="card-header">Featured</div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">Cras justo odio</li>
+        <li class="list-group-item">Dapibus ac facilisis in</li>
+        <li class="list-group-item">Vestibulum at eros</li>
+      </ul>
+    </div>
+  </div>
+);
 export default NDV;
