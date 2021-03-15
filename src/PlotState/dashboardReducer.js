@@ -12,6 +12,10 @@ const initialState = {
     legendFontSize: 12,
     titleFontSize: 18,
     legendSquare: 9
+  },
+  defaultSelectedObject: {
+    hover: null,
+    selected: null
   }
 };
 

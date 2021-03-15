@@ -6,6 +6,8 @@ import _ from "lodash";
 import { useDashboardState } from "../PlotState/dashboardState";
 
 import { canvasInit, drawAxis } from "../DrawingUtils/utils.js";
+//import Table from "react-bootstrap/Table";
+import DataTable from "react-data-table-component";
 
 const Table = ({ data, chartDim, selectedSubtype }) => {
   const [
@@ -29,36 +31,16 @@ const Table = ({ data, chartDim, selectedSubtype }) => {
         marginTop: 70,
       }}
     >
-      <table style={{ height: chartDim["height"] }}>
-        <thead style={{ position: "sticky" }}>
-          <tr>
-            {columns.map((column) => (
-              <th
-                style={{ background: "white", position: "sticky", top: 0 }}
-                key={column}
-              >
-                {column}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        {dataSource.map((row) => {
-          return (
-            <tr key={row["gene"] + row["log_fc"] + "tr"}>
-              {columns.map((column) => {
-                return (
-                  <td
-                    key={row[column] + row["log_fc"]}
-                    style={{ fontSize: 12, textAlign: "left" }}
-                  >
-                    {row[column]}
-                  </td>
-                );
-              })}
-            </tr>
-          );
-        })}
-      </table>
+      <DataTable
+        title=""
+        columns={columns.map((col) => ({
+          name: col,
+          selector: col,
+          sortable: true,
+          right: true,
+        }))}
+        data={dataSource}
+      />
     </div>
   );
 };

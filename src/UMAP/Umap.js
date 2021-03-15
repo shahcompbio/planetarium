@@ -5,6 +5,8 @@ import * as d3Array from "d3-array";
 import { useDashboardState } from "../PlotState/dashboardState";
 
 import { canvasInit, drawAxis } from "../DrawingUtils/utils.js";
+const radiusMax = 20;
+
 export const clearAll = (context, chartDim) =>
   context.clearRect(0, 0, chartDim["chart"].x2 + 50, chartDim["chart"].y2 + 80);
 export function drawPoint(
@@ -28,17 +30,17 @@ export function drawPoint(
 const Umap = ({
   data,
   chartDim,
-  selectedSubtype,
   selectedClonotype,
-  setSelectedSubtype,
+  hoveredClonotype,
   setSelectedClonotype
 }) => {
   const [
     { xParam, yParam, cellIdParam, clonotypeParam, fontSize, topTen, colors }
   ] = useDashboardState();
+  const [selected, setSelected] = useState(false);
   const [context, saveContext] = useState(null);
 
-  const [radiusAdjust, setRadius] = useState(3);
+  const [radiusAdjust, setRadius] = useState(5);
   const yData = data.map(d => parseFloat(d[yParam]));
   const xData = data.map(d => parseFloat(d[xParam]));
 
@@ -46,6 +48,12 @@ const Umap = ({
   const yMax = Math.max(...yData);
   const xMin = Math.min(...xData);
   const xMax = Math.max(...xData);
+
+  useEffect(() => {
+    if (selected && selectedClonotype === null) {
+      setSelectedClonotype({ hover: null, selected: selectedClonotype });
+    }
+  }, [selectedClonotype]);
 
   const sampleTen = topTen.reduce((final, curr) => {
     final[curr[0]] = curr[1];
@@ -78,7 +86,7 @@ const Umap = ({
   }, {});
   useEffect(() => {
     if (data.length > 0 && colors) {
-      init(data, "NDVL", chartDim);
+      init(data, chartDim);
     }
   }, [colors]);
 
@@ -98,12 +106,20 @@ const Umap = ({
         colors,
         topTenNumbering
       );
-      drawLegend(context);
+      drawLegend(context, selected);
     }
   }, [radiusAdjust]);
+
   useEffect(() => {
     if (context) {
-      if (selectedClonotype !== null) {
+      const selection =
+        hoveredClonotype !== null
+          ? hoveredClonotype
+          : selectedClonotype !== null
+          ? selectedClonotype
+          : null;
+
+      if (selection !== null) {
         clearAll(context, chartDim);
         context.beginPath();
         reDraw(
@@ -115,7 +131,7 @@ const Umap = ({
           sampleTen,
           colors,
           topTenNumbering,
-          selectedClonotype
+          selection
         );
       } else {
         clearAll(context, chartDim);
@@ -132,7 +148,7 @@ const Umap = ({
         );
       }
     }
-  }, [selectedClonotype, context]);
+  }, [selectedClonotype, hoveredClonotype, context]);
   function drawOutline(context, x, y, data, colors) {
     context.beginPath();
     context.lineWidth = 1;
@@ -356,8 +372,13 @@ const Umap = ({
       .sort((a, b) => b.radius - a.radius);
 
     const isCountInsignificant =
-      Math.max(...sortedmerge.map(point => point["radius"])) < 1 ? true : false;
-
+      Math.max(...sortedmerge.map(point => point["radius"])) < 1
+        ? true
+        : radiusAdjust == radiusMax
+        ? true
+        : false;
+    console.log(radiusAdjust);
+    console.log(radiusMax);
     sortedmerge.map(point => {
       const fill = selectedClonotype ? "grey" : colors(point[clonotypeParam]);
       context.globalAlpha = selectedClonotype ? 0.5 : 1;
@@ -429,9 +450,11 @@ const Umap = ({
       topTenNumbering,
       selectedClonotype
     );
+    drawLegend(context, selected);
   }
-  function drawLegend(context) {
+  function drawLegend(context, selected) {
     var legend = d3.select("#umapLegend");
+    legend.select("*").remove();
     legend = legend.append("g");
     legend
       .selectAll("rect")
@@ -449,11 +472,26 @@ const Umap = ({
       .attr("fill", function(d) {
         return colors(d[0]);
       })
-      .on("mouseover", function(d, i) {
-        setSelectedClonotype(d[0]);
+      .on("mouseover", function(d) {
+        setSelectedClonotype({
+          hover: d[0],
+          selected: null
+        });
+      })
+      .on("mousedown", function(d, i) {
+        setSelected(true);
+        setSelectedClonotype({
+          hover: null,
+          selected: d[0]
+        });
       })
       .on("mouseout", function(event, d) {
-        setSelectedClonotype(null);
+        if (hoveredClonotype !== null) {
+          setSelectedClonotype({
+            hover: null,
+            selected: selectedClonotype
+          });
+        }
       });
 
     legend
@@ -479,13 +517,28 @@ const Umap = ({
       })
       .attr("cursor", "pointer")
       .on("mouseover", function(d) {
-        setSelectedClonotype(d[0]);
+        setSelectedClonotype({
+          hover: d[0],
+          selected: selectedClonotype
+        });
+      })
+      .on("mousedown", function(d, i) {
+        setSelected(true);
+        setSelectedClonotype({
+          hover: null,
+          selected: d[0]
+        });
       })
       .on("mouseout", function(event, d) {
-        setSelectedClonotype(null);
+        if (selectedClonotype !== null) {
+          setSelectedClonotype({
+            hover: null,
+            selected: selectedClonotype
+          });
+        }
       });
   }
-  function init(data, sampleType, chartDim) {
+  function init(data, chartDim) {
     var canvas = d3.select("#umapCanvas");
     var currContext = canvasInit(canvas, chartDim.width, chartDim.height);
 
@@ -502,18 +555,7 @@ const Umap = ({
       colors,
       topTenNumbering
     );
-    drawLegend(currContext);
-    /*legend
-      .append("g")
-      .append("text")
-      .attr("x", function(d) {
-        return chartDim["legend"].x1 + 17;
-      })
-      .attr("y", function(d, i) {
-        return chartDim["legend"].y1 + 15;
-      })
-      .attr("font-size", 20)
-      .text(sampleType);*/
+    drawLegend(currContext, selected);
   }
 
   return (
@@ -543,16 +585,32 @@ const Umap = ({
               position: "absolute"
             }}
           >
-            <p style={{ fontSize: 12, marginLeft: -100 }}>Radius Adjustment</p>
-            <input
-              type="range"
-              min="1"
-              max="13"
-              step="0.5"
-              value={radiusAdjust}
-              onChange={event => setRadius(event.target.value)}
-              style={{ direction: "rtl", marginLeft: -100 }}
-            />
+            <div class="container">
+              <div class="row">
+                <label
+                  style={{ fontSize: 12, marginLeft: -100, marginTop: -20 }}
+                  for="customRange2"
+                  class="form-label"
+                >
+                  Radius Adjustment
+                </label>
+              </div>
+              <div class="row">
+                <input
+                  type="range"
+                  min="4"
+                  max={radiusMax}
+                  step="0.5"
+                  value={radiusAdjust}
+                  onChange={event => {
+                    setRadius(event.target.value);
+                  }}
+                  style={{ direction: "rtl", marginLeft: -100 }}
+                  class="form-range"
+                  id="customRange2"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

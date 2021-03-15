@@ -3,11 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "bootstrap": "^4.6.0",
     "d3": "^5.16.0",
     "d3-array": "^2.11.0",
     "d3-collection": "^1.0.7",
     "lodash": "^4.17.21",
     "react": "^17.0.1",
+    "react-bootstrap": "^1.5.2",
     "react-data-table-component": "^6.11.7",
     "react-dom": "^16.8.4",
     "react-scripts": "2.1.8",

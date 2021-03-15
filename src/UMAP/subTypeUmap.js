@@ -10,9 +10,8 @@ const SubtypeUmap = ({
   data,
   chartDim,
   selectedSubtype,
-  selectedClonotype,
-  setSelectedSubtype,
-  setSelectedClonotype
+  hoveredSubtype,
+  setSelectedSubtype
 }) => {
   const [{ xParam, yParam, subtypeParam, fontSize }] = useDashboardState();
   const [drawReady, setDrawReady] = useState(false);
@@ -62,17 +61,24 @@ const SubtypeUmap = ({
 
   useEffect(() => {
     if (context) {
-      if (selectedSubtype !== null) {
+      const selection =
+        hoveredSubtype !== null
+          ? hoveredSubtype
+          : selectedSubtype !== null
+          ? selectedSubtype
+          : null;
+
+      if (selection !== null) {
         clearAll(context, chartDim);
         context.beginPath();
-        reDraw(data, chartDim, context, x, y, selectedSubtype);
+        reDraw(data, chartDim, context, x, y, selection);
       } else {
         clearAll(context, chartDim);
         context.beginPath();
         reDraw(data, chartDim, context, x, y);
       }
     }
-  }, [selectedSubtype, context]);
+  }, [selectedSubtype, hoveredSubtype, context]);
 
   useEffect(() => {
     if (context !== null) {
@@ -185,7 +191,7 @@ const SubtypeUmap = ({
       .attr("width", fontSize.legendSquare)
       .attr("height", fontSize.legendSquare)
       .attr("x", function(d) {
-        return chartDim["legend"]["x1"] - 10;
+        return chartDim["legend"]["x1"];
       })
       .attr("y", function(d, i) {
         return chartDim["legend"].y1 + i * 20 + 65;
@@ -195,10 +201,24 @@ const SubtypeUmap = ({
       })
       .attr("cursor", "pointer")
       .on("mouseover", function(d) {
-        setSelectedSubtype(d);
+        setSelectedSubtype({
+          hover: d,
+          selected: selectedSubtype
+        });
+      })
+      .on("mousedown", function(d, i) {
+        setSelectedSubtype({
+          hover: null,
+          selected: d
+        });
       })
       .on("mouseout", function(event, d) {
-        setSelectedSubtype(null);
+        if (selectedSubtype !== null) {
+          setSelectedSubtype({
+            hover: null,
+            selected: selectedSubtype
+          });
+        }
       });
 
     legend
@@ -207,10 +227,10 @@ const SubtypeUmap = ({
       .enter()
       .append("text")
       .attr("x", function(d) {
-        return chartDim["legend"].x1 + 5;
+        return chartDim["legend"].x1 + 13;
       })
       .attr("y", function(d, i) {
-        return chartDim["legend"].y1 + i * 20 + 68;
+        return chartDim["legend"].y1 + i * 20 + 70;
       })
       .attr("dy", ".35em")
       .text(function(d) {
@@ -225,11 +245,31 @@ const SubtypeUmap = ({
       })
       .attr("cursor", "pointer")
       .on("mouseover", function(d) {
+        setSelectedSubtype({
+          hover: d,
+          selected: selectedSubtype
+        });
+      })
+      .on("mousedown", function(d, i) {
+        setSelectedSubtype({
+          hover: null,
+          selected: d
+        });
+      })
+      .on("mouseout", function(event, d) {
+        if (selectedSubtype !== null) {
+          setSelectedSubtype({
+            hover: null,
+            selected: selectedSubtype
+          });
+        }
+      });
+    /*  .on("mouseover", function(d) {
         setSelectedSubtype(d);
       })
       .on("mouseout", function(event, d) {
         setSelectedSubtype(null);
-      });
+      });*/
   }
   function filterOutliers(coords, quantiles) {
     const sortedCollection = coords.slice().sort((a, b) => a - b); //copy array fast and sort

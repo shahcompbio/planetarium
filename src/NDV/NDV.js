@@ -1,16 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Layout from "../Layout/Layout";
 import _ from "lodash";
 import * as d3 from "d3";
 import "./App.css";
 import dashboardReducer, { initialState } from "../PlotState/dashboardReducer";
 import { DashboardProvider } from "../PlotState/dashboardState";
+import Modal from "react-bootstrap/Modal";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Overlay from "react-bootstrap/Overlay";
+import Button from "react-bootstrap/Button";
 
 const NDV = ({ data }) => {
-  const [selectedSubtype, setSelectedSubtype] = useState(null);
-  const [selectedClonotype, setSelectedClonotype] = useState(null);
+  const [selectedSubtype, setSelectedSubtype] = useState(
+    initialState["defaultSelectedObject"]
+  );
+  const [selectedClonotype, setSelectedClonotype] = useState(
+    initialState["defaultSelectedObject"]
+  );
 
   const { metadata, probabilities, degs } = data;
+  const target = useRef(null);
 
   const topTen = Object.entries(
     _.countBy(metadata.map(row => row[initialState["clonotypeParam"]]))
@@ -69,25 +78,34 @@ const NDV = ({ data }) => {
         reducer={dashboardReducer}
       >
         <div>
+          {(selectedClonotype["selected"] || selectedSubtype["selected"]) && (
+            <Popup
+              selected={
+                selectedClonotype["selected"] || selectedSubtype["selected"]
+              }
+              setSelected={() => {
+                setSelectedClonotype(initialState["defaultSelectedObject"]);
+                setSelectedSubtype(initialState["defaultSelectedObject"]);
+              }}
+              type={selectedClonotype["selected"] ? "Clonotype" : "Subtype"}
+            />
+          )}
           <div style={{ display: "flex" }}>
             <Layout
               chartName={"UMAP"}
               data={metadata}
-              selectedSubtype={selectedSubtype}
-              selectedClonotype={selectedClonotype}
-              setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
+              selectedClonotype={selectedClonotype["selected"]}
+              hoveredClonotype={selectedClonotype["hover"]}
               setSelectedClonotype={clonotype =>
-                setSelectedClonotype(clonotype)
+                setSelectedClonotype({ ...clonotype })
               }
             />
             <Layout
               chartName={"SUBTYPEUMAP"}
               data={metadata}
-              selectedSubtype={selectedSubtype}
-              setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
-              setSelectedClonotype={clonotype =>
-                setSelectedClonotype(clonotype)
-              }
+              selectedSubtype={selectedSubtype["selected"]}
+              hoveredSubtype={selectedSubtype["hover"]}
+              setSelectedSubtype={subtype => setSelectedSubtype({ ...subtype })}
             />
           </div>
           <div style={{ display: "flex" }}>
@@ -104,17 +122,19 @@ const NDV = ({ data }) => {
                 width: 750
               }}
               data={probabilities}
-              selectedSubtype={selectedSubtype}
-              selectedClonotype={selectedClonotype}
-              setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
-              setSelectedClonotype={clonotype =>
-                setSelectedClonotype(clonotype)
+              selectedSubtype={
+                selectedSubtype["selected"] || selectedSubtype["hover"]
+              }
+              selectedClonotype={
+                selectedClonotype["selected"] || selectedClonotype["hover"]
               }
             />
             <Layout
               chartName={"TABLE"}
               data={degs}
-              selectedSubtype={selectedSubtype}
+              selectedClonotype={
+                selectedClonotype["selected"] || selectedClonotype["hover"]
+              }
               dim={{
                 chart: {
                   x1: 50,
@@ -174,5 +194,33 @@ const NDV = ({ data }) => {
     </div>
   );
 };
-
+const Popup = ({ selected, setSelected, type }) => (
+  <div
+    class="fixed-top"
+    style={{
+      width: 150,
+      float: "right",
+      right: "10px",
+      top: "10px",
+      left: "auto"
+    }}
+  >
+    <div class="card">
+      <div class="card-header">Selected {type}:</div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+          {selected}
+          <button
+            type="button"
+            class="close"
+            aria-label="Close"
+            onClick={setSelected}
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+);
 export default NDV;
