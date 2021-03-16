@@ -30,7 +30,7 @@ const DataWrapper = ({
     .sort(([, a], [, b]) => b - a)
     .map((clonotype, index) => ({
       value: clonotype,
-      label: `seq${index + 1} - ${clonotype}`,
+      label: `SEQ${index + 1} - ${clonotype}`,
       color: colors(clonotype),
     }));
 
@@ -141,25 +141,15 @@ const Heatmap = ({
   );
 
   return (
-    <div>
-      <div
-        style={{
-          width: chartDim["width"],
-          height: chartDim["height"],
-          position: "relative",
-        }}
-      >
-        <div
-          id="heatmap"
-          style={{
-            position: "absolute",
-            pointerEvents: "all",
-            display: "flex",
-          }}
-        >
-          <canvas ref={ref} />
-        </div>
-      </div>
+    <div
+      id="heatmap"
+      style={{
+        margin: 30,
+        pointerEvents: "all",
+        display: "flex",
+      }}
+    >
+      <canvas ref={ref} />
     </div>
   );
 };
