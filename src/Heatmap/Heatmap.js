@@ -14,6 +14,7 @@ const HEATMAP_COLOR_SCALE = d3
 const COLUMN_LABEL_SPACE = 100;
 const ROW_LABEL_SPACE = 300;
 const LABEL_COLOR = "#000000";
+const DEFAULT_LABEL_COLOR = "#000000";
 const LABEL_FONT = "normal 12px Helvetica";
 
 const DataWrapper = ({
@@ -124,10 +125,15 @@ const Heatmap = ({
         highlightedRow,
         highlightedColumn
       );
+
+      const formattedColumnLabels = formatLabelData(
+        columnLabels || columnValues
+      );
+      const formattedRowLabels = formatLabelData(rowLabels || rowValues);
       drawLabels(
         context,
-        rowLabels,
-        columnValues,
+        formattedRowLabels,
+        formattedColumnLabels,
         rowScale,
         columnScale,
         highlightedRow,
@@ -154,6 +160,17 @@ const Heatmap = ({
   );
 };
 
+const formatLabelData = (values) => {
+  if (typeof values[0] === "string") {
+    return values.map((value) => ({
+      value,
+      label: value,
+      color: DEFAULT_LABEL_COLOR,
+    }));
+  }
+  return values;
+};
+
 const drawLabels = (
   context,
   rowValues,
@@ -168,10 +185,12 @@ const drawLabels = (
   context.fillStyle = LABEL_COLOR;
   context.font = LABEL_FONT;
 
-  columnValues.map((columnName) => {
+  columnValues.map((columnData) => {
+    const { value, label, color } = columnData;
+
     context.save();
     context.translate(
-      columnScale(columnName) + columnScale.bandwidth() / 2,
+      columnScale(value) + columnScale.bandwidth() / 2,
       COLUMN_LABEL_SPACE
     );
 
@@ -179,13 +198,14 @@ const drawLabels = (
 
     context.textAlign = "left";
     context.textBaseline = "bottom";
+    context.fillStyle = color;
 
     // artifact from NDV :(
-    if (columnName.indexOf("/") !== -1) {
-      context.fillText(columnName.split("/")[0] + "/", 0, 0);
-      context.fillText(columnName.split("/")[1], 10, 10);
+    if (label.indexOf("/") !== -1) {
+      context.fillText(label.split("/")[0] + "/", 0, 0);
+      context.fillText(label.split("/")[1], 10, 10);
     } else {
-      context.fillText(columnName, 0, 0);
+      context.fillText(label, 0, 0);
     }
 
     context.restore();
@@ -193,7 +213,6 @@ const drawLabels = (
   });
 
   rowValues.map((rowData) => {
-    console.log(rowData);
     const { value, label, color } = rowData;
     context.font = "bold 12px Helvetica";
     context.fillStyle = color;
