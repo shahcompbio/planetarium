@@ -7,7 +7,7 @@ import DataTable from "react-data-table-component";
 const Table = ({ data, chartDim, selectedSubtype }) => {
   const [{ subtypeParam }] = useDashboardState();
 
-  const { columns } = data;
+  const columns = Object.keys(data[0]);
   const dataSource = selectedSubtype
     ? data.filter((row) => row[subtypeParam] === selectedSubtype)
     : data;
