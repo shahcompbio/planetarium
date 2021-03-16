@@ -35,12 +35,20 @@ const Umap = ({
   setSelectedClonotype
 }) => {
   const [
-    { xParam, yParam, cellIdParam, clonotypeParam, fontSize, topTen, colors }
+    {
+      xParam,
+      yParam,
+      cellIdParam,
+      clonotypeParam,
+      fontSize,
+      topTen,
+      colors,
+      topTenNumbering
+    }
   ] = useDashboardState();
-  const [selected, setSelected] = useState(false);
   const [context, saveContext] = useState(null);
 
-  const [radiusAdjust, setRadius] = useState(5);
+  const [radiusAdjust, setRadius] = useState(10);
   const yData = data.map(d => parseFloat(d[yParam]));
   const xData = data.map(d => parseFloat(d[xParam]));
 
@@ -48,12 +56,6 @@ const Umap = ({
   const yMax = Math.max(...yData);
   const xMin = Math.min(...xData);
   const xMax = Math.max(...xData);
-
-  useEffect(() => {
-    if (selected && selectedClonotype === null) {
-      setSelectedClonotype({ hover: null, selected: selectedClonotype });
-    }
-  }, [selectedClonotype]);
 
   const sampleTen = topTen.reduce((final, curr) => {
     final[curr[0]] = curr[1];
@@ -76,14 +78,7 @@ const Umap = ({
     .scaleLinear()
     .domain([yMin, yMax])
     .range([dim.y2, dim.y1]);
-  const topTenNumbering = topTen.reduce((final, seq) => {
-    const label =
-      "NDVL" === "NDVL"
-        ? "L" + (Object.keys(final).length + 1)
-        : "R" + (Object.keys(final).length + 1);
-    final[seq[0]] = label;
-    return final;
-  }, {});
+
   useEffect(() => {
     if (data.length > 0 && colors) {
       init(data, chartDim);
@@ -106,7 +101,7 @@ const Umap = ({
         colors,
         topTenNumbering
       );
-      drawLegend(context, selected);
+      drawLegend(context);
     }
   }, [radiusAdjust]);
 
@@ -377,9 +372,8 @@ const Umap = ({
         : radiusAdjust == radiusMax
         ? true
         : false;
-    console.log(radiusAdjust);
-    console.log(radiusMax);
-    sortedmerge.map(point => {
+
+    sortedmerge.forEach(point => {
       const fill = selectedClonotype ? "grey" : colors(point[clonotypeParam]);
       context.globalAlpha = selectedClonotype ? 0.5 : 1;
       drawPoint(
@@ -399,7 +393,7 @@ const Umap = ({
     if (selectedClonotype) {
       sortedmerge
         .filter(row => row[clonotypeParam] === selectedClonotype)
-        .map(point => {
+        .forEach(point => {
           const fill = colors(point[clonotypeParam]);
           drawPoint(
             context,
@@ -450,9 +444,29 @@ const Umap = ({
       topTenNumbering,
       selectedClonotype
     );
-    drawLegend(context, selected);
+    drawLegend(context);
   }
-  function drawLegend(context, selected) {
+  function drawLegend(context) {
+    const mouseInteractions = element =>
+      element
+        .on("mouseover", function(d) {
+          setSelectedClonotype({
+            hover: d[0],
+            selected: selectedClonotype
+          });
+        })
+        .on("mousedown", function(d, i) {
+          setSelectedClonotype({
+            hover: null,
+            selected: d[0]
+          });
+        })
+        .on("mouseout", function(event, d) {
+          setSelectedClonotype({
+            hover: null,
+            selected: selectedClonotype
+          });
+        });
     var legend = d3.select("#umapLegend");
     legend.select("*").remove();
     legend = legend.append("g");
@@ -472,27 +486,7 @@ const Umap = ({
       .attr("fill", function(d) {
         return colors(d[0]);
       })
-      .on("mouseover", function(d) {
-        setSelectedClonotype({
-          hover: d[0],
-          selected: null
-        });
-      })
-      .on("mousedown", function(d, i) {
-        setSelected(true);
-        setSelectedClonotype({
-          hover: null,
-          selected: d[0]
-        });
-      })
-      .on("mouseout", function(event, d) {
-        if (hoveredClonotype !== null) {
-          setSelectedClonotype({
-            hover: null,
-            selected: selectedClonotype
-          });
-        }
-      });
+      .call(mouseInteractions);
 
     legend
       .selectAll("text")
@@ -508,7 +502,6 @@ const Umap = ({
       .attr("dy", ".35em")
       .text(function(d) {
         return topTenNumbering[d[0]] + " - " + d[0] + " - " + d[1];
-        //  return d["key"];
       })
       .attr("font-weight", "700")
       .attr("font-size", fontSize.legendFontSize + "px")
@@ -516,27 +509,7 @@ const Umap = ({
         return colors(d[0]);
       })
       .attr("cursor", "pointer")
-      .on("mouseover", function(d) {
-        setSelectedClonotype({
-          hover: d[0],
-          selected: selectedClonotype
-        });
-      })
-      .on("mousedown", function(d, i) {
-        setSelected(true);
-        setSelectedClonotype({
-          hover: null,
-          selected: d[0]
-        });
-      })
-      .on("mouseout", function(event, d) {
-        if (selectedClonotype !== null) {
-          setSelectedClonotype({
-            hover: null,
-            selected: selectedClonotype
-          });
-        }
-      });
+      .call(mouseInteractions);
   }
   function init(data, chartDim) {
     var canvas = d3.select("#umapCanvas");
@@ -544,7 +517,9 @@ const Umap = ({
 
     currContext.fillStyle = "white";
     currContext.fillRect(0, 0, chartDim.width, chartDim.height);
+
     saveContext(currContext);
+
     reDraw(
       currContext,
       x,
@@ -555,7 +530,7 @@ const Umap = ({
       colors,
       topTenNumbering
     );
-    drawLegend(currContext, selected);
+    drawLegend(currContext);
   }
 
   return (
@@ -608,6 +583,7 @@ const Umap = ({
                   style={{ direction: "rtl", marginLeft: -100 }}
                   class="form-range"
                   id="customRange2"
+                  disabled={selectedClonotype !== null}
                 />
               </div>
             </div>
