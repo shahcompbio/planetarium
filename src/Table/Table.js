@@ -1,23 +1,13 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React from "react";
 
-import * as d3 from "d3";
-import * as d3Array from "d3-array";
-import _ from "lodash";
 import { useDashboardState } from "../PlotState/dashboardState";
 
-import { canvasInit, drawAxis } from "../DrawingUtils/utils.js";
-//import Table from "react-bootstrap/Table";
 import DataTable from "react-data-table-component";
 
 const Table = ({ data, chartDim, selectedSubtype }) => {
-  const [
-    { xParam, yParam, cellIdParam, clonotypeParam, topTen, subtypeParam },
-  ] = useDashboardState();
+  const [{ subtypeParam }] = useDashboardState();
 
-  console.log(data);
-  const [selectedRows, setSelectedRows] = useState(null);
-  // const { columns } = data;
-  const columns = Object.keys(data[0]);
+  const { columns } = data;
   const dataSource = selectedSubtype
     ? data.filter((row) => row[subtypeParam] === selectedSubtype)
     : data;

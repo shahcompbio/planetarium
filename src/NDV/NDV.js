@@ -36,8 +36,7 @@ const NDV = ({ data }) => {
     sampleTen.hasOwnProperty(row[initialState["clonotypeParam"]])
   );
   const topTenNumbering = Object.keys(sampleTen).reduce((final, seq, index) => {
-    const label = "NDVL" === "NDVL" ? "L" + (index + 1) : "R" + (index + 1);
-    final[seq] = label;
+    final[seq] = "SEQ" + (index + 1);
     return final;
   }, {});
   const clonotypes = _.groupBy(sampleData, initialState["clonotypeParam"]);
@@ -132,8 +131,10 @@ const NDV = ({ data }) => {
             <Layout
               chartName={"TABLE"}
               data={degs}
-              selectedClonotype={
-                selectedClonotype["selected"] || selectedClonotype["hover"]
+              selectedSubtype={
+                selectedSubtype["selected"]
+                  ? selectedSubtype["selected"]
+                  : selectedSubtype["hover"]
               }
               dim={{
                 chart: {

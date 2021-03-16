@@ -85,7 +85,8 @@ const SubtypeUmap = ({
       drawAxis(context, x, y, chartDim["chart"]);
       drawPoints(data, chartDim, context, x, y);
       appendSubtypeLabels(subTypes, x, y, yParam, xParam, context, colors);
-      appendLegend(colors, types, context, x, y, setSelectedSubtype);
+
+      appendLegend(colors, types, context, x, y);
     }
   }, [drawReady]);
 
@@ -100,19 +101,34 @@ const SubtypeUmap = ({
     setDrawReady(true);
   }
 
-  function drawPoints(data, chartDim, context, x, y, selectedSubtype) {
+  function drawPoints(data, chartDim, context, x, y, selection) {
     context.beginPath();
     context.lineWidth = 1;
     context.strokeStyle = "black";
 
     data.forEach(point => {
-      const type = point[subtypeParam];
       const fill =
-        selectedSubtype && selectedSubtype !== type
+        selection && selection !== point[subtypeParam]
           ? "#e8e8e8"
           : colors(point[subtypeParam]);
       drawPoint(context, point, fill, true, x, y, xParam, yParam);
     });
+    if (selection) {
+      data
+        .filter(point => point[subtypeParam] === selection)
+        .forEach(point => {
+          drawPoint(
+            context,
+            point,
+            colors(point[subtypeParam]),
+            true,
+            x,
+            y,
+            xParam,
+            yParam
+          );
+        });
+    }
   }
   function appendSubtypeLabels(
     subTypes,
@@ -122,9 +138,8 @@ const SubtypeUmap = ({
     xParam,
     context,
     colors,
-    selectedSubtype
+    selection
   ) {
-    var boundingBox = {};
     const allBoxes = Object.keys(subTypes).map(subtype => {
       const type = subtype.replace(/\s/g, "");
       const ySubtypeData = subTypes[subtype].map(d => x(parseFloat(d[yParam])));
@@ -152,23 +167,23 @@ const SubtypeUmap = ({
         box: getBoundingBox(remainingPoints)
       };
     });
-    const avgBoxSize =
+    /*  const avgBoxSize =
       allBoxes
         .map(box => x(box["box"]["right"]) - x(box["box"]["left"]))
         .reduce((a, b) => a + b) / allBoxes.length;
-
+*/
     //if the bounding box is larger than 1.5 the  avg do not add label
-    allBoxes.map(box => {
+    allBoxes.forEach(box => {
       //    if (
       //      !(x(box["box"]["right"]) - x(box["box"]["left"]) * 1.5 > avgBoxSize)
       //    ) {
-      drawBoundingBox(context, box, x, y, colors, selectedSubtype);
+      drawBoundingBox(context, box, x, y, colors, selection);
       //    }
     });
   }
-  function reDraw(data, chartDim, context, x, y, selectedSubtype) {
+  function reDraw(data, chartDim, context, x, y, selection) {
     drawAxis(context, x, y, chartDim["chart"]);
-    drawPoints(data, chartDim, context, x, y, selectedSubtype);
+    drawPoints(data, chartDim, context, x, y, selection);
     appendSubtypeLabels(
       subTypes,
       x,
@@ -177,11 +192,34 @@ const SubtypeUmap = ({
       xParam,
       context,
       colors,
-      selectedSubtype
+      selection
     );
+    appendLegend(colors, types, context, x, y);
   }
-  function appendLegend(colors, subTypes, context, x, y, setSelectedSubtype) {
+  function appendLegend(colors, subTypes, context, x, y) {
+    const mouseInteractions = element =>
+      element
+        .on("mouseover", function(d) {
+          setSelectedSubtype({
+            hover: d,
+            selected: selectedSubtype
+          });
+        })
+        .on("mousedown", function(d, i) {
+          setSelectedSubtype({
+            hover: null,
+            selected: d
+          });
+        })
+        .on("mouseout", function(event, d) {
+          setSelectedSubtype({
+            hover: null,
+            selected: selectedSubtype
+          });
+        });
+
     var legend = d3.select("#subTypeUmapLegend");
+    legend.selectAll("*").remove();
     legend = legend.append("g");
     legend
       .selectAll("rect")
@@ -200,26 +238,7 @@ const SubtypeUmap = ({
         return colors(d);
       })
       .attr("cursor", "pointer")
-      .on("mouseover", function(d) {
-        setSelectedSubtype({
-          hover: d,
-          selected: selectedSubtype
-        });
-      })
-      .on("mousedown", function(d, i) {
-        setSelectedSubtype({
-          hover: null,
-          selected: d
-        });
-      })
-      .on("mouseout", function(event, d) {
-        if (selectedSubtype !== null) {
-          setSelectedSubtype({
-            hover: null,
-            selected: selectedSubtype
-          });
-        }
-      });
+      .call(mouseInteractions);
 
     legend
       .selectAll("text")
@@ -241,39 +260,12 @@ const SubtypeUmap = ({
       .attr("font-weight", "500")
       .attr("fill", function(d) {
         return "#000000";
-        //return colors(d);
       })
       .attr("cursor", "pointer")
-      .on("mouseover", function(d) {
-        setSelectedSubtype({
-          hover: d,
-          selected: selectedSubtype
-        });
-      })
-      .on("mousedown", function(d, i) {
-        setSelectedSubtype({
-          hover: null,
-          selected: d
-        });
-      })
-      .on("mouseout", function(event, d) {
-        if (selectedSubtype !== null) {
-          setSelectedSubtype({
-            hover: null,
-            selected: selectedSubtype
-          });
-        }
-      });
-    /*  .on("mouseover", function(d) {
-        setSelectedSubtype(d);
-      })
-      .on("mouseout", function(event, d) {
-        setSelectedSubtype(null);
-      });*/
+      .call(mouseInteractions);
   }
   function filterOutliers(coords, quantiles) {
     const sortedCollection = coords.slice().sort((a, b) => a - b); //copy array fast and sort
-    const size = sortedCollection.length;
 
     let q1 = getQuantile(sortedCollection, quantiles[0]);
     let q3 = getQuantile(sortedCollection, quantiles[1]);
@@ -300,7 +292,7 @@ const SubtypeUmap = ({
       );
     }
   }
-  function drawBoundingBox(context, box, x, y, colors, selectedSubtype) {
+  function drawBoundingBox(context, box, x, y, colors, selection) {
     const type = box["type"];
     const title = box["subtype"];
     const boxCords = box["box"];
@@ -320,10 +312,8 @@ const SubtypeUmap = ({
 
     const textWidth = context.measureText(title).width + 2;
 
-    const textHeight = context.measureText(title);
-
     context.fillStyle = "white";
-    context.globalAlpha = 1;
+    context.globalAlpha = selection ? (selection === title ? 1 : 0.2) : 1;
 
     if (title.indexOf("/") !== -1) {
       const firstTextWidth = context.measureText(title.split("/")[0]).width + 4;
@@ -351,11 +341,7 @@ const SubtypeUmap = ({
     context.fill();
     context.save();
 
-    context.globalAlpha = selectedSubtype
-      ? selectedSubtype === title
-        ? 1
-        : 0.2
-      : 1;
+    context.globalAlpha = selection ? (selection === title ? 1 : 0.2) : 1;
     context.fillStyle = "black";
 
     if (title.indexOf("/") !== -1) {

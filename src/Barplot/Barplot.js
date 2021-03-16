@@ -1,23 +1,12 @@
 import React, { useState, useEffect } from "react";
 import * as d3 from "d3";
-import * as d3Array from "d3-array";
 import _ from "lodash";
 import { useDashboardState } from "../PlotState/dashboardState";
 
-import { canvasInit, drawAxis, changeFontSize } from "../DrawingUtils/utils.js";
+import { canvasInit, changeFontSize } from "../DrawingUtils/utils.js";
 
 const Barplot = ({ data, chartDim }) => {
-  const [
-    {
-      xParam,
-      yParam,
-      cellIdParam,
-      clonotypeParam,
-      topTen,
-      subtypeParam,
-      fontSize
-    }
-  ] = useDashboardState();
+  const [{ clonotypeParam, subtypeParam, fontSize }] = useDashboardState();
 
   const [drawReady, setDrawReady] = useState(false);
   const [context, saveContext] = useState(null);
@@ -70,7 +59,7 @@ const Barplot = ({ data, chartDim }) => {
     context.beginPath();
     context.lineWidth = 1;
     context.strokeStyle = "black";
-    subtypes.map(subtype => {
+    subtypes.forEach(subtype => {
       var currentHeight = 0;
       [...Array.from(Array(10).keys())].map((key, index) => {
         const { counts, total } = stackedBarData[subtype];
