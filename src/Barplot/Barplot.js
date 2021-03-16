@@ -12,17 +12,17 @@ const Barplot = ({ data, chartDim }) => {
   const [context, saveContext] = useState(null);
   const barWidth = 50;
   const groupedData = _.groupBy(data, subtypeParam);
-  const subtypes = Object.keys(groupedData);
+  const subtypes = Object.keys(groupedData).sort();
   const stackedBarData = subtypes.reduce((final, subtype) => {
     const groupedClonotypes = _.groupBy(groupedData[subtype], clonotypeParam);
     var counter = {};
     const hitList = Object.entries(groupedClonotypes).map(
-      cellHits => cellHits[1].length
+      (cellHits) => cellHits[1].length
     );
-    hitList.forEach(x => (counter[x] = (counter[x] || 0) + 1));
+    hitList.forEach((x) => (counter[x] = (counter[x] || 0) + 1));
     final[subtype] = {
       total: hitList.length,
-      counts: counter
+      counts: counter,
     };
     return final;
   }, []);
@@ -52,22 +52,22 @@ const Barplot = ({ data, chartDim }) => {
       "#FDAE61",
       "#F46D43",
       "#D53E4F",
-      "#9E0142"
+      "#9E0142",
     ]);
 
   function drawBars(context) {
     context.beginPath();
     context.lineWidth = 1;
     context.strokeStyle = "black";
-    subtypes.forEach(subtype => {
+    subtypes.forEach((subtype) => {
       var currentHeight = 0;
       [...Array.from(Array(10).keys())].map((key, index) => {
         const { counts, total } = stackedBarData[subtype];
         var height;
         if (index === 9) {
           const allOther = Object.entries(counts)
-            .filter(row => row[0] > 9)
-            .map(row => row[1]);
+            .filter((row) => row[0] > 9)
+            .map((row) => row[1]);
           height =
             allOther.length > 0
               ? (allOther.reduce((a, b) => a + b) / total) * 100
@@ -155,7 +155,7 @@ const Barplot = ({ data, chartDim }) => {
     context.textAlign = "right";
 
     changeFontSize(context, fontSize["axisLabelFontSize"]);
-    subtypes.map(subtype => {
+    subtypes.map((subtype) => {
       context.save();
       context.translate(x(subtype) + barWidth / 2, y(0) + 7);
       context.rotate((322 * Math.PI) / 180);
@@ -185,7 +185,7 @@ const Barplot = ({ data, chartDim }) => {
         style={{
           width: chartDim["width"],
           height: chartDim["height"],
-          position: "relative"
+          position: "relative",
         }}
       >
         <div
@@ -193,7 +193,7 @@ const Barplot = ({ data, chartDim }) => {
           style={{
             position: "absolute",
             pointerEvents: "all",
-            display: "flex"
+            display: "flex",
           }}
         >
           <canvas id="barplotCanvas" />

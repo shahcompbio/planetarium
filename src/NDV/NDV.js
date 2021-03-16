@@ -22,7 +22,7 @@ const NDV = ({ data }) => {
   const target = useRef(null);
 
   const topTen = Object.entries(
-    _.countBy(metadata.map(row => row[initialState["clonotypeParam"]]))
+    _.countBy(metadata.map((row) => row[initialState["clonotypeParam"]]))
   )
     .sort(([, a], [, b]) => b - a)
     .slice(0, 10);
@@ -32,7 +32,7 @@ const NDV = ({ data }) => {
     return final;
   }, {});
 
-  const sampleData = metadata.filter(row =>
+  const sampleData = metadata.filter((row) =>
     sampleTen.hasOwnProperty(row[initialState["clonotypeParam"]])
   );
   const topTenNumbering = Object.keys(sampleTen).reduce((final, seq, index) => {
@@ -55,7 +55,7 @@ const NDV = ({ data }) => {
     "#b5762a",
     "#5aebed",
     "#8f8f3f",
-    "#ed1a1a"
+    "#ed1a1a",
   ];
   var colors = d3
     .scaleOrdinal()
@@ -72,7 +72,7 @@ const NDV = ({ data }) => {
           topTenNumbering: topTenNumbering,
           topTen: topTen,
           colors: colors,
-          clonotypes: clonotypes
+          clonotypes: clonotypes,
         }}
         reducer={dashboardReducer}
       >
@@ -95,7 +95,7 @@ const NDV = ({ data }) => {
               data={metadata}
               selectedClonotype={selectedClonotype["selected"]}
               hoveredClonotype={selectedClonotype["hover"]}
-              setSelectedClonotype={clonotype =>
+              setSelectedClonotype={(clonotype) =>
                 setSelectedClonotype({ ...clonotype })
               }
             />
@@ -104,7 +104,9 @@ const NDV = ({ data }) => {
               data={metadata}
               selectedSubtype={selectedSubtype["selected"]}
               hoveredSubtype={selectedSubtype["hover"]}
-              setSelectedSubtype={subtype => setSelectedSubtype({ ...subtype })}
+              setSelectedSubtype={(subtype) =>
+                setSelectedSubtype({ ...subtype })
+              }
             />
           </div>
           <div style={{ display: "flex" }}>
@@ -115,10 +117,10 @@ const NDV = ({ data }) => {
                   x1: 50,
                   x2: 500,
                   y1: 100,
-                  y2: 500
+                  y2: 500,
                 },
                 height: 500,
-                width: 750
+                width: 750,
               }}
               data={probabilities}
               selectedSubtype={
@@ -141,34 +143,14 @@ const NDV = ({ data }) => {
                   x1: 50,
                   y1: 50,
                   x2: 600,
-                  y2: 200
+                  y2: 200,
                 },
                 height: 400,
-                width: 650
+                width: 650,
               }}
             />
           </div>
           <div style={{ display: "flex" }}>
-            <Layout
-              chartName={"HISTOGRAM"}
-              data={probabilities}
-              dim={{
-                chart: {
-                  x1: 100,
-                  y1: 50,
-                  x2: 600,
-                  y2: 200
-                },
-                height: 300,
-                width: 650
-              }}
-              selectedSubtype={selectedSubtype}
-              selectedClonotype={selectedClonotype}
-              setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
-              setSelectedClonotype={clonotype =>
-                setSelectedClonotype(clonotype)
-              }
-            />
             <Layout
               chartName={"BARPLOT"}
               data={probabilities}
@@ -177,15 +159,35 @@ const NDV = ({ data }) => {
                   x1: 50,
                   y1: 50,
                   x2: 600,
-                  y2: 200
+                  y2: 200,
                 },
                 height: 300,
-                width: 600
+                width: 600,
               }}
               selectedSubtype={selectedSubtype}
               selectedClonotype={selectedClonotype}
-              setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
-              setSelectedClonotype={clonotype =>
+              setSelectedSubtype={(subtype) => setSelectedSubtype(subtype)}
+              setSelectedClonotype={(clonotype) =>
+                setSelectedClonotype(clonotype)
+              }
+            />
+            <Layout
+              chartName={"HISTOGRAM"}
+              data={probabilities}
+              dim={{
+                chart: {
+                  x1: 100,
+                  y1: 50,
+                  x2: 600,
+                  y2: 200,
+                },
+                height: 300,
+                width: 650,
+              }}
+              selectedSubtype={selectedSubtype}
+              selectedClonotype={selectedClonotype}
+              setSelectedSubtype={(subtype) => setSelectedSubtype(subtype)}
+              setSelectedClonotype={(clonotype) =>
                 setSelectedClonotype(clonotype)
               }
             />
@@ -203,7 +205,7 @@ const Popup = ({ selected, setSelected, type }) => (
       float: "right",
       right: "10px",
       top: "10px",
-      left: "auto"
+      left: "auto",
     }}
   >
     <div class="card">
