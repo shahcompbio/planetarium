@@ -5,6 +5,7 @@ import * as d3 from "d3";
 import "./App.css";
 import dashboardReducer, { initialState } from "../PlotState/dashboardReducer";
 import { DashboardProvider } from "../PlotState/dashboardState";
+import Heatmap from "../components/Heatmap/Heatmap";
 import Modal from "react-bootstrap/Modal";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Overlay from "react-bootstrap/Overlay";
@@ -62,6 +63,14 @@ const NDV = ({ data }) => {
     .domain([...types])
     .range([...colourList]);
 
+  const clonotypeLabels = Object.keys(sampleTen)
+    .sort(([, a], [, b]) => b - a)
+    .map((clonotype, index) => ({
+      value: clonotype,
+      label: `SEQ${index + 1} - ${clonotype}`,
+      color: colors(clonotype),
+    }));
+
   return (
     <div className="App">
       <DashboardProvider
@@ -110,7 +119,23 @@ const NDV = ({ data }) => {
             />
           </div>
           <div style={{ display: "flex" }}>
-            <Layout
+            <Heatmap
+              data={probabilities}
+              chartDim={{
+                height: 500,
+                width: 750,
+              }}
+              column={initialState["subtypeParam"]}
+              row={initialState["clonotypeParam"]}
+              highlightedColumn={
+                selectedSubtype["selected"] || selectedSubtype["hover"]
+              }
+              highlightedRow={
+                selectedClonotype["selected"] || selectedClonotype["hover"]
+              }
+              rowLabels={clonotypeLabels}
+            />
+            {/* <Layout
               chartName={"HEATMAP"}
               dim={{
                 chart: {
@@ -129,7 +154,7 @@ const NDV = ({ data }) => {
               selectedClonotype={
                 selectedClonotype["selected"] || selectedClonotype["hover"]
               }
-            />
+            /> */}
             <Layout
               chartName={"TABLE"}
               data={degs}
