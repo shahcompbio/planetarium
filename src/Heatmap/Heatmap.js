@@ -10,12 +10,12 @@ const HEATMAP_COLOR_SCALE = d3
   .scaleLinear()
   .range(["#ffec8b", "#d91e18"])
   .domain([0, 1]);
+const CELL_FONT = "normal 12px Helvetica";
 
 const COLUMN_LABEL_SPACE = 100;
 const ROW_LABEL_SPACE = 300;
-const LABEL_COLOR = "#000000";
 const DEFAULT_LABEL_COLOR = "#000000";
-const LABEL_FONT = "normal 12px Helvetica";
+const LABEL_FONT = "bold 12px Helvetica";
 
 const DataWrapper = ({
   data,
@@ -181,8 +181,6 @@ const drawLabels = (
   highlightedColumn,
   chartWidth
 ) => {
-  context.globalAlpha = 1;
-  context.fillStyle = LABEL_COLOR;
   context.font = LABEL_FONT;
 
   columnValues.map((columnData) => {
@@ -199,6 +197,14 @@ const drawLabels = (
     context.textAlign = "left";
     context.textBaseline = "bottom";
     context.fillStyle = color;
+    context.globalAlpha = isHighlighted(
+      highlightedColumn,
+      highlightedRow,
+      value,
+      undefined
+    )
+      ? 1
+      : 0.2;
 
     // artifact from NDV :(
     if (label.indexOf("/") !== -1) {
@@ -216,6 +222,14 @@ const drawLabels = (
     const { value, label, color } = rowData;
     context.font = "bold 12px Helvetica";
     context.fillStyle = color;
+    context.globalAlpha = isHighlighted(
+      highlightedColumn,
+      highlightedRow,
+      undefined,
+      value
+    )
+      ? 1
+      : 0.2;
 
     context.textAlign = "left";
     context.textBaseline = "middle";
@@ -250,15 +264,14 @@ const drawHeatmap = (
       const rowFreq = columnData[rowName];
       const yPos = rowScale(rowName);
 
-      if (highlightedColumn !== null || highlightedRow !== null) {
-        if (highlightedColumn === columnName || highlightedRow === rowName) {
-          context.globalAlpha = 1;
-        } else {
-          context.globalAlpha = 0.2;
-        }
-      } else {
-        context.globalAlpha = 1;
-      }
+      context.globalAlpha = isHighlighted(
+        highlightedColumn,
+        highlightedRow,
+        columnName,
+        rowName
+      )
+        ? 1
+        : 0.2;
 
       if (rowFreq) {
         context.fillStyle = HEATMAP_COLOR_SCALE(rowFreq / total);
@@ -269,7 +282,7 @@ const drawHeatmap = (
 
       if (rowFreq) {
         context.fillStyle = "black";
-        context.font = LABEL_FONT;
+        context.font = CELL_FONT;
         context.textAlign = "center";
         context.textBaseline = "middle";
         context.fillText(
@@ -282,4 +295,15 @@ const drawHeatmap = (
   });
 };
 
+const isHighlighted = (highlightedColumn, highlightedRow, column, row) => {
+  if (highlightedColumn !== null || highlightedRow !== null) {
+    if (highlightedColumn === column || highlightedRow === row) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return true;
+  }
+};
 export default DataWrapper;
