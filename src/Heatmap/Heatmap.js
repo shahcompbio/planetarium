@@ -5,10 +5,16 @@ import _ from "lodash";
 import { useDashboardState } from "../PlotState/dashboardState";
 import { useCanvas } from "../components/utils/useCanvas";
 
-const HEATMAP_COLOR = ["#ffec8b", "#d91e18"];
 const HEATMAP_NULL_COLOR = "#eeeeee";
+const HEATMAP_COLOR_SCALE = d3
+  .scaleLinear()
+  .range(["#ffec8b", "#d91e18"])
+  .domain([0, 1]);
 
-const X_PADDING = 50;
+const COLUMN_LABEL_SPACE = 100;
+const ROW_LABEL_SPACE = 300;
+const LABEL_COLOR = "#000000";
+const LABEL_FONT = "normal 12px Helvetica";
 
 const DataWrapper = ({
   data,
@@ -17,24 +23,16 @@ const DataWrapper = ({
   selectedClonotype,
 }) => {
   const [
-    {
-      clonotypeParam,
-      sampleTen,
-      topTenNumbering,
-      colors,
-      subtypeParam,
-      fontSize,
-    },
+    { clonotypeParam, sampleTen, colors, subtypeParam },
   ] = useDashboardState();
 
-  const topTenData = data.filter((record) =>
-    Object.keys(sampleTen).includes(record[clonotypeParam])
-  );
-
-  console.log(sampleTen);
-
-  // proper should be
-  // data, chartDim, column, row, highlightedhighlightedColumn, highlightedhighlightedRow
+  const rowLabels = Object.keys(sampleTen)
+    .sort(([, a], [, b]) => b - a)
+    .map((clonotype, index) => ({
+      value: clonotype,
+      label: `seq${index + 1} - ${clonotype}`,
+      color: colors(clonotype),
+    }));
 
   return (
     <Heatmap
@@ -44,7 +42,7 @@ const DataWrapper = ({
       row={clonotypeParam}
       highlightedColumn={selectedSubtype}
       highlightedRow={selectedClonotype}
-      rowLabels={Object.keys(sampleTen).sort(([, a], [, b]) => b - a)}
+      rowLabels={rowLabels}
     />
   );
 };
@@ -59,214 +57,89 @@ const Heatmap = ({
   columnLabels,
   rowLabels,
 }) => {
-  const [{ topTenNumbering, colors, fontSize }] = useDashboardState();
-
   const columnValues =
     columnLabels || _.uniq(data.map((record) => record[column])).sort();
   const rowValues =
-    rowLabels || _.uniq(data.map((record) => record[row])).sort();
-  const xAxis = d3
+    rowLabels.map((row) => row["value"]) ||
+    _.uniq(data.map((record) => record[row])).sort();
+  const chartWidth = chartDim["width"] - ROW_LABEL_SPACE;
+
+  const columnScale = d3
     .scaleBand()
     .domain(columnValues)
-    .range([chartDim["chart"]["x1"], chartDim["chart"]["x2"] - X_PADDING]);
-  const heatmapWidth =
-    (chartDim["chart"]["x2"] - chartDim["chart"]["x1"] - 50) /
-    columnValues.length;
+    .range([0, chartWidth])
+    .paddingInner(0.03);
 
-  const subTypes = data.reduce((final, current) => {
-    var allSamples = final;
-    const subtype = current[column];
-    allSamples[subtype] = final.hasOwnProperty(subtype)
-      ? allSamples[subtype] + 1
-      : 1;
-    final = allSamples;
-    return final;
-  }, {});
+  const rowScale = d3
+    .scaleBand()
+    .domain(rowValues)
+    .range([COLUMN_LABEL_SPACE, chartDim["height"]])
+    .paddingInner(0.03);
 
-  // var largestFreq = 0;
-  const subtypeStats = data.reduce(
-    (final, current) => {
-      const seq = current[row];
-
-      if (rowValues.includes(seq)) {
-        const subtype = current[column];
-
-        if (final[seq].hasOwnProperty(subtype)) {
-          final[seq][subtype] = final[seq][subtype] + 1;
-        } else {
-          final[seq][subtype] = 1;
-        }
-      }
-      // largestFreq =
-      //   final[seq][subtype] > largestFreq ? final[seq][subtype] : largestFreq;
-
-      return final;
-    },
-    {
-      // this initializes an empty map
-      ...rowValues.reduce((final, entry) => {
-        final[entry] = {};
-        return final;
-      }, {}),
-    }
+  const columnMap = rowValues.reduce(
+    (currMap, rowName) => ({ ...currMap, [rowName]: 0 }),
+    { total: 0 }
+  );
+  const initMap = columnValues.reduce(
+    (currMap, columnName) => ({ ...currMap, [columnName]: columnMap }),
+    {}
   );
 
-  const alphaIndexing = Object.entries(topTenNumbering)
-    .map((entry) => entry[1])
-    .sort((a, b) => a - b);
+  const freqMap = data.reduce((currMap, record) => {
+    const columnValue = record[column];
+    const rowValue = record[row];
+
+    if (currMap.hasOwnProperty(columnValue)) {
+      const currColumn = currMap[columnValue];
+      if (currColumn.hasOwnProperty(rowValue)) {
+        return {
+          ...currMap,
+          [columnValue]: {
+            ...currColumn,
+            [rowValue]: currColumn[rowValue] + 1,
+            total: currColumn["total"] + 1,
+          },
+        };
+      } else {
+        return {
+          ...currMap,
+          [columnValue]: { ...currColumn, total: currColumn["total"] + 1 },
+        };
+      }
+    }
+
+    return currMap;
+  }, initMap);
 
   const ref = useCanvas(
     (canvas) => {
       const context = canvas.getContext("2d");
-      drawLabels(context, highlightedRow);
-      drawHeatmap(context, chartDim, data, highlightedColumn, highlightedRow);
+      drawHeatmap(
+        context,
+        freqMap,
+        rowValues,
+        columnValues,
+        rowScale,
+        columnScale,
+        highlightedRow,
+        highlightedColumn
+      );
+      drawLabels(
+        context,
+        rowLabels,
+        columnValues,
+        rowScale,
+        columnScale,
+        highlightedRow,
+        highlightedColumn,
+        chartWidth
+      );
     },
     chartDim["width"],
     chartDim["height"],
     [highlightedColumn, highlightedRow]
   );
 
-  function drawLabels(context, highlightedRow) {
-    context.beginPath();
-    context.globalAlpha = 1;
-    context.fillStyle = "#000000";
-    context.font = "normal " + fontSize.axisLabelFontSize + "px Helvetica";
-
-    columnValues.forEach(function(d, index) {
-      context.save();
-      context.translate(
-        xAxis(d) + heatmapWidth / 2,
-        chartDim["chart"]["y1"] - 5
-      );
-      context.rotate((322 * Math.PI) / 180);
-      if (d.indexOf("/") !== -1) {
-        context.fillText(d.split("/")[0] + "/", 5, 0);
-        context.fillText(d.split("/")[1], 5, 10);
-      } else {
-        context.fillText(d, 5, 5);
-      }
-      context.restore();
-      context.fill();
-    });
-    const startingY = chartDim["chart"]["y1"];
-
-    const sequenceLength = Object.keys(subtypeStats).length;
-    const heatmaphighlightedRowSpace = 3;
-    const heatmapHeight =
-      (chartDim["chart"]["y2"] -
-        chartDim["chart"]["y1"] -
-        sequenceLength * heatmaphighlightedRowSpace) /
-      sequenceLength;
-
-    Object.keys(subtypeStats)
-      .sort((a, b) => {
-        return (
-          alphaIndexing.indexOf(topTenNumbering[a]) -
-          alphaIndexing.indexOf(topTenNumbering[b])
-        );
-      })
-      .map((sequence, index) => {
-        const yPos =
-          startingY +
-          heatmapHeight * index +
-          heatmaphighlightedRowSpace * index;
-        context.fillStyle = colors(sequence);
-        context.globalAlpha =
-          highlightedRow !== null && highlightedRow !== undefined
-            ? highlightedRow === sequence
-              ? 1
-              : 0.2
-            : 1;
-
-        context.font = "bold " + fontSize.axisLabelFontSize + "px Helvetica";
-
-        context.fillText(
-          topTenNumbering[sequence] + " - " + sequence,
-          chartDim["chart"]["x2"] - 50,
-          yPos + (3 * heatmapHeight) / 4
-        );
-      });
-  }
-
-  function drawHeatmap(
-    context,
-    allDim,
-    data,
-    highlightedColumn,
-    highlightedRow
-  ) {
-    const dimensions = allDim;
-    const columnValues = Object.keys(subTypes);
-    const freqColouring = d3
-      .scaleLinear()
-      .range(HEATMAP_COLOR)
-      .domain([0, 96]);
-
-    const sequenceLength = Object.keys(subtypeStats).length;
-    const heatmaphighlightedRowSpace = 3;
-    const heatmapHeight =
-      (dimensions["chart"]["y2"] -
-        dimensions["chart"]["y1"] -
-        sequenceLength * heatmaphighlightedRowSpace) /
-      sequenceLength;
-    const startingY = dimensions["chart"]["y1"];
-
-    Object.keys(subtypeStats)
-      .sort((a, b) => {
-        return (
-          alphaIndexing.indexOf(topTenNumbering[a]) -
-          alphaIndexing.indexOf(topTenNumbering[b])
-        );
-      })
-      .map((sequence, index) => {
-        const yPos =
-          startingY +
-          heatmapHeight * index +
-          heatmaphighlightedRowSpace * index;
-
-        context.font = "normal " + fontSize.axisLabelFontSize + "px Helvetica";
-
-        const seqSubtypes = subtypeStats[sequence];
-        columnValues.map((subtype) => {
-          context.globalAlpha =
-            (highlightedColumn !== null || highlightedRow !== null) &&
-            (highlightedColumn !== undefined || highlightedRow !== undefined)
-              ? highlightedColumn === subtype || highlightedRow === sequence
-                ? 1
-                : 0.2
-              : 1;
-
-          if (seqSubtypes.hasOwnProperty(subtype)) {
-            context.fillStyle = freqColouring(subtypeStats[sequence][subtype]);
-          } else {
-            context.fillStyle = HEATMAP_NULL_COLOR;
-          }
-
-          context.fillRect(
-            xAxis(subtype),
-            yPos,
-            heatmapWidth - 3,
-            heatmapHeight
-          );
-
-          if (seqSubtypes.hasOwnProperty(subtype)) {
-            context.fillStyle = "black";
-            context.globalAlpha =
-              highlightedColumn !== null && highlightedColumn !== undefined
-                ? highlightedColumn === subtype
-                  ? 1
-                  : 0.2
-                : 1;
-            const freq = subtypeStats[sequence][subtype];
-            const freqTextX =
-              freq > 9
-                ? xAxis(subtype) + (heatmapWidth - 15) / 2
-                : xAxis(subtype) + (heatmapWidth - 6) / 2;
-            context.fillText(freq, freqTextX, yPos + heatmapHeight / 2 + 5);
-          }
-        });
-      });
-  }
   return (
     <div>
       <div
@@ -290,4 +163,114 @@ const Heatmap = ({
     </div>
   );
 };
+
+const drawLabels = (
+  context,
+  rowValues,
+  columnValues,
+  rowScale,
+  columnScale,
+  highlightedRow,
+  highlightedColumn,
+  chartWidth
+) => {
+  context.globalAlpha = 1;
+  context.fillStyle = LABEL_COLOR;
+  context.font = LABEL_FONT;
+
+  columnValues.map((columnName) => {
+    context.save();
+    context.translate(
+      columnScale(columnName) + columnScale.bandwidth() / 2,
+      COLUMN_LABEL_SPACE
+    );
+
+    context.rotate((322 * Math.PI) / 180);
+
+    context.textAlign = "left";
+    context.textBaseline = "bottom";
+
+    // artifact from NDV :(
+    if (columnName.indexOf("/") !== -1) {
+      context.fillText(columnName.split("/")[0] + "/", 0, 0);
+      context.fillText(columnName.split("/")[1], 10, 10);
+    } else {
+      context.fillText(columnName, 0, 0);
+    }
+
+    context.restore();
+    context.fill();
+  });
+
+  rowValues.map((rowData) => {
+    console.log(rowData);
+    const { value, label, color } = rowData;
+    context.font = "bold 12px Helvetica";
+    context.fillStyle = color;
+
+    context.textAlign = "left";
+    context.textBaseline = "middle";
+
+    context.fillText(
+      label,
+      chartWidth + 5,
+      rowScale(value) + rowScale.bandwidth() / 2
+    );
+  });
+};
+
+const drawHeatmap = (
+  context,
+  freqMap,
+  rowValues,
+  columnValues,
+  rowScale,
+  columnScale,
+  highlightedRow,
+  highlightedColumn
+) => {
+  const cellWidth = columnScale.bandwidth();
+  const cellHeight = rowScale.bandwidth();
+
+  columnValues.map((columnName) => {
+    const columnData = freqMap[columnName];
+    const xPos = columnScale(columnName);
+    const total = columnData["total"];
+
+    rowValues.map((rowName) => {
+      const rowFreq = columnData[rowName];
+      const yPos = rowScale(rowName);
+
+      if (highlightedColumn !== null || highlightedRow !== null) {
+        if (highlightedColumn === columnName || highlightedRow === rowName) {
+          context.globalAlpha = 1;
+        } else {
+          context.globalAlpha = 0.2;
+        }
+      } else {
+        context.globalAlpha = 1;
+      }
+
+      if (rowFreq) {
+        context.fillStyle = HEATMAP_COLOR_SCALE(rowFreq / total);
+      } else {
+        context.fillStyle = HEATMAP_NULL_COLOR;
+      }
+      context.fillRect(xPos, yPos, cellWidth, cellHeight);
+
+      if (rowFreq) {
+        context.fillStyle = "black";
+        context.font = LABEL_FONT;
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.fillText(
+          `${rowFreq} (${Math.round((rowFreq * 100) / total)}%)`,
+          xPos + cellWidth / 2,
+          yPos + cellHeight / 2
+        );
+      }
+    });
+  });
+};
+
 export default DataWrapper;
