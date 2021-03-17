@@ -95,16 +95,20 @@ const NDV = ({ data }) => {
               data={metadata}
               selectedClonotype={selectedClonotype["selected"]}
               hoveredClonotype={selectedClonotype["hover"]}
-              setSelectedClonotype={clonotype =>
-                setSelectedClonotype({ ...clonotype })
-              }
+              setSelectedClonotype={clonotype => {
+                setSelectedSubtype(initialState["defaultSelectedObject"]);
+                setSelectedClonotype({ ...clonotype });
+              }}
             />
             <Layout
               chartName={"SUBTYPEUMAP"}
               data={metadata}
               selectedSubtype={selectedSubtype["selected"]}
               hoveredSubtype={selectedSubtype["hover"]}
-              setSelectedSubtype={subtype => setSelectedSubtype({ ...subtype })}
+              setSelectedSubtype={subtype => {
+                setSelectedClonotype(initialState["defaultSelectedObject"]);
+                setSelectedSubtype({ ...subtype });
+              }}
             />
           </div>
           <div style={{ display: "flex" }}>
@@ -150,26 +154,6 @@ const NDV = ({ data }) => {
           </div>
           <div style={{ display: "flex" }}>
             <Layout
-              chartName={"HISTOGRAM"}
-              data={probabilities}
-              dim={{
-                chart: {
-                  x1: 100,
-                  y1: 50,
-                  x2: 600,
-                  y2: 200
-                },
-                height: 300,
-                width: 650
-              }}
-              selectedSubtype={selectedSubtype}
-              selectedClonotype={selectedClonotype}
-              setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
-              setSelectedClonotype={clonotype =>
-                setSelectedClonotype(clonotype)
-              }
-            />
-            <Layout
               chartName={"BARPLOT"}
               data={probabilities}
               dim={{
@@ -181,6 +165,26 @@ const NDV = ({ data }) => {
                 },
                 height: 300,
                 width: 600
+              }}
+              selectedSubtype={selectedSubtype}
+              selectedClonotype={selectedClonotype}
+              setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
+              setSelectedClonotype={clonotype =>
+                setSelectedClonotype(clonotype)
+              }
+            />{" "}
+            <Layout
+              chartName={"HISTOGRAM"}
+              data={probabilities}
+              dim={{
+                chart: {
+                  x1: 100,
+                  y1: 50,
+                  x2: 600,
+                  y2: 200
+                },
+                height: 300,
+                width: 650
               }}
               selectedSubtype={selectedSubtype}
               selectedClonotype={selectedClonotype}

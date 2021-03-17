@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import * as d3 from "d3";
 import _ from "lodash";
 
@@ -14,6 +14,7 @@ const SubtypeUmap = ({
   setSelectedSubtype
 }) => {
   const [{ xParam, yParam, subtypeParam, fontSize }] = useDashboardState();
+
   const [drawReady, setDrawReady] = useState(false);
   const [context, saveContext] = useState(null);
 
@@ -53,6 +54,7 @@ const SubtypeUmap = ({
       "#D53E4F",
       "#9E0142"
     ]);
+
   useEffect(() => {
     if (data.length > 0) {
       init(data, chartDim);
@@ -80,16 +82,6 @@ const SubtypeUmap = ({
     }
   }, [selectedSubtype, hoveredSubtype, context]);
 
-  useEffect(() => {
-    if (context !== null) {
-      drawAxis(context, x, y, chartDim["chart"]);
-      drawPoints(data, chartDim, context, x, y);
-      appendSubtypeLabels(subTypes, x, y, yParam, xParam, context, colors);
-
-      appendLegend(colors, types, context, x, y);
-    }
-  }, [drawReady]);
-
   function init(data, chartDim) {
     var canvas = d3.select("#subTypeUmapCanvas");
 
@@ -98,7 +90,6 @@ const SubtypeUmap = ({
     currContext.fillStyle = "white";
     currContext.fillRect(0, 0, chartDim.width, chartDim.height);
     saveContext(currContext);
-    setDrawReady(true);
   }
 
   function drawPoints(data, chartDim, context, x, y, selection) {
@@ -194,24 +185,29 @@ const SubtypeUmap = ({
       colors,
       selection
     );
-    appendLegend(colors, types, context, x, y);
+    appendLegend(colors, types, context, x, y, selectedSubtype, hoveredSubtype);
   }
-  function appendLegend(colors, subTypes, context, x, y) {
+  function appendLegend(colors, subTypes, context, x, y, selected, hovered) {
     const mouseInteractions = element =>
       element
         .on("mouseover", function(d) {
+          console.log("in", selected);
+          d3.event.stopPropagation();
           setSelectedSubtype({
             hover: d,
             selected: selectedSubtype
           });
         })
         .on("mousedown", function(d, i) {
+          d3.event.stopPropagation();
           setSelectedSubtype({
             hover: null,
             selected: d
           });
         })
         .on("mouseout", function(event, d) {
+          console.log("out", selected);
+          d3.event.stopPropagation();
           setSelectedSubtype({
             hover: null,
             selected: selectedSubtype
@@ -219,11 +215,25 @@ const SubtypeUmap = ({
         });
 
     var legend = d3.select("#subTypeUmapLegend");
-    legend.selectAll("*").remove();
-    legend = legend.append("g");
-    legend
-      .selectAll("rect")
-      .data(subTypes)
+
+    const legendRect = legend.selectAll("rect").data(subTypes);
+
+    const legendEnter = legendRect
+      .append("rect")
+      .attr("width", fontSize.legendSquare)
+      .attr("height", fontSize.legendSquare)
+      .attr("x", function(d) {
+        return chartDim["legend"]["x1"];
+      })
+      .attr("y", function(d, i) {
+        return chartDim["legend"].y1 + i * 20 + 65;
+      })
+      .attr("fill", function(d) {
+        return colors(d);
+      })
+      .attr("cursor", "pointer");
+
+    legendRect
       .enter()
       .append("rect")
       .attr("width", fontSize.legendSquare)
@@ -240,9 +250,28 @@ const SubtypeUmap = ({
       .attr("cursor", "pointer")
       .call(mouseInteractions);
 
-    legend
-      .selectAll("text")
-      .data(subTypes)
+    const legendText = legend.selectAll("text").data(subTypes);
+    const legendTextEnter = legendText
+      .append("text")
+      .attr("x", function(d) {
+        return chartDim["legend"].x1 + 13;
+      })
+      .attr("y", function(d, i) {
+        return chartDim["legend"].y1 + i * 20 + 70;
+      })
+      .attr("dy", ".35em")
+      .text(function(d) {
+        return d;
+      })
+      .attr("font", "Helvetica")
+      .attr("font-size", fontSize.legendFontSize)
+      .attr("font-weight", "500")
+      .attr("fill", function(d) {
+        return "#000000";
+      })
+      .attr("cursor", "pointer");
+
+    legendText
       .enter()
       .append("text")
       .attr("x", function(d) {
@@ -264,6 +293,7 @@ const SubtypeUmap = ({
       .attr("cursor", "pointer")
       .call(mouseInteractions);
   }
+
   function filterOutliers(coords, quantiles) {
     const sortedCollection = coords.slice().sort((a, b) => a - b); //copy array fast and sort
 

@@ -27,6 +27,7 @@ export function drawPoint(
   context.fillStyle = fill;
   context.fill();
 }
+
 const Umap = ({
   data,
   chartDim,
@@ -88,9 +89,6 @@ const Umap = ({
   useEffect(() => {
     if (context) {
       clearAll(context, chartDim);
-      d3.select("#umapLegend")
-        .selectAll("*")
-        .remove();
       reDraw(
         context,
         x,
@@ -101,7 +99,7 @@ const Umap = ({
         colors,
         topTenNumbering
       );
-      drawLegend(context);
+      //  drawLegend(context);
     }
   }, [radiusAdjust]);
 
@@ -373,7 +371,7 @@ const Umap = ({
         ? true
         : false;
 
-    sortedmerge.forEach(point => {
+    sortedmerge.map(point => {
       const fill = selectedClonotype ? "grey" : colors(point[clonotypeParam]);
       context.globalAlpha = selectedClonotype ? 0.5 : 1;
       drawPoint(
@@ -393,7 +391,7 @@ const Umap = ({
     if (selectedClonotype) {
       sortedmerge
         .filter(row => row[clonotypeParam] === selectedClonotype)
-        .forEach(point => {
+        .map(point => {
           const fill = colors(point[clonotypeParam]);
           drawPoint(
             context,
@@ -444,18 +442,24 @@ const Umap = ({
       topTenNumbering,
       selectedClonotype
     );
-    drawLegend(context);
+    drawLegend(context, selectedClonotype);
+    //  requestAnimationFrame(reDraw);
   }
-  function drawLegend(context) {
+  function drawLegend(context, selected) {
+    console.log(selected);
     const mouseInteractions = element =>
       element
         .on("mouseover", function(d) {
+          console.log(selected);
+          console.log("mouseovers");
           setSelectedClonotype({
             hover: d[0],
             selected: selectedClonotype
           });
         })
         .on("mousedown", function(d, i) {
+          console.log(selected);
+          d3.event.stopPropagation();
           setSelectedClonotype({
             hover: null,
             selected: d[0]
@@ -511,7 +515,7 @@ const Umap = ({
       .attr("cursor", "pointer")
       .call(mouseInteractions);
   }
-  function init(data, chartDim) {
+  function init(data, chartDim, selectedClonotype) {
     var canvas = d3.select("#umapCanvas");
     var currContext = canvasInit(canvas, chartDim.width, chartDim.height);
 
@@ -530,7 +534,7 @@ const Umap = ({
       colors,
       topTenNumbering
     );
-    drawLegend(currContext);
+    //  drawLegend(currContext, selectedClonotype);
   }
 
   return (
