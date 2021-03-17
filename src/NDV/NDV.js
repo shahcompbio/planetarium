@@ -104,18 +104,20 @@ const NDV = ({ data }) => {
               data={metadata}
               selectedClonotype={selectedClonotype["selected"]}
               hoveredClonotype={selectedClonotype["hover"]}
-              setSelectedClonotype={(clonotype) =>
-                setSelectedClonotype({ ...clonotype })
-              }
+              setSelectedClonotype={(clonotype) => {
+                setSelectedSubtype(initialState["defaultSelectedObject"]);
+                setSelectedClonotype({ ...clonotype });
+              }}
             />
             <Layout
               chartName={"SUBTYPEUMAP"}
               data={metadata}
               selectedSubtype={selectedSubtype["selected"]}
               hoveredSubtype={selectedSubtype["hover"]}
-              setSelectedSubtype={(subtype) =>
-                setSelectedSubtype({ ...subtype })
-              }
+              setSelectedSubtype={(subtype) => {
+                setSelectedClonotype(initialState["defaultSelectedObject"]);
+                setSelectedSubtype({ ...subtype });
+              }}
             />
           </div>
           <div style={{ display: "flex" }}>
@@ -195,7 +197,7 @@ const NDV = ({ data }) => {
               setSelectedClonotype={(clonotype) =>
                 setSelectedClonotype(clonotype)
               }
-            />
+            />{" "}
             <Layout
               chartName={"HISTOGRAM"}
               data={probabilities}
