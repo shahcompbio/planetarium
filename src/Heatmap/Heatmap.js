@@ -8,7 +8,7 @@ const clearAll = (context, chartDim) =>
   context.clearRect(
     0,
     0,
-    chartDim["chart"].x2 + 100,
+    chartDim["chart"].x2 + 150,
     chartDim["chart"].y2 + 50
   );
 
