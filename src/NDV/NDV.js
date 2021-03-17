@@ -82,9 +82,12 @@ const NDV = ({ data }) => {
               selected={
                 selectedClonotype["selected"] || selectedSubtype["selected"]
               }
-              setSelected={() => {
-                setSelectedClonotype(initialState["defaultSelectedObject"]);
-                setSelectedSubtype(initialState["defaultSelectedObject"]);
+              setSelected={reset => {
+                if (reset) {
+                  console.log("reset");
+                  setSelectedClonotype(initialState["defaultSelectedObject"]);
+                  setSelectedSubtype(initialState["defaultSelectedObject"]);
+                }
               }}
               type={selectedClonotype["selected"] ? "Clonotype" : "Subtype"}
             />
@@ -96,7 +99,7 @@ const NDV = ({ data }) => {
               selectedClonotype={selectedClonotype["selected"]}
               hoveredClonotype={selectedClonotype["hover"]}
               setSelectedClonotype={clonotype => {
-                setSelectedSubtype(initialState["defaultSelectedObject"]);
+                //  setSelectedSubtype(initialState["defaultSelectedObject"]);
                 setSelectedClonotype({ ...clonotype });
               }}
             />
@@ -106,7 +109,7 @@ const NDV = ({ data }) => {
               selectedSubtype={selectedSubtype["selected"]}
               hoveredSubtype={selectedSubtype["hover"]}
               setSelectedSubtype={subtype => {
-                setSelectedClonotype(initialState["defaultSelectedObject"]);
+                //  setSelectedClonotype(initialState["defaultSelectedObject"]);
                 setSelectedSubtype({ ...subtype });
               }}
             />
@@ -172,7 +175,7 @@ const NDV = ({ data }) => {
               setSelectedClonotype={clonotype =>
                 setSelectedClonotype(clonotype)
               }
-            />{" "}
+            />
             <Layout
               chartName={"HISTOGRAM"}
               data={probabilities}
@@ -219,7 +222,7 @@ const Popup = ({ selected, setSelected, type }) => (
             type="button"
             class="close"
             aria-label="Close"
-            onClick={setSelected}
+            onClick={() => setSelected(true)}
           >
             <span aria-hidden="true">&times;</span>
           </button>
