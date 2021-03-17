@@ -185,15 +185,12 @@ const SubtypeUmap = ({
       colors,
       selection
     );
-    //    console.log(selectedSubtype);
-    //    console.log(hoveredSubtype);
-    appendLegend(colors, types, context, x, y, selectedSubtype, hoveredSubtype);
+    appendLegend(colors, types, context, x, y);
   }
-  function appendLegend(colors, subTypes, context, x, y, selected, hovered) {
+  function appendLegend(colors, subTypes, context, x, y) {
     const mouseInteractions = element =>
       element
         .on("mouseenter", function(d) {
-          console.log("in", selected);
           d3.event.stopPropagation();
           setSelectedSubtype({
             hover: d,
@@ -211,7 +208,7 @@ const SubtypeUmap = ({
           d3.event.stopPropagation();
           setSelectedSubtype({
             hover: null,
-            selected: selected
+            selected: selectedSubtype
           });
         });
 
@@ -248,8 +245,8 @@ const SubtypeUmap = ({
       .attr("fill", function(d) {
         return colors(d);
       })
-      .attr("cursor", "pointer");
-    //  .call(mouseInteractions);
+      .attr("cursor", "pointer")
+      .call(mouseInteractions);
 
     const legendText = legend.selectAll("text").data(subTypes);
     const legendTextEnter = legendText

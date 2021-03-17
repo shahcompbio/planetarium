@@ -99,7 +99,6 @@ const Umap = ({
         colors,
         topTenNumbering
       );
-      //  drawLegend(context);
     }
   }, [radiusAdjust]);
 
@@ -442,23 +441,20 @@ const Umap = ({
       topTenNumbering,
       selectedClonotype
     );
-    drawLegend(context, selectedClonotype);
+    drawLegend(context);
     //  requestAnimationFrame(reDraw);
   }
-  function drawLegend(context, selected) {
-    console.log(selected);
+  function drawLegend(context) {
     const mouseInteractions = element =>
       element
-        .on("mouseover", function(d) {
-          console.log(selected);
-          console.log("mouseovers");
+        .on("mouseenter", function(d) {
+          console.log("mopsue", d[0]);
           setSelectedClonotype({
             hover: d[0],
             selected: selectedClonotype
           });
         })
         .on("mousedown", function(d, i) {
-          console.log(selected);
           d3.event.stopPropagation();
           setSelectedClonotype({
             hover: null,
@@ -472,11 +468,30 @@ const Umap = ({
           });
         });
     var legend = d3.select("#umapLegend");
-    legend.select("*").remove();
-    legend = legend.append("g");
     legend
-      .selectAll("rect")
-      .data(topTen)
+      .selectAll("text")
+      .on("mouseenter", null)
+      .on("mousedown", null)
+      .on("mouseout", null);
+    legend.selectAll("*").remove();
+
+    const legendRect = legend.selectAll("rect").data(topTen);
+
+    const legendRectEnter = legendRect
+      .append("rect")
+      .attr("width", fontSize.legendSquare)
+      .attr("height", fontSize.legendSquare)
+      .attr("x", function(d) {
+        return chartDim["legend"].x1 + 5;
+      })
+      .attr("y", function(d, i) {
+        return i * 20 + chartDim["legend"].y1 + 70;
+      })
+      .attr("fill", function(d) {
+        return colors(d[0]);
+      });
+
+    legendRect
       .enter()
       .append("rect")
       .attr("width", fontSize.legendSquare)
@@ -492,9 +507,31 @@ const Umap = ({
       })
       .call(mouseInteractions);
 
-    legend
-      .selectAll("text")
-      .data(topTen)
+    const legendText = legend.selectAll("text").data(topTen);
+
+    legendText
+      .append("text")
+      .attr("x", function(d) {
+        return chartDim["legend"].x1 + 20;
+      })
+      .attr("y", function(d, i) {
+        return i * 20 + chartDim["legend"].y1 + 75;
+      })
+      .attr("dy", ".35em")
+      .text(function(d) {
+        return topTenNumbering[d[0]] + " - " + d[0] + " - " + d[1];
+      })
+      .attr("font-weight", "700")
+      .attr("font-size", fontSize.legendFontSize + "px")
+      .attr("fill", function(d) {
+        return colors(d[0]);
+      })
+      .attr("cursor", "pointer")
+      .on("mouseenter", null)
+      .on("mousedown", null)
+      .on("mouseout", null);
+
+    legendText
       .enter()
       .append("text")
       .attr("x", function(d) {
@@ -534,7 +571,6 @@ const Umap = ({
       colors,
       topTenNumbering
     );
-    //  drawLegend(currContext, selectedClonotype);
   }
 
   return (

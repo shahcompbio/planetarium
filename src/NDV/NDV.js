@@ -91,12 +91,9 @@ const NDV = ({ data }) => {
               selected={
                 selectedClonotype["selected"] || selectedSubtype["selected"]
               }
-              setSelected={(reset) => {
-                if (reset) {
-                  console.log("reset");
-                  setSelectedClonotype(initialState["defaultSelectedObject"]);
-                  setSelectedSubtype(initialState["defaultSelectedObject"]);
-                }
+              setSelected={() => {
+                setSelectedClonotype(initialState["defaultSelectedObject"]);
+                setSelectedSubtype(initialState["defaultSelectedObject"]);
               }}
               type={selectedClonotype["selected"] ? "Clonotype" : "Subtype"}
             />
@@ -108,7 +105,9 @@ const NDV = ({ data }) => {
               selectedClonotype={selectedClonotype["selected"]}
               hoveredClonotype={selectedClonotype["hover"]}
               setSelectedClonotype={(clonotype) => {
-                //  setSelectedSubtype(initialState["defaultSelectedObject"]);
+                if (clonotype["selected"]) {
+                  setSelectedSubtype(initialState["defaultSelectedObject"]);
+                }
                 setSelectedClonotype({ ...clonotype });
               }}
             />
@@ -118,7 +117,9 @@ const NDV = ({ data }) => {
               selectedSubtype={selectedSubtype["selected"]}
               hoveredSubtype={selectedSubtype["hover"]}
               setSelectedSubtype={(subtype) => {
-                //  setSelectedClonotype(initialState["defaultSelectedObject"]);
+                if (subtype["selected"]) {
+                  setSelectedClonotype(initialState["defaultSelectedObject"]);
+                }
                 setSelectedSubtype({ ...subtype });
               }}
             />
@@ -247,7 +248,7 @@ const Popup = ({ selected, setSelected, type }) => (
             type="button"
             class="close"
             aria-label="Close"
-            onClick={() => setSelected(true)}
+            onClick={setSelected}
           >
             <span aria-hidden="true">&times;</span>
           </button>
