@@ -141,26 +141,6 @@ const NDV = ({ data }) => {
               }
               rowLabels={clonotypeLabels}
             />
-            {/* <Layout
-              chartName={"HEATMAP"}
-              dim={{
-                chart: {
-                  x1: 50,
-                  x2: 500,
-                  y1: 100,
-                  y2: 500,
-                },
-                height: 500,
-                width: 750,
-              }}
-              data={probabilities}
-              selectedSubtype={
-                selectedSubtype["selected"] || selectedSubtype["hover"]
-              }
-              selectedClonotype={
-                selectedClonotype["selected"] || selectedClonotype["hover"]
-              }
-            /> */}
             <Layout
               chartName={"TABLE"}
               data={degs}
