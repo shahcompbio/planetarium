@@ -17,9 +17,8 @@ const tooltip = d3Tip()
 const Info = ({ name, direction }) => {
   const info = d3.select("#" + name + "-info");
   info.call(tooltip);
-  console.log((infoText[name]["text"].match(/<br>/g) || []).length);
   const height =
-    (infoText[name]["text"].match(/<br>/g) || []).length * 10.66 - 70;
+    (infoText[name]["text"].match(/<br>/g) || []).length * 10.66 - 50;
   d3.select("#" + name + "-info")
     .on("mouseover", function(d) {
       tooltip
