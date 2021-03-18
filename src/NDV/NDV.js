@@ -198,6 +198,9 @@ const NDV = ({ data }) => {
                 height: 300,
                 width: 650,
               }}
+              highlighted={
+                selectedClonotype["hover"] || selectedClonotype["selected"]
+              }
               selectedSubtype={selectedSubtype}
               selectedClonotype={selectedClonotype}
               setSelectedSubtype={(subtype) => setSelectedSubtype(subtype)}
