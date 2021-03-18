@@ -44,7 +44,6 @@ const DataWrapper = ({ data, chartDim }) => {
     return { ...countMap, [subtype]: countFreq };
   }, {});
 
-  console.log(countedClonotypes);
   return (
     <StackedBarProportion
       data={countedClonotypes}
@@ -65,7 +64,7 @@ const StackedBarProportion = ({ data, chartDim, barValues }) => {
     .scaleBand()
     .domain(categoryValues)
     .range([0, chartWidth])
-    .paddingInner(0.2);
+    .paddingInner(0.03);
 
   const barScale = d3
     .scaleLinear()
@@ -90,10 +89,6 @@ const StackedBarProportion = ({ data, chartDim, barValues }) => {
         barScale,
         colors
       );
-      // drawLegend(context);
-      // drawBars(context);
-      // drawAxisLabels(context);
-      // drawYAxisLabels(context);
     },
     chartDim["width"],
     chartDim["height"],
@@ -143,13 +138,6 @@ const drawBars = (
         context.fillStyle = colors(bValue);
         const barHeight = barScale(categoryData[bValue] / total);
 
-        console.log(
-          currHeight,
-          barHeight,
-          bValue,
-          categoryData[bValue] / total,
-          barScale(categoryData[bValue] / total)
-        );
         context.fillRect(
           xPos,
           currHeight - barHeight,
@@ -166,7 +154,7 @@ const drawBars = (
 const StackedBar = ({ chartName, data, chartDim }) => {
   const [{ clonotypeParam, subtypeParam, fontSize }] = useDashboardState();
 
-  const barWidth = 60;
+  const barWidth = 67;
   const groupedData = _.groupBy(data, subtypeParam);
   // console.log(groupedData);
   const subtypes = Object.keys(groupedData).sort();
@@ -177,7 +165,7 @@ const StackedBar = ({ chartName, data, chartDim }) => {
     const hitList = Object.entries(groupedClonotypes).map(
       cellHits => cellHits[1].length
     );
-    // console.log(hitList);
+
     hitList.forEach(x => (counter[x] = (counter[x] || 0) + 1));
     final[subtype] = {
       total: hitList.length,
@@ -186,7 +174,6 @@ const StackedBar = ({ chartName, data, chartDim }) => {
     return final;
   }, []);
 
-  // console.log(stackedBarData);
   // X axis
   const x = d3
     .scaleBand()
@@ -238,7 +225,7 @@ const StackedBar = ({ chartName, data, chartDim }) => {
         }
         context.fillStyle = colors(key);
         context.fillRect(
-          x(subtype) - subIndex * 3,
+          x(subtype),
           y(height + currentHeight),
           barWidth,
           y(0) - y(height)
@@ -255,7 +242,7 @@ const StackedBar = ({ chartName, data, chartDim }) => {
       .map((key, index) => {
         context.fillStyle = colors(key);
         context.fillRect(
-          chartDim["chart"]["x2"] - 40,
+          chartDim["chart"]["x2"] - 20,
           chartDim["chart"]["y1"] + index * 14 + index * 2,
           9,
           9
@@ -264,7 +251,7 @@ const StackedBar = ({ chartName, data, chartDim }) => {
         const legendText = key + 1 >= 10 ? "≥10" : key + 1;
         context.fillText(
           legendText,
-          chartDim["chart"]["x2"] - 25,
+          chartDim["chart"]["x2"] - 5,
           chartDim["chart"]["y1"] + index * 14 + index * 2 + 8
         );
         context.fill();
@@ -290,7 +277,7 @@ const StackedBar = ({ chartName, data, chartDim }) => {
       changeFontSize(context, fontSize["tickLabelFontSize"]);
       //  context.moveTo(chartDim["margin"]["left"] + 17, y(d));
       //  context.lineTo(chartDim["margin"]["left"] + 27, y(d));
-      context.fillText(d, chartDim["margin"]["left"] + 15, y(d));
+      context.fillText(d, chartDim["margin"]["left"] + 2, y(d));
       context.stroke();
     });
   }
@@ -344,6 +331,7 @@ const StackedBar = ({ chartName, data, chartDim }) => {
             <div
               class="card-title"
               style={{
+                pointerEvents: "all",
                 width: "100%",
                 height: 80,
                 marginLeft: -50,

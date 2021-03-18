@@ -123,7 +123,10 @@ const Heatmap = ({
   );
 
   return (
-    <div class="card" style={{ margin: 10, paddingBottom: 10 }}>
+    <div
+      class="card"
+      style={{ margin: 10, paddingBottom: 10, paddingLeft: 10 }}
+    >
       <div
         class="container"
         style={{
