@@ -3,14 +3,17 @@ import * as d3 from "d3";
 import _ from "lodash";
 import { useDashboardState } from "../PlotState/dashboardState";
 
+import Info from "../Info/Info.js";
+import infoText from "../Info/InfoText.js";
+
 import { canvasInit, changeFontSize } from "../DrawingUtils/utils.js";
 
-const Barplot = ({ data, chartDim }) => {
+const Barplot = ({ chartName, data, chartDim }) => {
   const [{ clonotypeParam, subtypeParam, fontSize }] = useDashboardState();
 
   const [drawReady, setDrawReady] = useState(false);
   const [context, saveContext] = useState(null);
-  const barWidth = 50;
+  const barWidth = 60;
   const groupedData = _.groupBy(data, subtypeParam);
   const subtypes = Object.keys(groupedData);
   const stackedBarData = subtypes.reduce((final, subtype) => {
@@ -59,7 +62,7 @@ const Barplot = ({ data, chartDim }) => {
     context.beginPath();
     context.lineWidth = 1;
     context.strokeStyle = "black";
-    subtypes.forEach(subtype => {
+    subtypes.forEach((subtype, subIndex) => {
       var currentHeight = 0;
       [...Array.from(Array(10).keys())].map((key, index) => {
         const { counts, total } = stackedBarData[subtype];
@@ -77,7 +80,7 @@ const Barplot = ({ data, chartDim }) => {
         }
         context.fillStyle = colors(key);
         context.fillRect(
-          x(subtype),
+          x(subtype) - subIndex * 3,
           y(height + currentHeight),
           barWidth,
           y(0) - y(height)
@@ -180,23 +183,44 @@ const Barplot = ({ data, chartDim }) => {
   }
 
   return (
-    <div class="card" style={{ margin: 10 }}>
+    <div class="card" style={{ margin: 10, width: chartDim["width"] }}>
       <div
+        class="container"
         style={{
           width: chartDim["width"],
           height: chartDim["height"],
           position: "relative"
         }}
       >
-        <div
-          id="barchart"
-          style={{
-            position: "absolute",
-            pointerEvents: "all",
-            display: "flex"
-          }}
-        >
-          <canvas id="barplotCanvas" />
+        <div class="row">
+          <div class="col-9">
+            <div
+              id="barchart"
+              style={{
+                pointerEvents: "all",
+                display: "flex",
+                paddingRight: 0
+              }}
+            >
+              <canvas id="barplotCanvas" />
+            </div>
+          </div>
+          <div class="col-3">
+            <div
+              class="card-title"
+              style={{
+                width: "100%",
+                height: 80,
+                marginLeft: -50,
+                paddingTop: 350,
+                textAlign: "left"
+              }}
+            >
+              {infoText[chartName]["title"] + "    "}
+
+              <Info name={chartName} direction="s" />
+            </div>
+          </div>
         </div>
       </div>
     </div>

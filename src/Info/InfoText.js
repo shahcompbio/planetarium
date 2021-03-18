@@ -23,6 +23,11 @@ const infoText = {
     title: "Clonotype Expansion",
     text:
       "Visualization of clonal expansion in each subtype by plotting the fraction of cells that belong to sequences expanded to N cells. The fraction of cells with sequences that belong to a single cell (labeled 1 in legend) describes the relative proportion of unexpanded clonotypes. The fraction of cells with sequences that belong to >10 cells describes the relative proportion of highly expanded clonotypes within the subtype."
+  },
+  TABLE: {
+    title: "Differentially Expressed Genes",
+    text:
+      "Differentially expressed genes for each subtype (1 vs. All) using the Wilcoxon test. The top 50 statistically significant (p < 0.001) with a minimum log fold change of 0.25 and expression found in >= 50% of the subtype cells are included for each subtype. It is possible to sort DEGs by both p-value and log fold change. "
   }
 };
 export default infoText;

@@ -4,9 +4,12 @@ import * as d3Array from "d3-array";
 import _ from "lodash";
 import { useDashboardState } from "../PlotState/dashboardState";
 
+import Info from "../Info/Info.js";
+import infoText from "../Info/InfoText.js";
+
 import { canvasInit, drawAxis, changeFontSize } from "../DrawingUtils/utils.js";
 
-const Histogram = ({ data, chartDim }) => {
+const Histogram = ({ chartName, data, chartDim }) => {
   const [{ logXParam, logYParam, fontSize }] = useDashboardState();
   const [drawReady, setDrawReady] = useState(false);
   const [context, saveContext] = useState(null);
@@ -131,21 +134,42 @@ const Histogram = ({ data, chartDim }) => {
   return (
     <div class="card" style={{ margin: 10 }}>
       <div
+        class="container"
         style={{
           width: chartDim["width"],
           height: chartDim["height"],
           position: "relative"
         }}
       >
-        <div
-          id="histogram"
-          style={{
-            position: "absolute",
-            pointerEvents: "all",
-            display: "flex"
-          }}
-        >
-          <canvas id="histogramCanvas" />
+        <div class="row">
+          <div class="col-9">
+            <div
+              id="histogram"
+              style={{
+                position: "absolute",
+                pointerEvents: "all",
+                display: "flex"
+              }}
+            >
+              <canvas id="histogramCanvas" />
+            </div>
+          </div>
+          <div class="col-3">
+            <div
+              class="card-title"
+              style={{
+                marginTop: 40,
+                width: "100%",
+                height: 80,
+                paddingLeft: -50,
+                textAlign: "left"
+              }}
+            >
+              {infoText[chartName]["title"] + "    "}
+
+              <Info name={chartName} direction="s" />
+            </div>
+          </div>
         </div>
       </div>
     </div>

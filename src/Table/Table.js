@@ -1,11 +1,13 @@
 import React, { useState, useMemo } from "react";
 import * as d3 from "d3";
 import { useDashboardState } from "../PlotState/dashboardState";
+import Info from "../Info/Info.js";
+import infoText from "../Info/InfoText.js";
 
 import DataTable from "react-data-table-component";
 const formatCols = ["adj_pval", "log_fc"];
 const formatDecimal = d3.format(",.4f");
-const Table = ({ data, chartDim, selectedSubtype }) => {
+const Table = ({ chartName, data, chartDim, selectedSubtype }) => {
   const [filterText, setFilterText] = useState("");
   const [{ subtypeParam }] = useDashboardState();
 
@@ -41,12 +43,24 @@ const Table = ({ data, chartDim, selectedSubtype }) => {
         margin: 10,
         height: chartDim["height"],
         width: chartDim["width"],
-        overflow: "scroll",
         padding: 15
       }}
     >
       <DataTable
-        title=""
+        title={
+          <div
+            class="card-title"
+            style={{
+              width: "100%",
+              height: 80,
+              textAlign: "left"
+            }}
+          >
+            {infoText[chartName]["title"] + "    "}
+
+            <Info name={chartName} direction="s" />
+          </div>
+        }
         subHeader
         fixedHeader
         dense
@@ -75,6 +89,23 @@ const Table = ({ data, chartDim, selectedSubtype }) => {
     </div>
   );
 };
+const Title = ({ chartName, chartDim }) => (
+  <div
+    class="card-title"
+    style={{
+      marginTop: chartDim["chart"]["x1"],
+      width: "100%",
+      height: 80,
+      paddingTop: 40,
+      paddingLeft: -50,
+      textAlign: "left"
+    }}
+  >
+    {infoText[chartName]["title"] + "    "}
+
+    <Info name={chartName} direction="s" />
+  </div>
+);
 const FilterComponent = ({ filterText, onFilter, onClear }) => (
   <div style={{ display: "flex" }}>
     <input
