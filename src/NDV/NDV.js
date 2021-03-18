@@ -71,6 +71,8 @@ const NDV = ({ data }) => {
       color: colors(clonotype),
     }));
 
+  const subtypeTotals = _.countBy(metadata, initialState["subtypeParam"]);
+
   return (
     <div className="App">
       <DashboardProvider
@@ -140,6 +142,7 @@ const NDV = ({ data }) => {
                 selectedClonotype["selected"] || selectedClonotype["hover"]
               }
               rowLabels={clonotypeLabels}
+              columnTotal={subtypeTotals}
             />
             <Layout
               chartName={"TABLE"}

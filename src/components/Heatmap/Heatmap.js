@@ -5,6 +5,7 @@ import _ from "lodash";
 import { useCanvas } from "../utils/useCanvas";
 
 const HEATMAP_NULL_COLOR = "#eeeeee";
+const HEATMAP_COLOR = ["#ffec8b", "#d91e18"];
 const HEATMAP_COLOR_SCALE = d3
   .scaleLinear()
   .range(["#ffec8b", "#d91e18"])
@@ -16,6 +17,11 @@ const ROW_LABEL_SPACE = 300;
 const DEFAULT_LABEL_COLOR = "#000000";
 const LABEL_FONT = "bold 12px Helvetica";
 
+/*
+
+This heatmap calculates it by total column value (or given total column value)
+
+*/
 const Heatmap = ({
   data,
   chartDim,
@@ -25,6 +31,7 @@ const Heatmap = ({
   highlightedRow,
   columnLabels,
   rowLabels,
+  columnTotal,
 }) => {
   const columnValues =
     columnLabels || _.uniq(data.map((record) => record[column])).sort();
@@ -45,40 +52,41 @@ const Heatmap = ({
     .range([COLUMN_LABEL_SPACE, chartDim["height"]])
     .paddingInner(0.03);
 
-  const columnMap = rowValues.reduce(
-    (currMap, rowName) => ({ ...currMap, [rowName]: 0 }),
-    { total: 0 }
-  );
-  const initMap = columnValues.reduce(
-    (currMap, columnName) => ({ ...currMap, [columnName]: columnMap }),
+  const groupedColumn = _.groupBy(data, column);
+  const freqMap = Object.keys(groupedColumn).reduce(
+    (currMap, columnName) => ({
+      ...currMap,
+      [columnName]: {
+        ..._.countBy(groupedColumn[columnName], row),
+        total: columnTotal
+          ? columnTotal[columnName]
+          : groupedColumn[columnName].length,
+      },
+    }),
     {}
   );
 
-  const freqMap = data.reduce((currMap, record) => {
-    const columnValue = record[column];
-    const rowValue = record[row];
-
-    if (currMap.hasOwnProperty(columnValue)) {
-      const currColumn = currMap[columnValue];
-      if (currColumn.hasOwnProperty(rowValue)) {
-        return {
-          ...currMap,
-          [columnValue]: {
-            ...currColumn,
-            [rowValue]: currColumn[rowValue] + 1,
-            total: currColumn["total"] + 1,
+  const mostFreqCount = _.reduce(
+    freqMap,
+    (currMax, columnData, key) => {
+      return Math.max(
+        currMax,
+        _.reduce(
+          columnData,
+          (columnMax, value, key) => {
+            return key === "total" ? columnMax : Math.max(value, columnMax);
           },
-        };
-      } else {
-        return {
-          ...currMap,
-          [columnValue]: { ...currColumn, total: currColumn["total"] + 1 },
-        };
-      }
-    }
+          0
+        )
+      );
+    },
+    0
+  );
 
-    return currMap;
-  }, initMap);
+  const heatmapColor = d3
+    .scaleLinear()
+    .range(HEATMAP_COLOR)
+    .domain([0, mostFreqCount]);
 
   const ref = useCanvas(
     (canvas) => {
@@ -91,7 +99,8 @@ const Heatmap = ({
         rowScale,
         columnScale,
         highlightedRow,
-        highlightedColumn
+        highlightedColumn,
+        heatmapColor
       );
 
       const formattedColumnLabels = formatLabelData(
@@ -218,7 +227,8 @@ const drawHeatmap = (
   rowScale,
   columnScale,
   highlightedRow,
-  highlightedColumn
+  highlightedColumn,
+  heatmapColor
 ) => {
   const cellWidth = columnScale.bandwidth();
   const cellHeight = rowScale.bandwidth();
@@ -242,7 +252,7 @@ const drawHeatmap = (
         : 0.2;
 
       if (rowFreq) {
-        context.fillStyle = HEATMAP_COLOR_SCALE(rowFreq / total);
+        context.fillStyle = heatmapColor(rowFreq);
       } else {
         context.fillStyle = HEATMAP_NULL_COLOR;
       }
