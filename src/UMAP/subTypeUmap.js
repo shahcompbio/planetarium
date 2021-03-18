@@ -434,7 +434,7 @@ const SubtypeUmap = ({
       <div
         class="container"
         style={{
-          width: chartDim["width"] + 250,
+          width: chartDim["width"] + 200,
           height: chartDim["height"],
           position: "relative"
         }}
