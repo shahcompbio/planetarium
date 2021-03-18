@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import * as d3 from "d3";
+import Info from "../Info/Info.js";
+import infoText from "../Info/InfoText.js";
 
 import { useDashboardState } from "../PlotState/dashboardState";
 
@@ -13,6 +15,7 @@ const clearAll = (context, chartDim) =>
   );
 
 const Heatmap = ({
+  chartName,
   data,
   chartDim,
   selectedSubtype,
@@ -265,23 +268,45 @@ const Heatmap = ({
       });
   }
   return (
-    <div>
+    <div class="card" style={{ margin: 10 }}>
       <div
+        class="container"
         style={{
           width: chartDim["width"],
           height: chartDim["height"],
           position: "relative"
         }}
       >
-        <div
-          id="heatmap"
-          style={{
-            position: "absolute",
-            pointerEvents: "all",
-            display: "flex"
-          }}
-        >
-          <canvas id="heatmapCanvas" />
+        <div class="row">
+          <div class="col-10">
+            <div
+              id="heatmap"
+              style={{
+                position: "absolute",
+                pointerEvents: "all",
+                display: "flex"
+              }}
+            >
+              <canvas id="heatmapCanvas" />
+            </div>
+          </div>
+          <div class="col-2">
+            <div
+              class="card-title"
+              style={{
+                marginTop: chartDim["chart"]["x1"],
+                width: "100%",
+                height: 80,
+                paddingTop: 40,
+                paddingLeft: -50,
+                textAlign: "left"
+              }}
+            >
+              {infoText[chartName]["title"] + "    "}
+
+              <Info name={chartName} direction="s" />
+            </div>
+          </div>
         </div>
       </div>
     </div>

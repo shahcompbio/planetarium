@@ -36,11 +36,13 @@ const Table = ({ data, chartDim, selectedSubtype }) => {
   }, [filterText]);
   return (
     <div
+      class="card"
       style={{
+        margin: 10,
         height: chartDim["height"],
+        width: chartDim["width"],
         overflow: "scroll",
-        marginLeft: 0,
-        marginTop: 70
+        padding: 15
       }}
     >
       <DataTable

@@ -180,7 +180,7 @@ const Barplot = ({ data, chartDim }) => {
   }
 
   return (
-    <div>
+    <div class="card" style={{ margin: 10 }}>
       <div
         style={{
           width: chartDim["width"],
