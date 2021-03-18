@@ -13,10 +13,10 @@ const Table = ({ chartName, data, chartDim, selectedSubtype }) => {
 
   const columns = Object.keys(data[0]);
   const dataSource = selectedSubtype
-    ? data.filter((row) => row[subtypeParam] === selectedSubtype)
+    ? data.filter(row => row[subtypeParam] === selectedSubtype)
     : data;
   const filteredItems = dataSource.filter(
-    (item) =>
+    item =>
       item["gene"] &&
       item["gene"].toLowerCase().includes(filterText.toLowerCase())
   );
@@ -30,7 +30,7 @@ const Table = ({ chartName, data, chartDim, selectedSubtype }) => {
 
     return (
       <FilterComponent
-        onFilter={(e) => setFilterText(e.target.value)}
+        onFilter={e => setFilterText(e.target.value)}
         onClear={handleClear}
         filterText={filterText}
       />
@@ -43,7 +43,7 @@ const Table = ({ chartName, data, chartDim, selectedSubtype }) => {
         margin: 10,
         height: chartDim["height"],
         width: chartDim["width"],
-        padding: 15,
+        padding: 15
       }}
     >
       <DataTable
@@ -53,12 +53,13 @@ const Table = ({ chartName, data, chartDim, selectedSubtype }) => {
             style={{
               width: "100%",
               height: 80,
-              textAlign: "left",
+              textAlign: "left"
             }}
           >
-            {infoText[chartName]["title"] + "    "}
-
-            <Info name={chartName} direction="s" />
+            <h6 class="card-title">
+              {infoText[chartName]["title"] + "    "}
+              <Info name={chartName} direction="s" />
+            </h6>
           </div>
         }
         subHeader
@@ -68,22 +69,20 @@ const Table = ({ chartName, data, chartDim, selectedSubtype }) => {
         overflowY={false}
         subHeaderComponent={subHeaderComponentMemo}
         compact
-        columns={columns.map((col) => {
+        columns={columns.map(col => {
           return formatCols.indexOf(col) !== -1
             ? {
                 name: col,
                 selector: col,
                 sortable: true,
                 right: true,
-                cell: (row) => (
-                  <span>{formatDecimal(parseFloat(row[col]))}</span>
-                ),
+                cell: row => <span>{formatDecimal(parseFloat(row[col]))}</span>
               }
             : {
                 name: col,
                 selector: col,
                 sortable: true,
-                right: true,
+                right: true
               };
         })}
         data={filteredItems}
@@ -100,7 +99,7 @@ const Title = ({ chartName, chartDim }) => (
       height: 80,
       paddingTop: 40,
       paddingLeft: -50,
-      textAlign: "left",
+      textAlign: "left"
     }}
   >
     {infoText[chartName]["title"] + "    "}

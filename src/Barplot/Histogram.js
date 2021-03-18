@@ -4,21 +4,18 @@ import * as d3Array from "d3-array";
 import _ from "lodash";
 import { useDashboardState } from "../PlotState/dashboardState";
 
-import { useCanvas } from "../components/utils/useCanvas";
 import Info from "../Info/Info.js";
 import infoText from "../Info/InfoText.js";
+
 import { canvasInit, drawAxis, changeFontSize } from "../DrawingUtils/utils.js";
 
-const HIGHLIGHTED_BAR_COLOR = "#eb5067";
-const HIGHLIGHTED_BAR_WIDTH = 2;
+const Histogram = ({ chartName, data, chartDim }) => {
+  const [{ logXParam, logYParam, fontSize }] = useDashboardState();
+  const [drawReady, setDrawReady] = useState(false);
+  const [context, saveContext] = useState(null);
 
-const Histogram = ({ chartName, data, chartDim, highlighted }) => {
-  const [
-    { logXParam, logYParam, fontSize, clonotypeParam },
-  ] = useDashboardState();
-
-  const allX = data.map((row) => parseFloat(row[logXParam]));
-  const allY = data.map((row) => parseFloat(row[logYParam]));
+  const allX = data.map(row => parseFloat(row[logXParam]));
+  const allY = data.map(row => parseFloat(row[logYParam]));
   const xMax = Math.max(...allX);
   const xMin = Math.min(...allX);
 
@@ -29,12 +26,12 @@ const Histogram = ({ chartName, data, chartDim, highlighted }) => {
 
   const bins = d3Array
     .bin()
-    .value((d) => d[logXParam])
+    .value(d => d[logXParam])
     .domain(x.domain())
     .thresholds(x.ticks(10));
 
   const buckets = bins(data);
-  const maxY = Math.max(...buckets.map((row) => row.length));
+  const maxY = Math.max(...buckets.map(row => row.length));
 
   // Y axis
   const y = d3
@@ -42,22 +39,10 @@ const Histogram = ({ chartName, data, chartDim, highlighted }) => {
     .domain([0, maxY / data.length])
     .range([chartDim["chart"]["y2"], chartDim["chart"]["y1"]]);
 
-  const ref = useCanvas(
-    (canvas) => {
-      const context = canvas.getContext("2d");
-
-      drawAxisLabels(context);
-      drawBars(context, data);
-    },
-    chartDim["width"],
-    chartDim["width"],
-    [highlighted]
-  );
-
   function drawBars(context, data) {
     context.fillStyle = "#6bb9f0";
     context.strokeStyle = "#5c97bf";
-    buckets.map((bar) => {
+    buckets.map(bar => {
       const yPos = y(bar.length / data.length);
       context.fillRect(
         x(bar["x0"]) - 5,
@@ -73,28 +58,21 @@ const Histogram = ({ chartName, data, chartDim, highlighted }) => {
       );
       context.fill();
     });
-
-    if (highlighted) {
-      const highlightedData = data.filter(
-        (datum) => datum[clonotypeParam] === highlighted
-      );
-
-      if (highlightedData.length > 0) {
-        const highlightedProbability = highlightedData[0][logXParam];
-
-        context.fillStyle = HIGHLIGHTED_BAR_COLOR;
-        context.fillRect(
-          x(highlightedProbability),
-          y(maxY / data.length),
-          HIGHLIGHTED_BAR_WIDTH,
-          y(0) - y(maxY / data.length)
-        );
-      }
-    }
   }
+  useEffect(() => {
+    if (data.length > 0) {
+      init(data, chartDim);
+    }
+  }, [data]);
+  useEffect(() => {
+    if (drawReady) {
+      drawAxisLabels(context);
+      drawBars(context, data);
+    }
+  }, [drawReady]);
 
   function drawAxisLabels(context) {
-    const format = (tick) => (tick === 0 ? "0" : d3.format(".2f")(tick));
+    const format = tick => (tick === 0 ? "0" : d3.format(".2f")(tick));
     context.beginPath();
     context.globalAlpha = 1;
     //context.lineWidth = 1;
@@ -102,7 +80,7 @@ const Histogram = ({ chartName, data, chartDim, highlighted }) => {
     context.textAlign = "right";
     const xMinValue = x(xMin) - 10;
     changeFontSize(context, fontSize["tickLabelFontSize"]);
-    x.ticks(10).map((tick) => {
+    x.ticks(10).map(tick => {
       context.fillText(tick, x(tick), y(0) + 15);
     });
     changeFontSize(context, fontSize["axisLabelFontSize"]);
@@ -110,11 +88,11 @@ const Histogram = ({ chartName, data, chartDim, highlighted }) => {
       logXParam,
       (chartDim["chart"]["x2"] - chartDim["chart"]["x1"]) / 2 +
         chartDim["chart"]["x1"],
-      chartDim["chart"]["y2"] + 30
+      chartDim["chart"]["y2"] + 50
     );
 
     context.restore();
-    y.ticks(10).map((tick) => {
+    y.ticks(10).map(tick => {
       context.globalAlpha = 1;
       changeFontSize(context, fontSize["tickLabelFontSize"]);
       context.fillText(format(tick), xMinValue, y(tick) + 3);
@@ -137,9 +115,19 @@ const Histogram = ({ chartName, data, chartDim, highlighted }) => {
     context.fillText(
       "Probability",
       -(chartDim["chart"]["y2"] - chartDim["chart"]["y1"]) / 2 - 15,
-      chartDim["chart"]["x1"] - 35
+      chartDim["chart"]["x1"] - 70
     );
     context.restore();
+  }
+  function init(data, chartDim) {
+    var canvas = d3.select("#histogramCanvas");
+
+    var currContext = canvasInit(canvas, chartDim.width, chartDim.height);
+
+    currContext.fillStyle = "white";
+    currContext.fillRect(0, 0, chartDim.width, chartDim.height);
+    saveContext(currContext);
+    setDrawReady(true);
   }
 
   return (
@@ -149,7 +137,7 @@ const Histogram = ({ chartName, data, chartDim, highlighted }) => {
         style={{
           width: chartDim["width"],
           height: chartDim["height"],
-          position: "relative",
+          position: "relative"
         }}
       >
         <div class="row">
@@ -159,10 +147,10 @@ const Histogram = ({ chartName, data, chartDim, highlighted }) => {
               style={{
                 position: "absolute",
                 pointerEvents: "all",
-                display: "flex",
+                display: "flex"
               }}
             >
-              <canvas ref={ref} />
+              <canvas id="histogramCanvas" />
             </div>
           </div>
           <div class="col-3">
@@ -173,12 +161,13 @@ const Histogram = ({ chartName, data, chartDim, highlighted }) => {
                 width: "100%",
                 height: 80,
                 paddingLeft: -50,
-                textAlign: "left",
+                textAlign: "left"
               }}
             >
-              {infoText[chartName]["title"] + "    "}
-
-              <Info name={chartName} direction="s" />
+              <h6 class="card-title">
+                {infoText[chartName]["title"] + "    "}
+                <Info name={chartName} direction="s" />
+              </h6>
             </div>
           </div>
         </div>

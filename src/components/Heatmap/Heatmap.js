@@ -30,13 +30,13 @@ const Heatmap = ({
   highlightedRow,
   columnLabels,
   rowLabels,
-  columnTotal,
+  columnTotal
 }) => {
   const columnValues =
-    columnLabels || _.uniq(data.map((record) => record[column])).sort();
+    columnLabels || _.uniq(data.map(record => record[column])).sort();
   const rowValues =
-    rowLabels.map((row) => row["value"]) ||
-    _.uniq(data.map((record) => record[row])).sort();
+    rowLabels.map(row => row["value"]) ||
+    _.uniq(data.map(record => record[row])).sort();
   const chartWidth = chartDim["width"] - ROW_LABEL_SPACE;
 
   const columnScale = d3
@@ -59,8 +59,8 @@ const Heatmap = ({
         ..._.countBy(groupedColumn[columnName], row),
         total: columnTotal
           ? columnTotal[columnName]
-          : groupedColumn[columnName].length,
-      },
+          : groupedColumn[columnName].length
+      }
     }),
     {}
   );
@@ -88,7 +88,7 @@ const Heatmap = ({
     .domain([0, mostFreqCount]);
 
   const ref = useCanvas(
-    (canvas) => {
+    canvas => {
       const context = canvas.getContext("2d");
       drawHeatmap(
         context,
@@ -129,7 +129,7 @@ const Heatmap = ({
         style={{
           width: chartDim["width"],
           height: chartDim["height"],
-          position: "relative",
+          position: "relative"
         }}
       >
         <div class="row">
@@ -139,7 +139,7 @@ const Heatmap = ({
               style={{
                 position: "absolute",
                 pointerEvents: "all",
-                display: "flex",
+                display: "flex"
               }}
             >
               <canvas ref={ref} />
@@ -149,17 +149,18 @@ const Heatmap = ({
             <div
               class="card-title"
               style={{
-                // marginTop: chartDim["chart"]["x1"],
                 width: "100%",
                 height: 80,
                 paddingTop: 40,
                 paddingLeft: -50,
-                textAlign: "left",
+                textAlign: "left"
               }}
             >
-              {infoText["HEATMAP"]["title"] + "    "}
+              <h6 class="card-title">
+                {infoText["HEATMAP"]["title"] + "    "}
 
-              <Info name={"HEATMAP"} direction="s" />
+                <Info name={"HEATMAP"} direction="s" />
+              </h6>
             </div>
           </div>
         </div>
@@ -168,12 +169,12 @@ const Heatmap = ({
   );
 };
 
-const formatLabelData = (values) => {
+const formatLabelData = values => {
   if (typeof values[0] === "string") {
-    return values.map((value) => ({
+    return values.map(value => ({
       value,
       label: value,
-      color: DEFAULT_LABEL_COLOR,
+      color: DEFAULT_LABEL_COLOR
     }));
   }
   return values;
@@ -191,7 +192,7 @@ const drawLabels = (
 ) => {
   context.font = LABEL_FONT;
 
-  columnValues.forEach((columnData) => {
+  columnValues.forEach(columnData => {
     const { value, label, color } = columnData;
 
     context.save();
@@ -226,7 +227,7 @@ const drawLabels = (
     context.fill();
   });
 
-  rowValues.forEach((rowData) => {
+  rowValues.forEach(rowData => {
     const { value, label, color } = rowData;
     context.font = "bold 12px Helvetica";
     context.fillStyle = color;
@@ -264,12 +265,12 @@ const drawHeatmap = (
   const cellWidth = columnScale.bandwidth();
   const cellHeight = rowScale.bandwidth();
 
-  columnValues.forEach((columnName) => {
+  columnValues.forEach(columnName => {
     const columnData = freqMap[columnName];
     const xPos = columnScale(columnName);
     const total = columnData["total"];
 
-    rowValues.forEach((rowName) => {
+    rowValues.forEach(rowName => {
       const rowFreq = columnData[rowName];
       const yPos = rowScale(rowName);
 

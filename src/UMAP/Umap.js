@@ -597,7 +597,7 @@ const Umap = ({
           >
             <canvas id="umapCanvas" />
           </div>
-          <div class="col-3" style={{ paddingLeft: 0 }}>
+          <div class="col-3" style={{ paddingLeft: 0, pointerEvents: "all" }}>
             <div
               class="card-title"
               style={{
@@ -608,9 +608,11 @@ const Umap = ({
                 textAlign: "left"
               }}
             >
-              {infoText[chartName]["title"] + "    "}
+              <h6 class="card-title">
+                {infoText[chartName]["title"] + "    "}
 
-              <Info name={chartName} direction="s" />
+                <Info name={chartName} direction="s" />
+              </h6>
             </div>
             <div class="" style={{ marginLeft: -50, height: 250 }}>
               <svg id="umapLegend" height={250} />

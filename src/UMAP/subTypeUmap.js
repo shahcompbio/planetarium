@@ -451,7 +451,7 @@ const SubtypeUmap = ({
           >
             <canvas id="subTypeUmapCanvas" />
           </div>
-          <div class="col-3" style={{ paddingLeft: 0 }}>
+          <div class="col-3" style={{ paddingLeft: 0, pointerEvents: "all" }}>
             <div
               class="card-title"
               style={{
@@ -460,12 +460,14 @@ const SubtypeUmap = ({
                 height: 80,
                 paddingTop: 40,
                 paddingLeft: -50,
-                textAlign: "left"
+                textAlign: "left",
+                fontSize: 16
               }}
             >
-              {infoText[chartName]["title"] + "    "}
-
-              <Info name={chartName} direction="s" />
+              <h6 class="card-title">
+                {infoText[chartName]["title"] + "    "}
+                <Info name={chartName} direction="s" />{" "}
+              </h6>
             </div>
             <div style={{ marginLeft: -50, height: 250 }}>
               <svg id="subTypeUmapLegend" style={{ float: "right" }} />
