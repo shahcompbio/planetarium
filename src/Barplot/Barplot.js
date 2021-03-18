@@ -319,14 +319,22 @@ const StackedBar = ({ data, chartDim }) => {
   return (
     <div class="card" style={{ margin: 10 }}>
       <div
-        id="barchart"
         style={{
-          position: "absolute",
-          pointerEvents: "all",
-          display: "flex",
+          width: chartDim["width"],
+          height: chartDim["height"],
+          position: "relative",
         }}
       >
-        <canvas ref={ref} />
+        <div
+          id="barchart"
+          style={{
+            position: "absolute",
+            pointerEvents: "all",
+            display: "flex",
+          }}
+        >
+          <canvas ref={ref} />
+        </div>
       </div>
     </div>
   );
