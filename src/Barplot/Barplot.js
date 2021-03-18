@@ -317,13 +317,7 @@ const StackedBar = ({ data, chartDim }) => {
   }
 
   return (
-    <div
-      style={{
-        width: chartDim["width"],
-        height: chartDim["height"],
-        position: "relative",
-      }}
-    >
+    <div class="card" style={{ margin: 10 }}>
       <div
         id="barchart"
         style={{

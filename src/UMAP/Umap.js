@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import * as d3 from "d3";
 import * as d3Array from "d3-array";
+import Info from "../Info/Info.js";
+import infoText from "../Info/InfoText.js";
 
 import { useDashboardState } from "../PlotState/dashboardState";
 
@@ -29,6 +31,7 @@ export function drawPoint(
 }
 
 const Umap = ({
+  chartName,
   data,
   chartDim,
   selectedClonotype,
@@ -448,7 +451,6 @@ const Umap = ({
     const mouseInteractions = element =>
       element
         .on("mouseenter", function(d) {
-          console.log("mopsue", d[0]);
           setSelectedClonotype({
             hover: d[0],
             selected: selectedClonotype
@@ -485,7 +487,7 @@ const Umap = ({
         return chartDim["legend"].x1 + 5;
       })
       .attr("y", function(d, i) {
-        return i * 20 + chartDim["legend"].y1 + 70;
+        return i * 20 + chartDim["legend"].y1 - 5;
       })
       .attr("fill", function(d) {
         return colors(d[0]);
@@ -500,7 +502,7 @@ const Umap = ({
         return chartDim["legend"].x1 + 5;
       })
       .attr("y", function(d, i) {
-        return i * 20 + chartDim["legend"].y1 + 70;
+        return i * 20 + chartDim["legend"].y1 - 5;
       })
       .attr("fill", function(d) {
         return colors(d[0]);
@@ -515,7 +517,7 @@ const Umap = ({
         return chartDim["legend"].x1 + 20;
       })
       .attr("y", function(d, i) {
-        return i * 20 + chartDim["legend"].y1 + 75;
+        return i * 20 + chartDim["legend"].y1;
       })
       .attr("dy", ".35em")
       .text(function(d) {
@@ -538,7 +540,7 @@ const Umap = ({
         return chartDim["legend"].x1 + 20;
       })
       .attr("y", function(d, i) {
-        return i * 20 + chartDim["legend"].y1 + 75;
+        return i * 20 + chartDim["legend"].y1;
       })
       .attr("dy", ".35em")
       .text(function(d) {
@@ -574,58 +576,69 @@ const Umap = ({
   }
 
   return (
-    <div>
+    <div class="card" style={{ margin: 10 }}>
       <div
+        class="container"
         style={{
           width: chartDim["width"] + 250,
           height: chartDim["height"],
           position: "relative"
         }}
       >
-        <div
-          id="scatterplot"
-          style={{
-            position: "absolute",
-            pointerEvents: "all",
-            display: "flex"
-          }}
-        >
-          <canvas id="umapCanvas" />
-          <svg id="umapLegend" style={{ float: "right" }} />
+        <div class="row">
           <div
+            class="col-9"
+            id="scatterplot"
             style={{
-              float: "right",
-              left: "670px",
-              top: "50%",
-              position: "absolute"
+              pointerEvents: "all",
+              display: "flex",
+              paddingRight: 0
             }}
           >
-            <div class="container">
-              <div class="row">
-                <label
-                  style={{ fontSize: 12, marginLeft: -100, marginTop: -20 }}
-                  for="customRange2"
-                  class="form-label"
-                >
-                  Radius Adjustment
-                </label>
-              </div>
-              <div class="row">
-                <input
-                  type="range"
-                  min="4"
-                  max={radiusMax}
-                  step="0.5"
-                  value={radiusAdjust}
-                  onChange={event => {
-                    setRadius(event.target.value);
-                  }}
-                  style={{ direction: "rtl", marginLeft: -100 }}
-                  class="form-range"
-                  id="customRange2"
-                  disabled={selectedClonotype !== null}
-                />
-              </div>
+            <canvas id="umapCanvas" />
+          </div>
+          <div class="col-3" style={{ paddingLeft: 0 }}>
+            <div
+              class="card-title"
+              style={{
+                marginTop: chartDim["chart"]["x1"],
+                width: "100%",
+                height: 80,
+                paddingTop: 40,
+                textAlign: "left"
+              }}
+            >
+              {infoText[chartName]["title"] + "    "}
+
+              <Info name={chartName} direction="s" />
+            </div>
+            <div class="" style={{ marginLeft: -50, height: 250 }}>
+              <svg id="umapLegend" height={250} />
+            </div>
+            <div style={{ marginLeft: -100 }}>
+              <label
+                style={{ fontSize: 12, marginTop: -20 }}
+                for="customRange2"
+                class="form-label"
+              >
+                Radius Adjustment
+              </label>
+            </div>
+            <div style={{ marginLeft: -100 }}>
+              <input
+                type="range"
+                min="4"
+                max={radiusMax}
+                step="0.5"
+                value={radiusAdjust}
+                onChange={event => {
+                  setRadius(event.target.value);
+                }}
+                style={{ direction: "rtl" }}
+                class="form-range"
+                id="customRange2"
+                disabled={selectedClonotype !== null}
+              />
             </div>
           </div>
         </div>
@@ -633,4 +646,5 @@ const Umap = ({
     </div>
   );
 };
+
 export default Umap;

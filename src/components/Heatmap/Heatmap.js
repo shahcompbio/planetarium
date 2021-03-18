@@ -4,6 +4,9 @@ import _ from "lodash";
 
 import { useCanvas } from "../utils/useCanvas";
 
+import Info from "../../Info/Info";
+import infoText from "../../Info/InfoText";
+
 const HEATMAP_NULL_COLOR = "#eeeeee";
 const HEATMAP_COLOR = ["#ffec8b", "#d91e18"];
 const CELL_FONT = "normal 12px Helvetica";
@@ -120,15 +123,47 @@ const Heatmap = ({
   );
 
   return (
-    <div
-      id="heatmap"
-      style={{
-        margin: 30,
-        pointerEvents: "all",
-        display: "flex",
-      }}
-    >
-      <canvas ref={ref} />
+    <div class="card" style={{ margin: 10, paddingBottom: 10 }}>
+      <div
+        class="container"
+        style={{
+          width: chartDim["width"],
+          height: chartDim["height"],
+          position: "relative",
+        }}
+      >
+        <div class="row">
+          <div class="col-10">
+            <div
+              id="heatmap"
+              style={{
+                position: "absolute",
+                pointerEvents: "all",
+                display: "flex",
+              }}
+            >
+              <canvas ref={ref} />
+            </div>
+          </div>
+          <div class="col-2">
+            <div
+              class="card-title"
+              style={{
+                // marginTop: chartDim["chart"]["x1"],
+                width: "100%",
+                height: 80,
+                paddingTop: 40,
+                paddingLeft: -50,
+                textAlign: "left",
+              }}
+            >
+              {infoText["HEATMAP"]["title"] + "    "}
+
+              <Info name={"HEATMAP"} direction="s" />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

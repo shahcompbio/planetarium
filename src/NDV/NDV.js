@@ -22,8 +22,13 @@ const NDV = ({ data }) => {
   const { metadata, probabilities, degs } = data;
   const target = useRef(null);
 
+  const filteredMetadata = metadata.filter(
+    (row) => row[initialState["clonotypeParam"]] !== "None"
+  );
   const topTen = Object.entries(
-    _.countBy(metadata.map((row) => row[initialState["clonotypeParam"]]))
+    _.countBy(
+      filteredMetadata.map((row) => row[initialState["clonotypeParam"]])
+    )
   )
     .sort(([, a], [, b]) => b - a)
     .slice(0, 10);
@@ -33,8 +38,10 @@ const NDV = ({ data }) => {
     return final;
   }, {});
 
-  const sampleData = metadata.filter((row) =>
-    sampleTen.hasOwnProperty(row[initialState["clonotypeParam"]])
+  const sampleData = metadata.filter(
+    (row) =>
+      sampleTen.hasOwnProperty(row[initialState["clonotypeParam"]]) &&
+      row[initialState["clonotypeParam"]] !== "None"
   );
   const topTenNumbering = Object.keys(sampleTen).reduce((final, seq, index) => {
     final[seq] = "SEQ" + (index + 1);
@@ -130,6 +137,12 @@ const NDV = ({ data }) => {
             <Heatmap
               data={probabilities}
               chartDim={{
+                chart: {
+                  x1: 30,
+                  x2: 500,
+                  y1: 100,
+                  y2: 500,
+                },
                 height: 500,
                 width: 750,
               }}
@@ -157,9 +170,9 @@ const NDV = ({ data }) => {
                   x1: 50,
                   y1: 50,
                   x2: 600,
-                  y2: 200,
+                  y2: 400,
                 },
-                height: 400,
+                height: 500,
                 width: 650,
               }}
             />
@@ -173,9 +186,9 @@ const NDV = ({ data }) => {
                   x1: 50,
                   y1: 50,
                   x2: 600,
-                  y2: 200,
+                  y2: 400,
                 },
-                height: 300,
+                height: 475,
                 width: 600,
               }}
               selectedSubtype={selectedSubtype}
@@ -193,9 +206,9 @@ const NDV = ({ data }) => {
                   x1: 100,
                   y1: 50,
                   x2: 600,
-                  y2: 200,
+                  y2: 400,
                 },
-                height: 300,
+                height: 475,
                 width: 650,
               }}
               highlighted={

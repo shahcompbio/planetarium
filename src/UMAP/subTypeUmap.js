@@ -1,13 +1,17 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import * as d3 from "d3";
 import _ from "lodash";
+import Info from "../Info/Info.js";
+import infoText from "../Info/InfoText.js";
 
 import { useDashboardState } from "../PlotState/dashboardState";
 import { drawPoint, clearAll } from "./Umap.js";
 import { canvasInit, drawAxis } from "../DrawingUtils/utils.js";
 
 const SubtypeUmap = ({
+  chartName,
   data,
+  metadata,
   chartDim,
   selectedSubtype,
   hoveredSubtype,
@@ -69,7 +73,7 @@ const SubtypeUmap = ({
           : selectedSubtype !== null
           ? selectedSubtype
           : null;
-
+      console.log("sle", selection);
       if (selection !== null) {
         clearAll(context, chartDim);
         context.beginPath();
@@ -221,10 +225,10 @@ const SubtypeUmap = ({
       .attr("width", fontSize.legendSquare)
       .attr("height", fontSize.legendSquare)
       .attr("x", function(d) {
-        return chartDim["legend"]["x1"];
+        return chartDim["legend"]["x1"] + 20;
       })
       .attr("y", function(d, i) {
-        return chartDim["legend"].y1 + i * 20 + 65;
+        return chartDim["legend"].y1 + i * 20;
       })
       .attr("fill", function(d) {
         return colors(d);
@@ -237,10 +241,10 @@ const SubtypeUmap = ({
       .attr("width", fontSize.legendSquare)
       .attr("height", fontSize.legendSquare)
       .attr("x", function(d) {
-        return chartDim["legend"]["x1"];
+        return chartDim["legend"]["x1"] + 20;
       })
       .attr("y", function(d, i) {
-        return chartDim["legend"].y1 + i * 20 + 65;
+        return chartDim["legend"].y1 + i * 20;
       })
       .attr("fill", function(d) {
         return colors(d);
@@ -252,10 +256,10 @@ const SubtypeUmap = ({
     const legendTextEnter = legendText
       .append("text")
       .attr("x", function(d) {
-        return chartDim["legend"].x1 + 13;
+        return chartDim["legend"].x1 + 13 + 20;
       })
       .attr("y", function(d, i) {
-        return chartDim["legend"].y1 + i * 20 + 70;
+        return chartDim["legend"].y1 + i * 20 + 4;
       })
       .attr("dy", ".35em")
       .text(function(d) {
@@ -274,10 +278,10 @@ const SubtypeUmap = ({
       .enter()
       .append("text")
       .attr("x", function(d) {
-        return chartDim["legend"].x1 + 13;
+        return chartDim["legend"].x1 + 13 + 20;
       })
       .attr("y", function(d, i) {
-        return chartDim["legend"].y1 + i * 20 + 70;
+        return chartDim["legend"].y1 + i * 20 + 4;
       })
       .attr("dy", ".35em")
       .text(function(d) {
@@ -426,24 +430,47 @@ const SubtypeUmap = ({
     }, {});
   }
   return (
-    <div>
+    <div class="card" style={{ margin: 10 }}>
       <div
+        class="container"
         style={{
-          width: chartDim["width"] + chartDim["legend"]["x1"],
+          width: chartDim["width"] + 200,
           height: chartDim["height"],
           position: "relative"
         }}
       >
-        <div
-          id="subTypeUmap"
-          style={{
-            position: "absolute",
-            pointerEvents: "all",
-            display: "flex"
-          }}
-        >
-          <canvas id="subTypeUmapCanvas" />
-          <svg id="subTypeUmapLegend" style={{ float: "right" }} />
+        <div class="row">
+          <div
+            class="col-9"
+            id="subTypeUmap"
+            style={{
+              pointerEvents: "all",
+              display: "flex",
+              paddingRight: 0
+            }}
+          >
+            <canvas id="subTypeUmapCanvas" />
+          </div>
+          <div class="col-3" style={{ paddingLeft: 0 }}>
+            <div
+              class="card-title"
+              style={{
+                marginTop: chartDim["chart"]["x1"],
+                width: "100%",
+                height: 80,
+                paddingTop: 40,
+                paddingLeft: -50,
+                textAlign: "left"
+              }}
+            >
+              {infoText[chartName]["title"] + "    "}
+
+              <Info name={chartName} direction="s" />
+            </div>
+            <div style={{ marginLeft: -50, height: 250 }}>
+              <svg id="subTypeUmapLegend" style={{ float: "right" }} />
+            </div>
+          </div>
         </div>
       </div>
     </div>
