@@ -6,10 +6,6 @@ import { useCanvas } from "../utils/useCanvas";
 
 const HEATMAP_NULL_COLOR = "#eeeeee";
 const HEATMAP_COLOR = ["#ffec8b", "#d91e18"];
-const HEATMAP_COLOR_SCALE = d3
-  .scaleLinear()
-  .range(["#ffec8b", "#d91e18"])
-  .domain([0, 1]);
 const CELL_FONT = "normal 12px Helvetica";
 
 const COLUMN_LABEL_SPACE = 100;
@@ -160,7 +156,7 @@ const drawLabels = (
 ) => {
   context.font = LABEL_FONT;
 
-  columnValues.map((columnData) => {
+  columnValues.forEach((columnData) => {
     const { value, label, color } = columnData;
 
     context.save();
@@ -195,7 +191,7 @@ const drawLabels = (
     context.fill();
   });
 
-  rowValues.map((rowData) => {
+  rowValues.forEach((rowData) => {
     const { value, label, color } = rowData;
     context.font = "bold 12px Helvetica";
     context.fillStyle = color;
@@ -233,12 +229,12 @@ const drawHeatmap = (
   const cellWidth = columnScale.bandwidth();
   const cellHeight = rowScale.bandwidth();
 
-  columnValues.map((columnName) => {
+  columnValues.forEach((columnName) => {
     const columnData = freqMap[columnName];
     const xPos = columnScale(columnName);
     const total = columnData["total"];
 
-    rowValues.map((rowName) => {
+    rowValues.forEach((rowName) => {
       const rowFreq = columnData[rowName];
       const yPos = rowScale(rowName);
 
