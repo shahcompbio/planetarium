@@ -5,13 +5,14 @@ import _ from "lodash";
 import { useDashboardState } from "../PlotState/dashboardState";
 
 import { useCanvas } from "../components/utils/useCanvas";
-
+import Info from "../Info/Info.js";
+import infoText from "../Info/InfoText.js";
 import { canvasInit, drawAxis, changeFontSize } from "../DrawingUtils/utils.js";
 
 const HIGHLIGHTED_BAR_COLOR = "#eb5067";
 const HIGHLIGHTED_BAR_WIDTH = 2;
 
-const Histogram = ({ data, chartDim, highlighted }) => {
+const Histogram = ({ chartName, data, chartDim, highlighted }) => {
   const [
     { logXParam, logYParam, fontSize, clonotypeParam },
   ] = useDashboardState();
@@ -144,21 +145,42 @@ const Histogram = ({ data, chartDim, highlighted }) => {
   return (
     <div class="card" style={{ margin: 10 }}>
       <div
+        class="container"
         style={{
           width: chartDim["width"],
           height: chartDim["height"],
           position: "relative",
         }}
       >
-        <div
-          id="histogram"
-          style={{
-            position: "absolute",
-            pointerEvents: "all",
-            display: "flex",
-          }}
-        >
-          <canvas ref={ref} />
+        <div class="row">
+          <div class="col-9">
+            <div
+              id="histogram"
+              style={{
+                position: "absolute",
+                pointerEvents: "all",
+                display: "flex",
+              }}
+            >
+              <canvas ref={ref} />
+            </div>
+          </div>
+          <div class="col-3">
+            <div
+              class="card-title"
+              style={{
+                marginTop: 40,
+                width: "100%",
+                height: 80,
+                paddingLeft: -50,
+                textAlign: "left",
+              }}
+            >
+              {infoText[chartName]["title"] + "    "}
+
+              <Info name={chartName} direction="s" />
+            </div>
+          </div>
         </div>
       </div>
     </div>

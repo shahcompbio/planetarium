@@ -173,7 +173,7 @@ const NDV = ({ data }) => {
                   y2: 400,
                 },
                 height: 500,
-                width: 650,
+                width: 750,
               }}
             />
           </div>
@@ -183,13 +183,13 @@ const NDV = ({ data }) => {
               data={probabilities}
               dim={{
                 chart: {
-                  x1: 50,
+                  x1: 30,
+                  x2: 500,
                   y1: 50,
-                  x2: 600,
                   y2: 400,
                 },
                 height: 475,
-                width: 600,
+                width: 700,
               }}
               selectedSubtype={selectedSubtype}
               selectedClonotype={selectedClonotype}
@@ -208,8 +208,8 @@ const NDV = ({ data }) => {
                   x2: 600,
                   y2: 400,
                 },
-                height: 475,
-                width: 650,
+                height: 500,
+                width: 750,
               }}
               highlighted={
                 selectedClonotype["hover"] || selectedClonotype["selected"]
