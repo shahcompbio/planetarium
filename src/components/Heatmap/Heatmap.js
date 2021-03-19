@@ -173,7 +173,7 @@ const Heatmap = ({
 };
 
 const formatLabelData = (values) => {
-  if (typeof values[0] === "string") {
+  if (typeof values[0] !== "object") {
     return values.map((value) => ({
       value: value,
       label: value.toString(),
@@ -194,7 +194,6 @@ const drawLabels = (
   chartWidth
 ) => {
   context.font = LABEL_FONT;
-
   columnValues.forEach((columnData) => {
     const { value, label, color } = columnData;
 
