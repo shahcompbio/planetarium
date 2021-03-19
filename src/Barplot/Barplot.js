@@ -47,7 +47,6 @@ const DataWrapper = ({ data, chartDim }) => {
     return { ...countMap, [subtype]: countFreq };
   }, {});
 
-  console.log(countedClonotypes);
   return (
     <StackedBarProportion
       data={countedClonotypes}
@@ -61,14 +60,14 @@ const StackedBarProportion = ({ data, chartDim, barValues }) => {
   // make this flexible
   const categoryValues = Object.keys(data);
 
-  const chartWidth = chartDim["width"];
-  const chartHeight = chartDim["height"] - 50;
+  const chartWidth = chartDim["chart"]["x2"] - chartDim["chart"]["x1"];
+  const chartHeight = chartDim["chart"]["y2"] - chartDim["chart"]["y1"] - 50;
 
   const catScale = d3
     .scaleBand()
     .domain(categoryValues)
-    .range([0, chartWidth])
-    .paddingInner(0.2);
+    .range([chartDim["chart"]["x1"], chartWidth]);
+  //  .paddingInner(0.1);
 
   const barScale = d3
     .scaleLinear()
@@ -98,8 +97,9 @@ const StackedBarProportion = ({ data, chartDim, barValues }) => {
       // drawAxisLabels(context);
       // drawYAxisLabels(context);
     },
-    chartDim["width"],
-    chartDim["height"],
+
+    chartDim["chart"]["x2"] - chartDim["chart"]["x1"],
+    chartDim["chart"]["y2"] - chartDim["chart"]["y1"],
     []
   );
 
@@ -146,13 +146,6 @@ const drawBars = (
         context.fillStyle = colors(bValue);
         const barHeight = barScale(categoryData[bValue] / total);
 
-        console.log(
-          currHeight,
-          barHeight,
-          bValue,
-          categoryData[bValue] / total,
-          barScale(categoryData[bValue] / total)
-        );
         context.fillRect(
           xPos,
           currHeight - barHeight,
@@ -352,7 +345,10 @@ const StackedBar = ({ chartName, data, chartDim }) => {
           style={{
             textAlign: "right",
             marginTop: 10,
-            paddingRight: 15
+            paddingRight: 15,
+            pointerEvents: "all",
+            curser: "pointer",
+            zIndex: 100
           }}
         >
           {infoText[chartName]["title"] + "    "}

@@ -166,7 +166,7 @@ const NDV = ({ data }) => {
               chartDim={{
                 chart: {
                   x1: 30,
-                  x2: 500,
+                  x2: 850,
                   y1: 100,
                   y2: 550
                 },
@@ -216,13 +216,13 @@ const NDV = ({ data }) => {
               data={probabilities}
               dim={{
                 chart: {
-                  x1: 30,
-                  x2: 500,
+                  x1: 50,
+                  x2: 600,
                   y1: 50,
                   y2: 400
                 },
                 height: 475,
-                width: 700
+                width: 750
               }}
               selectedSubtype={selectedSubtype}
               selectedClonotype={selectedClonotype}

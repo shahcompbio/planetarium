@@ -40,12 +40,13 @@ const Heatmap = ({
   const rowValues =
     rowLabels.map(row => row["value"]) ||
     _.uniq(data.map(record => record[row])).sort();
-  const chartWidth = chartDim["width"] - ROW_LABEL_SPACE;
+  const chartWidth =
+    chartDim["chart"]["x2"] - chartDim["chart"]["x1"] - ROW_LABEL_SPACE;
 
   const columnScale = d3
     .scaleBand()
     .domain(columnValues)
-    .range([0, chartWidth])
+    .range([chartDim["chart"]["x1"], chartWidth])
     .paddingInner(0.03);
 
   const rowScale = d3
@@ -123,8 +124,8 @@ const Heatmap = ({
         chartWidth
       );
     },
-    chartDim["width"],
-    chartDim["height"],
+    chartDim["chart"]["x2"] - chartDim["chart"]["x1"],
+    chartDim["chart"]["y2"] - chartDim["chart"]["y1"],
     [highlightedColumn, highlightedRow]
   );
 
@@ -167,7 +168,10 @@ const Heatmap = ({
             width: "100%",
             height: "100%",
             textAlign: "left",
-            paddingTop: 20
+            paddingTop: 20,
+            pointerEvents: "all",
+            curser: "pointer",
+            zIndex: 100
           }}
         >
           {infoText["HEATMAP"]["title"] + "    "}
