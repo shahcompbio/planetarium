@@ -25,8 +25,15 @@ const BAR_COLORS = [
   "#FDAE61",
   "#F46D43",
   "#D53E4F",
-  "#9E0142"
+  "#9E0142",
 ];
+
+const LEGEND_WIDTH = 250;
+const Y_AXIS_FONT = "normal 10px Helvetica";
+
+const CAT_LABEL_SPACE = 100;
+const CAT_LABEL_FONT = "bold 12px Helvetica";
+const TOP_PADDING = 5;
 
 const DataWrapper = ({ data, chartDim }) => {
   const [{ clonotypeParam, subtypeParam, fontSize }] = useDashboardState();
@@ -37,7 +44,7 @@ const DataWrapper = ({ data, chartDim }) => {
   const countedClonotypes = subtypes.reduce((countMap, subtype) => {
     const clonotypeCount = _.countBy(groupedSubtype[subtype], clonotypeParam);
 
-    const countFreq = _.countBy(Object.values(clonotypeCount), value =>
+    const countFreq = _.countBy(Object.values(clonotypeCount), (value) =>
       Math.min(value, 10)
     );
 
@@ -48,7 +55,7 @@ const DataWrapper = ({ data, chartDim }) => {
     <StackedBarProportion
       data={countedClonotypes}
       chartDim={chartDim}
-      barValues={Array.from(Array(10).keys())}
+      barValues={Array.from(Array(10).keys()).map((value) => value + 1)}
     />
   );
 };
@@ -57,16 +64,21 @@ const StackedBarProportion = ({ data, chartDim, barValues }) => {
   // make this flexible
   const categoryValues = Object.keys(data);
 
-  const chartWidth = chartDim["width"];
-  const chartHeight = chartDim["height"] - 50;
+  const chartWidth = chartDim["width"] - LEGEND_WIDTH;
+  const chartHeight = chartDim["height"] - CAT_LABEL_SPACE - TOP_PADDING;
 
   const catScale = d3
     .scaleBand()
     .domain(categoryValues)
     .range([0, chartWidth])
-    .paddingInner(0.03);
+    .paddingInner(0.03)
+    .paddingOuter(0.25);
 
-  const barScale = d3
+  const barYScale = d3
+    .scaleLinear()
+    .domain([1, 0])
+    .range([TOP_PADDING, chartHeight + TOP_PADDING]);
+  const barSizeScale = d3
     .scaleLinear()
     .domain([0, 1])
     .range([0, chartHeight]);
@@ -77,7 +89,7 @@ const StackedBarProportion = ({ data, chartDim, barValues }) => {
     .range(BAR_COLORS.slice(0, barValues.length));
 
   const ref = useCanvas(
-    canvas => {
+    (canvas) => {
       const context = canvas.getContext("2d");
 
       drawBars(
@@ -86,7 +98,17 @@ const StackedBarProportion = ({ data, chartDim, barValues }) => {
         categoryValues,
         barValues,
         catScale,
-        barScale,
+        barYScale,
+        barSizeScale,
+        colors
+      );
+      drawLabels(
+        context,
+        data,
+        categoryValues,
+        barValues,
+        catScale,
+        barYScale,
         colors
       );
     },
@@ -100,7 +122,7 @@ const StackedBarProportion = ({ data, chartDim, barValues }) => {
       style={{
         width: chartDim["width"],
         height: chartDim["height"],
-        position: "relative"
+        position: "relative",
       }}
     >
       <div
@@ -108,7 +130,7 @@ const StackedBarProportion = ({ data, chartDim, barValues }) => {
         style={{
           position: "absolute",
           pointerEvents: "all",
-          display: "flex"
+          display: "flex",
         }}
       >
         <canvas ref={ref} />
@@ -123,21 +145,21 @@ const drawBars = (
   categoryValues,
   barValues,
   catScale,
-  barScale,
+  barYScale,
+  barSizeScale,
   colors
 ) => {
-  categoryValues.map(cValue => {
+  categoryValues.map((cValue) => {
     const categoryData = data[cValue];
     const total = Object.values(categoryData).reduce((sum, x) => sum + x, 0);
 
-    var currHeight = barScale(1);
+    var currHeight = barYScale(0);
     const xPos = catScale(cValue);
 
-    barValues.map(bValue => {
+    barValues.map((bValue) => {
       if (categoryData.hasOwnProperty(bValue)) {
         context.fillStyle = colors(bValue);
-        const barHeight = barScale(categoryData[bValue] / total);
-
+        const barHeight = barSizeScale(categoryData[bValue] / total);
         context.fillRect(
           xPos,
           currHeight - barHeight,
@@ -148,6 +170,50 @@ const drawBars = (
         currHeight += barHeight * -1;
       }
     });
+  });
+};
+
+const drawLabels = (
+  context,
+  data,
+  categoryValues,
+  barValues,
+  catScale,
+  barScale,
+  colors
+) => {
+  const values = barScale.ticks(10);
+  context.font = Y_AXIS_FONT;
+  context.fillStyle = "black";
+  context.textAlign = "right";
+  context.lineWidth = 1;
+  context.textBaseline = "middle";
+
+  values.forEach((value) => {
+    context.fillText(
+      value * 100,
+      catScale(categoryValues[0]) - 2,
+      barScale(value)
+    );
+  });
+
+  context.font = CAT_LABEL_FONT;
+
+  categoryValues.forEach((cValue) => {
+    context.save();
+    context.translate(
+      catScale(cValue) + catScale.bandwidth() / 2,
+      barScale(0) + 7
+    );
+    context.rotate((322 * Math.PI) / 180);
+    if (cValue.indexOf("/") !== -1) {
+      context.fillText(cValue.split("/")[0] + "/", -5, 0);
+      context.fillText(cValue.split("/")[1], -5, 10);
+    } else {
+      context.fillText(cValue, -5, 5);
+    }
+    context.stroke();
+    context.restore();
   });
 };
 
@@ -163,13 +229,13 @@ const StackedBar = ({ chartName, data, chartDim }) => {
     // console.log(_.countBy(groupedData[subtype], clonotypeParam));
     var counter = {};
     const hitList = Object.entries(groupedClonotypes).map(
-      cellHits => cellHits[1].length
+      (cellHits) => cellHits[1].length
     );
 
-    hitList.forEach(x => (counter[x] = (counter[x] || 0) + 1));
+    hitList.forEach((x) => (counter[x] = (counter[x] || 0) + 1));
     final[subtype] = {
       total: hitList.length,
-      counts: counter
+      counts: counter,
     };
     return final;
   }, []);
@@ -191,7 +257,7 @@ const StackedBar = ({ chartName, data, chartDim }) => {
     .range(BAR_COLORS);
 
   const ref = useCanvas(
-    canvas => {
+    (canvas) => {
       const context = canvas.getContext("2d");
       drawLegend(context);
       drawBars(context);
@@ -214,8 +280,8 @@ const StackedBar = ({ chartName, data, chartDim }) => {
         var height;
         if (index === 9) {
           const allOther = Object.entries(counts)
-            .filter(row => row[0] > 9)
-            .map(row => row[1]);
+            .filter((row) => row[0] > 9)
+            .map((row) => row[1]);
           height =
             allOther.length > 0
               ? (allOther.reduce((a, b) => a + b) / total) * 100
@@ -289,7 +355,7 @@ const StackedBar = ({ chartName, data, chartDim }) => {
     context.textAlign = "right";
 
     changeFontSize(context, fontSize["axisLabelFontSize"]);
-    subtypes.map(subtype => {
+    subtypes.map((subtype) => {
       context.save();
       context.translate(x(subtype) + barWidth / 2, y(0) + 7);
       context.rotate((322 * Math.PI) / 180);
@@ -311,7 +377,7 @@ const StackedBar = ({ chartName, data, chartDim }) => {
         style={{
           width: chartDim["width"],
           height: chartDim["height"],
-          position: "relative"
+          position: "relative",
         }}
       >
         <div class="row">
@@ -321,7 +387,7 @@ const StackedBar = ({ chartName, data, chartDim }) => {
               style={{
                 pointerEvents: "all",
                 display: "flex",
-                paddingRight: 0
+                paddingRight: 0,
               }}
             >
               <canvas ref={ref} />
@@ -336,7 +402,7 @@ const StackedBar = ({ chartName, data, chartDim }) => {
                 height: 80,
                 marginLeft: -50,
                 paddingTop: 350,
-                textAlign: "left"
+                textAlign: "left",
               }}
             >
               <h6 class="card-title">
@@ -350,4 +416,4 @@ const StackedBar = ({ chartName, data, chartDim }) => {
     </div>
   );
 };
-export default StackedBar;
+export default DataWrapper;
