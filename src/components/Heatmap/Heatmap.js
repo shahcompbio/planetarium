@@ -7,6 +7,9 @@ import { useCanvas } from "../utils/useCanvas";
 import Info from "../../Info/Info";
 import infoText from "../../Info/InfoText";
 
+import Grid from "@material-ui/core/Grid";
+import Paper from "@material-ui/core/Paper";
+
 const HEATMAP_NULL_COLOR = "#eeeeee";
 const HEATMAP_COLOR = ["#ffec8b", "#d91e18"];
 const CELL_FONT = "normal 12px Helvetica";
@@ -30,13 +33,13 @@ const Heatmap = ({
   highlightedRow,
   columnLabels,
   rowLabels,
-  columnTotal,
+  columnTotal
 }) => {
   const columnValues =
-    columnLabels || _.uniq(data.map((record) => record[column])).sort();
+    columnLabels || _.uniq(data.map(record => record[column])).sort();
   const rowValues =
-    rowLabels.map((row) => row["value"]) ||
-    _.uniq(data.map((record) => record[row])).sort();
+    rowLabels.map(row => row["value"]) ||
+    _.uniq(data.map(record => record[row])).sort();
   const chartWidth = chartDim["width"] - ROW_LABEL_SPACE;
 
   const columnScale = d3
@@ -48,7 +51,10 @@ const Heatmap = ({
   const rowScale = d3
     .scaleBand()
     .domain(rowValues)
-    .range([COLUMN_LABEL_SPACE, chartDim["height"]])
+    .range([
+      COLUMN_LABEL_SPACE,
+      chartDim["chart"]["y2"] - chartDim["chart"]["y1"]
+    ])
     .paddingInner(0.03);
 
   const groupedColumn = _.groupBy(data, column);
@@ -59,8 +65,8 @@ const Heatmap = ({
         ..._.countBy(groupedColumn[columnName], row),
         total: columnTotal
           ? columnTotal[columnName]
-          : groupedColumn[columnName].length,
-      },
+          : groupedColumn[columnName].length
+      }
     }),
     {}
   );
@@ -88,7 +94,7 @@ const Heatmap = ({
     .domain([0, mostFreqCount]);
 
   const ref = useCanvas(
-    (canvas) => {
+    canvas => {
       const context = canvas.getContext("2d");
       drawHeatmap(
         context,
@@ -123,57 +129,61 @@ const Heatmap = ({
   );
 
   return (
-    <div class="card" style={{ margin: 10, paddingBottom: 10 }}>
-      <div
-        class="container"
+    <Paper
+      style={{
+        margin: 10,
+        height: chartDim["height"],
+        width: chartDim["width"],
+        padding: 10
+      }}
+    >
+      <Grid
+        container
+        direction="row"
+        justify="flex-start"
+        alignItems="flex-start"
         style={{
           width: chartDim["width"],
           height: chartDim["height"],
-          position: "relative",
+          position: "relative"
         }}
       >
-        <div class="row">
-          <div class="col-10">
-            <div
-              id="heatmap"
-              style={{
-                position: "absolute",
-                pointerEvents: "all",
-                display: "flex",
-              }}
-            >
-              <canvas ref={ref} />
-            </div>
-          </div>
-          <div class="col-2">
-            <div
-              class="card-title"
-              style={{
-                // marginTop: chartDim["chart"]["x1"],
-                width: "100%",
-                height: 80,
-                paddingTop: 40,
-                paddingLeft: -50,
-                textAlign: "left",
-              }}
-            >
-              {infoText["HEATMAP"]["title"] + "    "}
-
-              <Info name={"HEATMAP"} direction="s" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+        <Grid
+          item
+          xs={17}
+          sm={8}
+          id="heatmap"
+          style={{
+            pointerEvents: "all"
+          }}
+        >
+          <canvas ref={ref} />
+        </Grid>
+        <Grid
+          item
+          xs={7}
+          sm={4}
+          style={{
+            width: "100%",
+            height: "100%",
+            textAlign: "left",
+            paddingTop: 20
+          }}
+        >
+          {infoText["HEATMAP"]["title"] + "    "}
+          <Info name={"HEATMAP"} direction="s" />
+        </Grid>
+      </Grid>
+    </Paper>
   );
 };
 
-const formatLabelData = (values) => {
+const formatLabelData = values => {
   if (typeof values[0] === "string") {
-    return values.map((value) => ({
+    return values.map(value => ({
       value,
       label: value,
-      color: DEFAULT_LABEL_COLOR,
+      color: DEFAULT_LABEL_COLOR
     }));
   }
   return values;
@@ -191,7 +201,7 @@ const drawLabels = (
 ) => {
   context.font = LABEL_FONT;
 
-  columnValues.forEach((columnData) => {
+  columnValues.forEach(columnData => {
     const { value, label, color } = columnData;
 
     context.save();
@@ -226,7 +236,7 @@ const drawLabels = (
     context.fill();
   });
 
-  rowValues.forEach((rowData) => {
+  rowValues.forEach(rowData => {
     const { value, label, color } = rowData;
     context.font = "bold 12px Helvetica";
     context.fillStyle = color;
@@ -264,12 +274,12 @@ const drawHeatmap = (
   const cellWidth = columnScale.bandwidth();
   const cellHeight = rowScale.bandwidth();
 
-  columnValues.forEach((columnName) => {
+  columnValues.forEach(columnName => {
     const columnData = freqMap[columnName];
     const xPos = columnScale(columnName);
     const total = columnData["total"];
 
-    rowValues.forEach((rowName) => {
+    rowValues.forEach(rowName => {
       const rowFreq = columnData[rowName];
       const yPos = rowScale(rowName);
 

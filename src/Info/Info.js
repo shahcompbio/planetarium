@@ -3,7 +3,7 @@ import infoText from "./InfoText.js";
 import * as d3 from "d3";
 import d3Tip from "d3-tip";
 const tooltip = d3Tip()
-  .style("font-size", "8px")
+  .style("font-size", "12px")
   .style("width", 150)
   .style("box-shadow", "1px 1px 4px rgba(0,0,0,0.5)")
   .style("border-radius", "none")
@@ -15,35 +15,35 @@ const tooltip = d3Tip()
   .offset([-12, 0]);
 
 const Info = ({ name, direction }) => {
-  const info = d3.select("#" + name + "-info");
-  info.call(tooltip);
-  const height =
-    (infoText[name]["text"].match(/<br>/g) || []).length * 10.66 - 50;
-  d3.select("#" + name + "-info")
-    .on("mouseover", function(d) {
-      tooltip
-        .direction(direction)
-        .offset(function() {
-          if (direction == "n") {
-            return [-height, 0];
-          } else if (direction == "s") {
-            return [height, 0];
-          } else if (direction == "e") {
-            return [0, height];
-          } else if (direction == "w") {
-            return [0, -height];
-          }
-        })
-        .attr("class", "d3-tip " + direction)
-        .attr("id", name + "-tip")
-        .show(d, info.node())
-        .html(function(d) {
-          return (
-            "<strong>" + name + "</strong><p>" + infoText[name]["text"] + "</p>"
-          );
-        });
-    })
-    .on("mouseout", tooltip.hide);
+  if (name) {
+    const info = d3.select("#" + name + "-info");
+    info.call(tooltip);
+    const height =
+      (infoText[name]["text"].match(/<br>/g) || []).length * 10.66 - 50;
+    d3.select("#" + name + "-info")
+      .on("mouseover", function(d) {
+        tooltip
+          .direction(direction)
+          .offset(function() {
+            if (direction == "n") {
+              return [-height, 0];
+            } else if (direction == "s") {
+              return [height, 0];
+            } else if (direction == "e") {
+              return [0, height];
+            } else if (direction == "w") {
+              return [0, -height];
+            }
+          })
+          .attr("class", "d3-tip " + direction)
+          .attr("id", name + "-tip")
+          .show(d, info.node())
+          .html(function(d) {
+            return "<p>" + infoText[name]["text"] + "</p>";
+          });
+      })
+      .on("mouseout", tooltip.hide);
+  }
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

@@ -3,6 +3,9 @@ import * as d3 from "d3";
 import _ from "lodash";
 import { useDashboardState } from "../PlotState/dashboardState";
 
+import Grid from "@material-ui/core/Grid";
+import Paper from "@material-ui/core/Paper";
+
 import { useCanvas } from "../components/utils/useCanvas";
 import Info from "../Info/Info.js";
 import infoText from "../Info/InfoText.js";
@@ -25,7 +28,7 @@ const BAR_COLORS = [
   "#FDAE61",
   "#F46D43",
   "#D53E4F",
-  "#9E0142",
+  "#9E0142"
 ];
 
 const DataWrapper = ({ data, chartDim }) => {
@@ -37,7 +40,7 @@ const DataWrapper = ({ data, chartDim }) => {
   const countedClonotypes = subtypes.reduce((countMap, subtype) => {
     const clonotypeCount = _.countBy(groupedSubtype[subtype], clonotypeParam);
 
-    const countFreq = _.countBy(Object.values(clonotypeCount), (value) =>
+    const countFreq = _.countBy(Object.values(clonotypeCount), value =>
       Math.min(value, 10)
     );
 
@@ -78,7 +81,7 @@ const StackedBarProportion = ({ data, chartDim, barValues }) => {
     .range(BAR_COLORS.slice(0, barValues.length));
 
   const ref = useCanvas(
-    (canvas) => {
+    canvas => {
       const context = canvas.getContext("2d");
 
       drawBars(
@@ -105,7 +108,7 @@ const StackedBarProportion = ({ data, chartDim, barValues }) => {
       style={{
         width: chartDim["width"],
         height: chartDim["height"],
-        position: "relative",
+        position: "relative"
       }}
     >
       <div
@@ -113,7 +116,7 @@ const StackedBarProportion = ({ data, chartDim, barValues }) => {
         style={{
           position: "absolute",
           pointerEvents: "all",
-          display: "flex",
+          display: "flex"
         }}
       >
         <canvas ref={ref} />
@@ -131,14 +134,14 @@ const drawBars = (
   barScale,
   colors
 ) => {
-  categoryValues.map((cValue) => {
+  categoryValues.map(cValue => {
     const categoryData = data[cValue];
     const total = Object.values(categoryData).reduce((sum, x) => sum + x, 0);
 
     var currHeight = barScale(1);
     const xPos = catScale(cValue);
 
-    barValues.map((bValue) => {
+    barValues.map(bValue => {
       if (categoryData.hasOwnProperty(bValue)) {
         context.fillStyle = colors(bValue);
         const barHeight = barScale(categoryData[bValue] / total);
@@ -175,13 +178,13 @@ const StackedBar = ({ chartName, data, chartDim }) => {
     // console.log(_.countBy(groupedData[subtype], clonotypeParam));
     var counter = {};
     const hitList = Object.entries(groupedClonotypes).map(
-      (cellHits) => cellHits[1].length
+      cellHits => cellHits[1].length
     );
     // console.log(hitList);
-    hitList.forEach((x) => (counter[x] = (counter[x] || 0) + 1));
+    hitList.forEach(x => (counter[x] = (counter[x] || 0) + 1));
     final[subtype] = {
       total: hitList.length,
-      counts: counter,
+      counts: counter
     };
     return final;
   }, []);
@@ -204,7 +207,7 @@ const StackedBar = ({ chartName, data, chartDim }) => {
     .range(BAR_COLORS);
 
   const ref = useCanvas(
-    (canvas) => {
+    canvas => {
       const context = canvas.getContext("2d");
       drawLegend(context);
       drawBars(context);
@@ -227,8 +230,8 @@ const StackedBar = ({ chartName, data, chartDim }) => {
         var height;
         if (index === 9) {
           const allOther = Object.entries(counts)
-            .filter((row) => row[0] > 9)
-            .map((row) => row[1]);
+            .filter(row => row[0] > 9)
+            .map(row => row[1]);
           height =
             allOther.length > 0
               ? (allOther.reduce((a, b) => a + b) / total) * 100
@@ -302,7 +305,7 @@ const StackedBar = ({ chartName, data, chartDim }) => {
     context.textAlign = "right";
 
     changeFontSize(context, fontSize["axisLabelFontSize"]);
-    subtypes.map((subtype) => {
+    subtypes.map(subtype => {
       context.save();
       context.translate(x(subtype) + barWidth / 2, y(0) + 7);
       context.rotate((322 * Math.PI) / 180);
@@ -316,49 +319,48 @@ const StackedBar = ({ chartName, data, chartDim }) => {
       context.restore();
     });
   }
-
+  //style={{ margin: 10, width: chartDim["width"] }}
   return (
-    <div class="card" style={{ margin: 10, width: chartDim["width"] }}>
-      <div
-        class="container"
+    <Paper style={{ margin: 10 }}>
+      <Grid
+        container
+        direction="row"
+        justify="flex-start"
+        alignItems="flex-start"
         style={{
           width: chartDim["width"],
           height: chartDim["height"],
-          position: "relative",
+          position: "relative"
         }}
       >
-        <div class="row">
-          <div class="col-9">
-            <div
-              id="barchart"
-              style={{
-                pointerEvents: "all",
-                display: "flex",
-                paddingRight: 0,
-              }}
-            >
-              <canvas ref={ref} />
-            </div>
-          </div>
-          <div class="col-3">
-            <div
-              class="card-title"
-              style={{
-                width: "100%",
-                height: 80,
-                marginLeft: -50,
-                paddingTop: 350,
-                textAlign: "left",
-              }}
-            >
-              {infoText[chartName]["title"] + "    "}
+        <Grid
+          item
+          xs={17}
+          sm={8}
+          id="barchart"
+          style={{
+            pointerEvents: "all",
+            paddingRight: 0
+          }}
+        >
+          <canvas ref={ref} />
+        </Grid>
+        <Grid
+          item
+          xs={7}
+          sm={4}
+          style={{
+            textAlign: "right",
+            marginTop: 10,
+            paddingRight: 15
+          }}
+        >
+          {infoText[chartName]["title"] + "    "}
 
-              <Info name={chartName} direction="s" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          <Info name={chartName} direction="s" />
+        </Grid>
+      </Grid>
+    </Paper>
   );
 };
 export default StackedBar;

@@ -13,6 +13,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Popper from "@material-ui/core/Popper";
 import Typography from "@material-ui/core/Typography";
 
+import Grid from "@material-ui/core/Grid";
+
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
@@ -102,20 +104,31 @@ const NDV = ({ data }) => {
         }}
         reducer={dashboardReducer}
       >
-        <div>
-          {(selectedClonotype["selected"] || selectedSubtype["selected"]) && (
-            <Popup
-              selected={
-                selectedClonotype["selected"] || selectedSubtype["selected"]
-              }
-              setSelected={() => {
-                setSelectedClonotype(initialState["defaultSelectedObject"]);
-                setSelectedSubtype(initialState["defaultSelectedObject"]);
-              }}
-              type={selectedClonotype["selected"] ? "Clonotype" : "Subtype"}
-            />
-          )}
-          <div style={{ display: "flex" }}>
+        {(selectedClonotype["selected"] || selectedSubtype["selected"]) && (
+          <Popup
+            selected={
+              selectedClonotype["selected"] || selectedSubtype["selected"]
+            }
+            setSelected={() => {
+              setSelectedClonotype(initialState["defaultSelectedObject"]);
+              setSelectedSubtype(initialState["defaultSelectedObject"]);
+            }}
+            type={selectedClonotype["selected"] ? "Clonotype" : "Subtype"}
+          />
+        )}
+        <Grid
+          container
+          direction="column"
+          justify="flex-start"
+          alignItems="flex-start"
+        >
+          <Grid
+            item
+            container
+            direction="row"
+            justify="flex-start"
+            alignItems="flex-start"
+          >
             <Layout
               chartName={"UMAP"}
               data={metadata}
@@ -140,8 +153,14 @@ const NDV = ({ data }) => {
                 setSelectedSubtype({ ...subtype });
               }}
             />
-          </div>
-          <div style={{ display: "flex" }}>
+          </Grid>
+          <Grid
+            item
+            container
+            direction="row"
+            justify="flex-start"
+            alignItems="flex-start"
+          >
             <Heatmap
               data={probabilities}
               chartDim={{
@@ -149,7 +168,7 @@ const NDV = ({ data }) => {
                   x1: 30,
                   x2: 500,
                   y1: 100,
-                  y2: 500
+                  y2: 550
                 },
                 height: 500,
                 width: 750
@@ -184,8 +203,14 @@ const NDV = ({ data }) => {
                 width: 750
               }}
             />
-          </div>
-          <div style={{ display: "flex" }}>
+          </Grid>
+          <Grid
+            item
+            container
+            direction="row"
+            justify="flex-start"
+            alignItems="flex-start"
+          >
             <Layout
               chartName={"BARPLOT"}
               data={probabilities}
@@ -216,7 +241,7 @@ const NDV = ({ data }) => {
                   x2: 600,
                   y2: 400
                 },
-                height: 500,
+                height: 475,
                 width: 750
               }}
               highlighted={
@@ -229,8 +254,8 @@ const NDV = ({ data }) => {
                 setSelectedClonotype(clonotype)
               }
             />
-          </div>
-        </div>
+          </Grid>
+        </Grid>
       </DashboardProvider>
     </MuiThemeProvider>
   );

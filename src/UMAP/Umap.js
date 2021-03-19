@@ -4,6 +4,9 @@ import * as d3Array from "d3-array";
 import Info from "../Info/Info.js";
 import infoText from "../Info/InfoText.js";
 
+import Grid from "@material-ui/core/Grid";
+import Paper from "@material-ui/core/Paper";
+
 import { useDashboardState } from "../PlotState/dashboardState";
 
 import { canvasInit, drawAxis } from "../DrawingUtils/utils.js";
@@ -576,74 +579,87 @@ const Umap = ({
   }
 
   return (
-    <div class="card" style={{ margin: 10 }}>
-      <div
-        class="container"
+    <Paper style={{ margin: 10 }}>
+      <Grid
+        container
+        direction="row"
+        justify="flex-start"
+        alignItems="flex-start"
         style={{
           width: chartDim["width"] + 250,
           height: chartDim["height"],
           position: "relative"
         }}
       >
-        <div class="row">
-          <div
-            class="col-9"
-            id="scatterplot"
+        <Grid
+          item
+          xs={18}
+          sm={9}
+          id="scatterplot"
+          style={{
+            pointerEvents: "all",
+            display: "flex",
+            paddingRight: 0
+          }}
+        >
+          <canvas id="umapCanvas" />
+        </Grid>
+        <Grid
+          item
+          xs={6}
+          sm={3}
+          style={{ paddingLeft: 0 }}
+          container
+          direction="column"
+          justify="flex-start"
+          alignItems="flex-start"
+        >
+          <Grid
+            item
             style={{
-              pointerEvents: "all",
-              display: "flex",
-              paddingRight: 0
+              marginTop: chartDim["chart"]["x1"],
+              width: "100%",
+              height: 80,
+              paddingTop: 40,
+              marginLeft: -38,
+              textAlign: "left"
             }}
           >
-            <canvas id="umapCanvas" />
-          </div>
-          <div class="col-3" style={{ paddingLeft: 0 }}>
-            <div
-              class="card-title"
-              style={{
-                marginTop: chartDim["chart"]["x1"],
-                width: "100%",
-                height: 80,
-                paddingTop: 40,
-                textAlign: "left"
-              }}
-            >
-              {infoText[chartName]["title"] + "    "}
+            {infoText[chartName]["title"] + "    "}
 
-              <Info name={chartName} direction="s" />
-            </div>
-            <div class="" style={{ marginLeft: -50, height: 250 }}>
-              <svg id="umapLegend" height={250} />
-            </div>
-            <div style={{ marginLeft: -100 }}>
-              <label
-                style={{ fontSize: 12, marginTop: -20 }}
-                for="customRange2"
-                class="form-label"
-              >
-                Radius Adjustment
-              </label>
-            </div>
-            <div style={{ marginLeft: -100 }}>
-              <input
-                type="range"
-                min="4"
-                max={radiusMax}
-                step="0.5"
-                value={radiusAdjust}
-                onChange={event => {
-                  setRadius(event.target.value);
-                }}
-                style={{ direction: "rtl" }}
-                class="form-range"
-                id="customRange2"
-                disabled={selectedClonotype !== null}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+            <Info name={chartName} direction="s" />
+          </Grid>
+          <Grid item style={{ marginLeft: -50, height: 250 }}>
+            <svg id="umapLegend" height={250} />
+          </Grid>
+          <Grid item style={{ marginLeft: -38 }}>
+            <label
+              style={{ fontSize: 12, marginTop: -20 }}
+              for="customRange2"
+              class="form-label"
+            >
+              Radius Adjustment
+            </label>
+          </Grid>
+          <Grid style={{ marginLeft: -38 }}>
+            <input
+              type="range"
+              min="4"
+              max={radiusMax}
+              step="0.5"
+              value={radiusAdjust}
+              onChange={event => {
+                setRadius(event.target.value);
+              }}
+              style={{ direction: "rtl" }}
+              class="form-range"
+              id="customRange2"
+              disabled={selectedClonotype !== null}
+            />
+          </Grid>
+        </Grid>
+      </Grid>
+    </Paper>
   );
 };
 
