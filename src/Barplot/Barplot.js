@@ -3,6 +3,9 @@ import * as d3 from "d3";
 import _ from "lodash";
 import { useDashboardState } from "../PlotState/dashboardState";
 
+import Grid from "@material-ui/core/Grid";
+import Paper from "@material-ui/core/Paper";
+
 import { useCanvas } from "../components/utils/useCanvas";
 import Info from "../Info/Info.js";
 import infoText from "../Info/InfoText.js";
@@ -231,7 +234,7 @@ const StackedBar = ({ chartName, data, chartDim }) => {
     const hitList = Object.entries(groupedClonotypes).map(
       (cellHits) => cellHits[1].length
     );
-
+    // console.log(hitList);
     hitList.forEach((x) => (counter[x] = (counter[x] || 0) + 1));
     final[subtype] = {
       total: hitList.length,
@@ -369,51 +372,48 @@ const StackedBar = ({ chartName, data, chartDim }) => {
       context.restore();
     });
   }
-
+  //style={{ margin: 10, width: chartDim["width"] }}
   return (
-    <div class="card" style={{ margin: 10, width: chartDim["width"] }}>
-      <div
-        class="container"
+    <Paper style={{ margin: 10 }}>
+      <Grid
+        container
+        direction="row"
+        justify="flex-start"
+        alignItems="flex-start"
         style={{
           width: chartDim["width"],
           height: chartDim["height"],
           position: "relative",
         }}
       >
-        <div class="row">
-          <div class="col-9">
-            <div
-              id="barchart"
-              style={{
-                pointerEvents: "all",
-                display: "flex",
-                paddingRight: 0,
-              }}
-            >
-              <canvas ref={ref} />
-            </div>
-          </div>
-          <div class="col-3">
-            <div
-              class="card-title"
-              style={{
-                pointerEvents: "all",
-                width: "100%",
-                height: 80,
-                marginLeft: -50,
-                paddingTop: 350,
-                textAlign: "left",
-              }}
-            >
-              <h6 class="card-title">
-                {infoText[chartName]["title"] + "    "}
-                <Info name={chartName} direction="n" />
-              </h6>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+        <Grid
+          item
+          xs={17}
+          sm={8}
+          id="barchart"
+          style={{
+            pointerEvents: "all",
+            paddingRight: 0,
+          }}
+        >
+          <canvas ref={ref} />
+        </Grid>
+        <Grid
+          item
+          xs={7}
+          sm={4}
+          style={{
+            textAlign: "right",
+            marginTop: 10,
+            paddingRight: 15,
+          }}
+        >
+          {infoText[chartName]["title"] + "    "}
+
+          <Info name={chartName} direction="s" />
+        </Grid>
+      </Grid>
+    </Paper>
   );
 };
-export default DataWrapper;
+export default StackedBar;

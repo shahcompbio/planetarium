@@ -4,6 +4,9 @@ import _ from "lodash";
 import Info from "../Info/Info.js";
 import infoText from "../Info/InfoText.js";
 
+import Grid from "@material-ui/core/Grid";
+import Paper from "@material-ui/core/Paper";
+
 import { useDashboardState } from "../PlotState/dashboardState";
 import { drawPoint, clearAll } from "./Umap.js";
 import { canvasInit, drawAxis } from "../DrawingUtils/utils.js";
@@ -434,52 +437,54 @@ const SubtypeUmap = ({
     }, {});
   }
   return (
-    <div class="card" style={{ margin: 10 }}>
-      <div
-        class="container"
+    <Paper style={{ margin: 10 }}>
+      <Grid
+        container
+        direction="row"
+        justify="flex-start"
+        alignItems="flex-start"
         style={{
           width: chartDim["width"] + 200,
           height: chartDim["height"],
           position: "relative",
         }}
       >
-        <div class="row">
-          <div
-            class="col-9"
-            id="subTypeUmap"
+        <Grid
+          item
+          xs={18}
+          sm={9}
+          id="subTypeUmap"
+          style={{
+            pointerEvents: "all",
+            display: "flex",
+            paddingRight: 0,
+          }}
+        >
+          <canvas id="subTypeUmapCanvas" />
+        </Grid>
+        <Grid item xs={6} sm={3} style={{ paddingLeft: 0 }}>
+          <Grid
+            item
             style={{
-              pointerEvents: "all",
-              display: "flex",
-              paddingRight: 0,
+              marginTop: chartDim["chart"]["x1"],
+              width: "100%",
+              height: 80,
+              paddingTop: 40,
+              marginLeft: -83,
+              paddingLeft: -50,
+              textAlign: "left",
             }}
           >
-            <canvas id="subTypeUmapCanvas" />
-          </div>
-          <div class="col-3" style={{ paddingLeft: 0, pointerEvents: "all" }}>
-            <div
-              class="card-title"
-              style={{
-                marginTop: chartDim["chart"]["x1"],
-                width: "100%",
-                height: 80,
-                paddingTop: 40,
-                paddingLeft: -50,
-                textAlign: "left",
-                fontSize: 16,
-              }}
-            >
-              <h6 class="card-title">
-                {infoText[chartName]["title"] + "    "}
-                <Info name={chartName} direction="s" />{" "}
-              </h6>
-            </div>
-            <div style={{ marginLeft: -50, height: 250 }}>
-              <svg id="subTypeUmapLegend" style={{ float: "right" }} />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+            {infoText[chartName]["title"] + "    "}
+
+            <Info name={chartName} direction="s" />
+          </Grid>
+          <Grid item style={{ marginLeft: -50, height: 250 }}>
+            <svg id="subTypeUmapLegend" style={{ float: "right" }} />
+          </Grid>
+        </Grid>
+      </Grid>
+    </Paper>
   );
 };
 

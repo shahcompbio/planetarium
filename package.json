@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^4.11.3",
+    "@material-ui/icons": "^4.11.2",
     "bootstrap": "^4.6.0",
     "d3": "^5.16.0",
     "d3-array": "^2.11.0",

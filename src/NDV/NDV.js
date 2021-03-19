@@ -6,10 +6,22 @@ import "./App.css";
 import dashboardReducer, { initialState } from "../PlotState/dashboardReducer";
 import { DashboardProvider } from "../PlotState/dashboardState";
 import Heatmap from "../components/Heatmap/Heatmap";
-import Modal from "react-bootstrap/Modal";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Overlay from "react-bootstrap/Overlay";
-import Button from "react-bootstrap/Button";
+
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
+import { makeStyles } from "@material-ui/core/styles";
+import Popper from "@material-ui/core/Popper";
+import Typography from "@material-ui/core/Typography";
+
+import Grid from "@material-ui/core/Grid";
+
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import CardHeader from "@material-ui/core/CardHeader";
+
+import { theme } from "../theme/theme.js";
+import { MuiThemeProvider } from "@material-ui/core/styles";
+import CssBaseline from "@material-ui/core/CssBaseline";
 
 const NDV = ({ data }) => {
   const [selectedSubtype, setSelectedSubtype] = useState(
@@ -20,13 +32,14 @@ const NDV = ({ data }) => {
   );
 
   const { metadata, probabilities, degs } = data;
-  const target = useRef(null);
 
   const filteredMetadata = metadata.filter(
-    row => row[initialState["clonotypeParam"]] !== "None"
+    (row) => row[initialState["clonotypeParam"]] !== "None"
   );
   const topTen = Object.entries(
-    _.countBy(filteredMetadata.map(row => row[initialState["clonotypeParam"]]))
+    _.countBy(
+      filteredMetadata.map((row) => row[initialState["clonotypeParam"]])
+    )
   )
     .sort(([, a], [, b]) => b - a)
     .slice(0, 10);
@@ -37,7 +50,7 @@ const NDV = ({ data }) => {
   }, {});
 
   const sampleData = metadata.filter(
-    row =>
+    (row) =>
       sampleTen.hasOwnProperty(row[initialState["clonotypeParam"]]) &&
       row[initialState["clonotypeParam"]] !== "None"
   );
@@ -61,7 +74,7 @@ const NDV = ({ data }) => {
     "#b5762a",
     "#5aebed",
     "#8f8f3f",
-    "#ed1a1a"
+    "#ed1a1a",
   ];
   var colors = d3
     .scaleOrdinal()
@@ -73,13 +86,14 @@ const NDV = ({ data }) => {
     .map((clonotype, index) => ({
       value: clonotype,
       label: `SEQ${index + 1} - ${clonotype}`,
-      color: colors(clonotype)
+      color: colors(clonotype),
     }));
 
   const subtypeTotals = _.countBy(metadata, initialState["subtypeParam"]);
 
   return (
-    <div className="App">
+    <MuiThemeProvider theme={theme}>
+      <CssBaseline />
       <DashboardProvider
         initialState={{
           ...initialState,
@@ -88,30 +102,41 @@ const NDV = ({ data }) => {
           topTenNumbering: topTenNumbering,
           topTen: topTen,
           colors: colors,
-          clonotypes: clonotypes
+          clonotypes: clonotypes,
         }}
         reducer={dashboardReducer}
       >
-        <div>
-          {(selectedClonotype["selected"] || selectedSubtype["selected"]) && (
-            <Popup
-              selected={
-                selectedClonotype["selected"] || selectedSubtype["selected"]
-              }
-              setSelected={() => {
-                setSelectedClonotype(initialState["defaultSelectedObject"]);
-                setSelectedSubtype(initialState["defaultSelectedObject"]);
-              }}
-              type={selectedClonotype["selected"] ? "Clonotype" : "Subtype"}
-            />
-          )}
-          <div style={{ display: "flex" }}>
+        {(selectedClonotype["selected"] || selectedSubtype["selected"]) && (
+          <Popup
+            selected={
+              selectedClonotype["selected"] || selectedSubtype["selected"]
+            }
+            setSelected={() => {
+              setSelectedClonotype(initialState["defaultSelectedObject"]);
+              setSelectedSubtype(initialState["defaultSelectedObject"]);
+            }}
+            type={selectedClonotype["selected"] ? "Clonotype" : "Subtype"}
+          />
+        )}
+        <Grid
+          container
+          direction="column"
+          justify="flex-start"
+          alignItems="flex-start"
+        >
+          <Grid
+            item
+            container
+            direction="row"
+            justify="flex-start"
+            alignItems="flex-start"
+          >
             <Layout
               chartName={"UMAP"}
               data={metadata}
               selectedClonotype={selectedClonotype["selected"]}
               hoveredClonotype={selectedClonotype["hover"]}
-              setSelectedClonotype={clonotype => {
+              setSelectedClonotype={(clonotype) => {
                 if (clonotype["selected"]) {
                   setSelectedSubtype(initialState["defaultSelectedObject"]);
                 }
@@ -123,15 +148,21 @@ const NDV = ({ data }) => {
               data={metadata}
               selectedSubtype={selectedSubtype["selected"]}
               hoveredSubtype={selectedSubtype["hover"]}
-              setSelectedSubtype={subtype => {
+              setSelectedSubtype={(subtype) => {
                 if (subtype["selected"]) {
                   setSelectedClonotype(initialState["defaultSelectedObject"]);
                 }
                 setSelectedSubtype({ ...subtype });
               }}
             />
-          </div>
-          <div style={{ display: "flex" }}>
+          </Grid>
+          <Grid
+            item
+            container
+            direction="row"
+            justify="flex-start"
+            alignItems="flex-start"
+          >
             <Heatmap
               data={probabilities}
               chartDim={{
@@ -139,10 +170,10 @@ const NDV = ({ data }) => {
                   x1: 30,
                   x2: 500,
                   y1: 100,
-                  y2: 500
+                  y2: 550,
                 },
                 height: 500,
-                width: 750
+                width: 750,
               }}
               column={initialState["subtypeParam"]}
               row={initialState["clonotypeParam"]}
@@ -168,14 +199,20 @@ const NDV = ({ data }) => {
                   x1: 50,
                   y1: 50,
                   x2: 600,
-                  y2: 400
+                  y2: 400,
                 },
                 height: 500,
-                width: 750
+                width: 750,
               }}
             />
-          </div>
-          <div style={{ display: "flex" }}>
+          </Grid>
+          <Grid
+            item
+            container
+            direction="row"
+            justify="flex-start"
+            alignItems="flex-start"
+          >
             <Layout
               chartName={"BARPLOT"}
               data={probabilities}
@@ -183,16 +220,16 @@ const NDV = ({ data }) => {
                 chart: {
                   x1: 15,
                   x2: 500,
-                  y1: 30,
-                  y2: 400
+                  y1: 50,
+                  y2: 400,
                 },
                 height: 475,
-                width: 750
+                width: 700,
               }}
               selectedSubtype={selectedSubtype}
               selectedClonotype={selectedClonotype}
-              setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
-              setSelectedClonotype={clonotype =>
+              setSelectedSubtype={(subtype) => setSelectedSubtype(subtype)}
+              setSelectedClonotype={(clonotype) =>
                 setSelectedClonotype(clonotype)
               }
             />
@@ -204,54 +241,62 @@ const NDV = ({ data }) => {
                   x1: 100,
                   y1: 50,
                   x2: 600,
-                  y2: 400
+                  y2: 400,
                 },
-                height: 500,
-                width: 750
+                height: 475,
+                width: 750,
               }}
               highlighted={
                 selectedClonotype["hover"] || selectedClonotype["selected"]
               }
               selectedSubtype={selectedSubtype}
               selectedClonotype={selectedClonotype}
-              setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
-              setSelectedClonotype={clonotype =>
+              setSelectedSubtype={(subtype) => setSelectedSubtype(subtype)}
+              setSelectedClonotype={(clonotype) =>
                 setSelectedClonotype(clonotype)
               }
             />
-          </div>
-        </div>
+          </Grid>
+        </Grid>
       </DashboardProvider>
-    </div>
+    </MuiThemeProvider>
   );
 };
-const Popup = ({ selected, setSelected, type }) => (
-  <div
-    class="fixed-top"
-    style={{
-      width: 150,
-      float: "right",
-      right: "10px",
-      top: "10px",
-      left: "auto"
-    }}
-  >
-    <div class="card">
-      <div class="card-header">Selected {type}:</div>
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item">
-          {selected}
-          <button
-            type="button"
-            class="close"
-            aria-label="Close"
-            onClick={setSelected}
-          >
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </li>
-      </ul>
-    </div>
-  </div>
-);
+const useStyles = makeStyles({
+  root: {
+    minWidth: 275,
+  },
+  poppr: {
+    width: 150,
+    float: "right",
+    right: "100px",
+    top: "10px",
+    left: "auto",
+  },
+});
+const Popup = ({ selected, setSelected, type }) => {
+  const classes = useStyles();
+  return (
+    <Popper
+      open={true}
+      placement={"bottom"}
+      transition
+      className={classes.popper}
+    >
+      <Card className={classes.root} variant="outlined">
+        <CardHeader
+          action={
+            <IconButton aria-label="settings">
+              <CloseIcon onClick={setSelected} />
+            </IconButton>
+          }
+          title={"Selected " + type}
+        />
+        <CardContent>
+          <Typography variant="body">{selected}</Typography>
+        </CardContent>
+      </Card>
+    </Popper>
+  );
+};
 export default NDV;

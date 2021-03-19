@@ -7,6 +7,9 @@ import { useCanvas } from "../utils/useCanvas";
 import Info from "../../Info/Info";
 import infoText from "../../Info/InfoText";
 
+import Grid from "@material-ui/core/Grid";
+import Paper from "@material-ui/core/Paper";
+
 const HEATMAP_NULL_COLOR = "#eeeeee";
 const HEATMAP_COLOR = ["#ffec8b", "#d91e18"];
 const CELL_FONT = "normal 12px Helvetica";
@@ -48,7 +51,10 @@ const Heatmap = ({
   const rowScale = d3
     .scaleBand()
     .domain(rowValues)
-    .range([COLUMN_LABEL_SPACE, chartDim["height"]])
+    .range([
+      COLUMN_LABEL_SPACE,
+      chartDim["chart"]["y2"] - chartDim["chart"]["y1"],
+    ])
     .paddingInner(0.03);
 
   const groupedColumn = _.groupBy(data, column);
@@ -123,60 +129,60 @@ const Heatmap = ({
   );
 
   return (
-    <div
-      class="card"
-      style={{ margin: 10, paddingBottom: 10, paddingLeft: 10 }}
+    <Paper
+      style={{
+        margin: 10,
+        height: chartDim["height"],
+        width: chartDim["width"],
+        padding: 10,
+      }}
     >
-      <div
-        class="container"
+      <Grid
+        container
+        direction="row"
+        justify="flex-start"
+        alignItems="flex-start"
         style={{
           width: chartDim["width"],
           height: chartDim["height"],
           position: "relative",
         }}
       >
-        <div class="row">
-          <div class="col-10">
-            <div
-              id="heatmap"
-              style={{
-                position: "absolute",
-                pointerEvents: "all",
-                display: "flex",
-              }}
-            >
-              <canvas ref={ref} />
-            </div>
-          </div>
-          <div class="col-2">
-            <div
-              class="card-title"
-              style={{
-                width: "100%",
-                height: 80,
-                paddingTop: 40,
-                paddingLeft: -50,
-                textAlign: "left",
-              }}
-            >
-              <h6 class="card-title">
-                {infoText["HEATMAP"]["title"] + "    "}
-
-                <Info name={"HEATMAP"} direction="s" />
-              </h6>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+        <Grid
+          item
+          xs={17}
+          sm={8}
+          id="heatmap"
+          style={{
+            pointerEvents: "all",
+          }}
+        >
+          <canvas ref={ref} />
+        </Grid>
+        <Grid
+          item
+          xs={7}
+          sm={4}
+          style={{
+            width: "100%",
+            height: "100%",
+            textAlign: "left",
+            paddingTop: 20,
+          }}
+        >
+          {infoText["HEATMAP"]["title"] + "    "}
+          <Info name={"HEATMAP"} direction="s" />
+        </Grid>
+      </Grid>
+    </Paper>
   );
 };
 
 const formatLabelData = (values) => {
-  if (typeof values[0] !== "object") {
+  if (typeof values[0] === "string") {
     return values.map((value) => ({
-      value: value,
-      label: value.toString(),
+      value,
+      label: value,
       color: DEFAULT_LABEL_COLOR,
     }));
   }
