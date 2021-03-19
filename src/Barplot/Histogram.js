@@ -61,12 +61,30 @@ const Histogram = ({ chartName, data, chartDim, highlighted }) => {
     [highlighted]
   );
   function drawKde(context, data) {
-    /*  const kde = kernelDensityEstimator(kernelEpanechnikov(7), x.ticks(40));
+    const kde = kernelDensityEstimator(kernelEpanechnikov(7), x.ticks(40));
     const density = kde(
       data.map(function(d) {
         return d[logXParam];
       })
-    );*/
+    );
+  }
+  // Function to compute density
+  function kernelDensityEstimator(kernel, X) {
+    return function(V) {
+      return X.map(function(x) {
+        return [
+          x,
+          d3.mean(V, function(v) {
+            return kernel(x - v);
+          }),
+        ];
+      });
+    };
+  }
+  function kernelEpanechnikov(k) {
+    return function(v) {
+      return Math.abs((v /= k)) <= 1 ? (0.75 * (1 - v * v)) / k : 0;
+    };
   }
   function drawBars(context, data) {
     context.fillStyle = "#6bb9f0";
@@ -188,6 +206,9 @@ const Histogram = ({ chartName, data, chartDim, highlighted }) => {
             textAlign: "right",
             marginTop: 10,
             paddingRight: 15,
+            pointerEvents: "all",
+            curser: "pointer",
+            zIndex: 100,
           }}
         >
           {infoText[chartName]["title"] + "    "}

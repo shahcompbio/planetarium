@@ -115,8 +115,9 @@ const StackedBarProportion = ({ data, chartDim, barValues }) => {
         colors
       );
     },
-    chartDim["width"],
-    chartDim["height"],
+
+    chartDim["chart"]["x2"] - chartDim["chart"]["x1"],
+    chartDim["chart"]["y2"] - chartDim["chart"]["y1"],
     []
   );
 
@@ -163,6 +164,7 @@ const drawBars = (
       if (categoryData.hasOwnProperty(bValue)) {
         context.fillStyle = colors(bValue);
         const barHeight = barSizeScale(categoryData[bValue] / total);
+
         context.fillRect(
           xPos,
           currHeight - barHeight,
@@ -406,6 +408,9 @@ const StackedBar = ({ chartName, data, chartDim }) => {
             textAlign: "right",
             marginTop: 10,
             paddingRight: 15,
+            pointerEvents: "all",
+            curser: "pointer",
+            zIndex: 100,
           }}
         >
           {infoText[chartName]["title"] + "    "}

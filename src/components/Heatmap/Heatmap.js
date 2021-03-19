@@ -45,7 +45,7 @@ const Heatmap = ({
   const columnScale = d3
     .scaleBand()
     .domain(columnValues)
-    .range([0, chartWidth])
+    .range([chartDim["chart"]["x1"], chartWidth])
     .paddingInner(0.03);
 
   const rowScale = d3
@@ -123,8 +123,8 @@ const Heatmap = ({
         chartWidth
       );
     },
-    chartDim["width"],
-    chartDim["height"],
+    chartDim["chart"]["x2"] - chartDim["chart"]["x1"],
+    chartDim["chart"]["y2"] - chartDim["chart"]["y1"],
     [highlightedColumn, highlightedRow]
   );
 
@@ -168,6 +168,9 @@ const Heatmap = ({
             height: "100%",
             textAlign: "left",
             paddingTop: 20,
+            pointerEvents: "all",
+            curser: "pointer",
+            zIndex: 100,
           }}
         >
           {infoText["HEATMAP"]["title"] + "    "}

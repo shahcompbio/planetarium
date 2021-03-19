@@ -14,12 +14,12 @@ const infoText = {
     text:
       "Frequency of the top 10 TRB <br>sequences is shown for each of the identified subtypes. <br>The heatmap intensity captures <br>the relative proportion of the <br>given sequence with respect to <br>total number of TCR+ sequences within each subtype <br>(Frequency of Sequence in Subtype / Total <br>TCR+ Cells in Subtype)."
   },
-  BARPLOT: {
+  HISTOGRAM: {
     title: "Generation Probabilities",
     text:
       "Distribution of log10 generation <br>probabilities generated from OLGA for all TRB sequences. <br>Description of the OLGA method can be found here: <br>https://academic.oup.com/bioinformatics/article/35/17/2974/5292315/. <br>The log10 probability of each top 10 TRB sequence <br>can be referenced with respect to the entire distribution<br> of the sample. Sequences with a lower <br>probability of generation will be found in the left<br> tail of the distribution."
   },
-  HISTOGRAM: {
+  BARPLOT: {
     title: "Clonotype Expansion",
     text:
       "Visualization of clonal expansion in <br>each subtype by plotting the fraction of <br>cells that belong to sequences expanded to N cells.<br> The fraction of cells with sequences that belong<br> to a single cell (labeled 1 in legend) describes<br> the relative proportion of unexpanded clonotypes.<br> The fraction of cells with sequences<br>that belong to >10 cells describes the relative proportion<br> of highly expanded clonotypes within the subtype."
