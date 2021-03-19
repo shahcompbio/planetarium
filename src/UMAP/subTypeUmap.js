@@ -15,15 +15,15 @@ const SubtypeUmap = ({
   chartDim,
   selectedSubtype,
   hoveredSubtype,
-  setSelectedSubtype
+  setSelectedSubtype,
 }) => {
   const [{ xParam, yParam, subtypeParam, fontSize }] = useDashboardState();
 
   const [drawReady, setDrawReady] = useState(false);
   const [context, saveContext] = useState(null);
 
-  const yData = data.map(d => parseFloat(d[yParam]));
-  const xData = data.map(d => parseFloat(d[xParam]));
+  const yData = data.map((d) => parseFloat(d[yParam]));
+  const xData = data.map((d) => parseFloat(d[xParam]));
 
   const yMin = Math.min(...yData);
   const yMax = Math.max(...yData);
@@ -56,7 +56,7 @@ const SubtypeUmap = ({
       "#FDAE61",
       "#F46D43",
       "#D53E4F",
-      "#9E0142"
+      "#9E0142",
     ]);
 
   useEffect(() => {
@@ -101,7 +101,7 @@ const SubtypeUmap = ({
     context.lineWidth = 1;
     context.strokeStyle = "black";
 
-    data.forEach(point => {
+    data.forEach((point) => {
       const fill =
         selection && selection !== point[subtypeParam]
           ? "#e8e8e8"
@@ -110,8 +110,8 @@ const SubtypeUmap = ({
     });
     if (selection) {
       data
-        .filter(point => point[subtypeParam] === selection)
-        .forEach(point => {
+        .filter((point) => point[subtypeParam] === selection)
+        .forEach((point) => {
           drawPoint(
             context,
             point,
@@ -135,10 +135,14 @@ const SubtypeUmap = ({
     colors,
     selection
   ) {
-    const allBoxes = Object.keys(subTypes).map(subtype => {
+    const allBoxes = Object.keys(subTypes).map((subtype) => {
       const type = subtype.replace(/\s/g, "");
-      const ySubtypeData = subTypes[subtype].map(d => x(parseFloat(d[yParam])));
-      const xSubtypeData = subTypes[subtype].map(d => y(parseFloat(d[xParam])));
+      const ySubtypeData = subTypes[subtype].map((d) =>
+        x(parseFloat(d[yParam]))
+      );
+      const xSubtypeData = subTypes[subtype].map((d) =>
+        y(parseFloat(d[xParam]))
+      );
 
       const xDataNoOutliers = filterOutliers(xSubtypeData, [50, 75]);
       const yDataNoOutliers = filterOutliers(ySubtypeData, [50, 75]);
@@ -159,7 +163,7 @@ const SubtypeUmap = ({
       return {
         type: type,
         subtype: subtype,
-        box: getBoundingBox(remainingPoints)
+        box: getBoundingBox(remainingPoints),
       };
     });
     /*  const avgBoxSize =
@@ -168,7 +172,7 @@ const SubtypeUmap = ({
         .reduce((a, b) => a + b) / allBoxes.length;
 */
     //if the bounding box is larger than 1.5 the  avg do not add label
-    allBoxes.forEach(box => {
+    allBoxes.forEach((box) => {
       //    if (
       //      !(x(box["box"]["right"]) - x(box["box"]["left"]) * 1.5 > avgBoxSize)
       //    ) {
@@ -192,27 +196,27 @@ const SubtypeUmap = ({
     appendLegend(colors, types, context, x, y);
   }
   function appendLegend(colors, subTypes, context, x, y) {
-    const mouseInteractions = element =>
+    const mouseInteractions = (element) =>
       element
         .on("mouseenter", function(d) {
           d3.event.stopPropagation();
           setSelectedSubtype({
             hover: d,
-            selected: selectedSubtype
+            selected: selectedSubtype,
           });
         })
         .on("mousedown", function(d, i) {
           d3.event.stopPropagation();
           setSelectedSubtype({
             hover: null,
-            selected: d
+            selected: d,
           });
         })
         .on("mouseout", function(event, d) {
           d3.event.stopPropagation();
           setSelectedSubtype({
             hover: null,
-            selected: selectedSubtype
+            selected: selectedSubtype,
           });
         });
 
@@ -309,7 +313,7 @@ const SubtypeUmap = ({
 
     return coords
       .map((value, index) => ({ value: value, index: index }))
-      .filter(d => d.value >= minValue && d.value <= maxValue);
+      .filter((d) => d.value >= minValue && d.value <= maxValue);
   }
   function getQuantile(array, quantile) {
     let index = (quantile / 100.0) * (array.length - 1);
@@ -327,7 +331,7 @@ const SubtypeUmap = ({
   }
   function drawBoundingBox(context, box, x, y, colors, selection) {
     const type = box["type"];
-    const title = box["subtype"];
+    const title = box["subtype"].toString();
     const boxCords = box["box"];
     context.restore();
     context.fillStyle = colors(type);
@@ -436,7 +440,7 @@ const SubtypeUmap = ({
         style={{
           width: chartDim["width"] + 200,
           height: chartDim["height"],
-          position: "relative"
+          position: "relative",
         }}
       >
         <div class="row">
@@ -446,7 +450,7 @@ const SubtypeUmap = ({
             style={{
               pointerEvents: "all",
               display: "flex",
-              paddingRight: 0
+              paddingRight: 0,
             }}
           >
             <canvas id="subTypeUmapCanvas" />
@@ -461,7 +465,7 @@ const SubtypeUmap = ({
                 paddingTop: 40,
                 paddingLeft: -50,
                 textAlign: "left",
-                fontSize: 16
+                fontSize: 16,
               }}
             >
               <h6 class="card-title">
