@@ -182,7 +182,7 @@ const Umap = ({
   ) {
     const maxValue = Math.max(...Object.entries(topTen).map(row => row[1]));
     const minValue = Math.min(...Object.entries(topTen).map(row => row[1]));
-    console.log(minValue);
+
     const lineXFreq = d3
       .scaleLinear()
       .domain([minValue, maxValue])
