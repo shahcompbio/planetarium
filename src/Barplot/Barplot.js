@@ -92,10 +92,6 @@ const StackedBarProportion = ({ data, chartDim, barValues }) => {
         barScale,
         colors
       );
-      // drawLegend(context);
-      // drawBars(context);
-      // drawAxisLabels(context);
-      // drawYAxisLabels(context);
     },
 
     chartDim["chart"]["x2"] - chartDim["chart"]["x1"],
@@ -303,7 +299,7 @@ const StackedBar = ({ chartName, data, chartDim }) => {
       context.restore();
     });
   }
-  //style={{ margin: 10, width: chartDim["width"] }}
+
   return (
     <Paper style={{ margin: 10 }}>
       <Grid

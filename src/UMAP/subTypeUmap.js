@@ -228,7 +228,7 @@ const SubtypeUmap = ({
       .attr("width", fontSize.legendSquare)
       .attr("height", fontSize.legendSquare)
       .attr("x", function(d) {
-        return chartDim["legend"]["x1"] + 20;
+        return 5;
       })
       .attr("y", function(d, i) {
         return chartDim["legend"].y1 + i * 20;
@@ -244,7 +244,7 @@ const SubtypeUmap = ({
       .attr("width", fontSize.legendSquare)
       .attr("height", fontSize.legendSquare)
       .attr("x", function(d) {
-        return chartDim["legend"]["x1"] + 20;
+        return 5;
       })
       .attr("y", function(d, i) {
         return chartDim["legend"].y1 + i * 20;
@@ -259,7 +259,7 @@ const SubtypeUmap = ({
     const legendTextEnter = legendText
       .append("text")
       .attr("x", function(d) {
-        return chartDim["legend"].x1 + 13 + 20;
+        return 17;
       })
       .attr("y", function(d, i) {
         return chartDim["legend"].y1 + i * 20 + 4;
@@ -281,7 +281,7 @@ const SubtypeUmap = ({
       .enter()
       .append("text")
       .attr("x", function(d) {
-        return chartDim["legend"].x1 + 13 + 20;
+        return 17;
       })
       .attr("y", function(d, i) {
         return chartDim["legend"].y1 + i * 20 + 4;
@@ -466,8 +466,6 @@ const SubtypeUmap = ({
               width: "100%",
               height: 80,
               paddingTop: 40,
-              marginLeft: -83,
-              paddingLeft: -50,
               textAlign: "left"
             }}
           >
@@ -475,8 +473,11 @@ const SubtypeUmap = ({
 
             <Info name={chartName} direction="s" />
           </Grid>
-          <Grid item style={{ marginLeft: -50, height: 250 }}>
-            <svg id="subTypeUmapLegend" style={{ float: "right" }} />
+          <Grid item style={{ height: 450 }}>
+            <svg
+              id="subTypeUmapLegend"
+              style={{ float: "right", height: "100%", width: "100%" }}
+            />
           </Grid>
         </Grid>
       </Grid>
