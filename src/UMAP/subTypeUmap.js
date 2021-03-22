@@ -9,7 +9,7 @@ import Paper from "@material-ui/core/Paper";
 
 import { useDashboardState } from "../PlotState/dashboardState";
 import { drawPoint, clearAll } from "./Umap.js";
-import { canvasInit, drawAxis } from "../DrawingUtils/utils.js";
+import { canvasInit, drawMiniAxis } from "../DrawingUtils/utils.js";
 
 const SubtypeUmap = ({
   chartName,
@@ -76,7 +76,7 @@ const SubtypeUmap = ({
           : selectedSubtype !== null
           ? selectedSubtype
           : null;
-      console.log("sle", selection);
+
       if (selection !== null) {
         clearAll(context, chartDim);
         context.beginPath();
@@ -180,7 +180,7 @@ const SubtypeUmap = ({
     });
   }
   function reDraw(data, chartDim, context, x, y, selection) {
-    drawAxis(context, x, y, chartDim["chart"]);
+    drawMiniAxis(context, x, y, chartDim["chart"], xParam, yParam);
     drawPoints(data, chartDim, context, x, y, selection);
     appendSubtypeLabels(
       subTypes,

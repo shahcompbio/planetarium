@@ -131,6 +131,14 @@ const NDV = ({ data }) => {
           >
             <Layout
               chartName={"UMAP"}
+              dim={{
+                chart: {
+                  x1: 10,
+                  y1: 100,
+                  x2: 475,
+                  y2: 550
+                }
+              }}
               data={metadata}
               selectedClonotype={selectedClonotype["selected"]}
               hoveredClonotype={selectedClonotype["hover"]}

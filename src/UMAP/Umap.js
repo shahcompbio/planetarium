@@ -9,7 +9,7 @@ import Paper from "@material-ui/core/Paper";
 
 import { useDashboardState } from "../PlotState/dashboardState";
 
-import { canvasInit, drawAxis } from "../DrawingUtils/utils.js";
+import { canvasInit, drawAxis, drawMiniAxis } from "../DrawingUtils/utils.js";
 const radiusMax = 20;
 
 export const clearAll = (context, chartDim) =>
@@ -54,7 +54,7 @@ const Umap = ({
     }
   ] = useDashboardState();
   const [context, saveContext] = useState(null);
-
+  console.log(chartDim);
   const [radiusAdjust, setRadius] = useState(10);
   const yData = data.map(d => parseFloat(d[yParam]));
   const xData = data.map(d => parseFloat(d[xParam]));
@@ -185,12 +185,12 @@ const Umap = ({
     const lineXFreq = d3
       .scaleLinear()
       .domain([0, maxValue / 2.5])
-      .range([dimensions.x2, dimensions.x2 + 25]);
+      .range([dimensions.x2, dimensions.x2 + 50]);
 
     const lineYFreq = d3
       .scaleLinear()
       .domain([0, maxValue / 2.5])
-      .range([dimensions.y1, dimensions.y1 - 25]);
+      .range([dimensions.y1, dimensions.y1 - 50]);
 
     const lineXaxis = d3
       .line()
@@ -423,7 +423,7 @@ const Umap = ({
     topTenNumbering,
     selectedClonotype
   ) {
-    drawAxis(context, x, y, dim);
+    drawMiniAxis(context, x, y, dim, xParam, yParam);
     //  drawAxisLabels(context, x, y, chartDim);
     drawOutline(context, x, y, data, colors);
     drawLineGraph(
