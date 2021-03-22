@@ -15,7 +15,7 @@ const HEATMAP_COLOR = ["#ffec8b", "#d91e18"];
 const CELL_FONT = "normal 12px Helvetica";
 
 const COLUMN_LABEL_SPACE = 150;
-const ROW_LABEL_SPACE = 100;
+const ROW_LABEL_SPACE = 150;
 const DEFAULT_LABEL_COLOR = "#000000";
 const LABEL_FONT = "12px Helvetica";
 
