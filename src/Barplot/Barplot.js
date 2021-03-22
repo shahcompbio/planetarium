@@ -265,13 +265,6 @@ const StackedBar = ({ chartName, data, chartDim }) => {
         );
         context.fill();
       });
-
-    context.fillRect(
-      chartDim["chart"]["x2"] + 20,
-      chartDim["chart"]["y1"],
-      5,
-      5
-    );
   }
 
   function drawYAxisLabels(context) {
@@ -284,8 +277,6 @@ const StackedBar = ({ chartName, data, chartDim }) => {
     context.beginPath();
     ticks.forEach(function(d) {
       changeFontSize(context, fontSize["tickLabelFontSize"]);
-      //  context.moveTo(chartDim["margin"]["left"] + 17, y(d));
-      //  context.lineTo(chartDim["margin"]["left"] + 27, y(d));
       context.fillText(d, chartDim["margin"]["left"] + 15, y(d));
       context.stroke();
     });
