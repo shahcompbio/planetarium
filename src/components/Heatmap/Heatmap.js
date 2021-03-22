@@ -14,8 +14,8 @@ const HEATMAP_NULL_COLOR = "#eeeeee";
 const HEATMAP_COLOR = ["#ffec8b", "#d91e18"];
 const CELL_FONT = "normal 12px Helvetica";
 
-const COLUMN_LABEL_SPACE = 100;
-const ROW_LABEL_SPACE = 200;
+const COLUMN_LABEL_SPACE = 150;
+const ROW_LABEL_SPACE = 100;
 const DEFAULT_LABEL_COLOR = "#000000";
 const LABEL_FONT = "12px Helvetica";
 
@@ -24,7 +24,7 @@ const TITLE_HEIGHT = 30;
 
 /*
 
-This heatmap calculates it by total column value (or given total column value)
+This heatmap calculates it by total row value (or given total row value)
 
 */
 const Heatmap = ({
@@ -36,13 +36,13 @@ const Heatmap = ({
   highlightedRow,
   columnLabels,
   rowLabels,
-  columnTotal,
+  rowTotal,
 }) => {
   const columnValues =
-    columnLabels || _.uniq(data.map((record) => record[column])).sort();
+    columnLabels.map((col) => col["value"]) ||
+    _.uniq(data.map((record) => record[column])).sort();
   const rowValues =
-    rowLabels.map((row) => row["value"]) ||
-    _.uniq(data.map((record) => record[row])).sort();
+    rowLabels || _.uniq(data.map((record) => record[row])).sort();
 
   const canvasWidth = chartDim["width"] - PADDING - PADDING;
   const canvasHeight = chartDim["height"] - PADDING - PADDING - TITLE_HEIGHT;
@@ -62,27 +62,25 @@ const Heatmap = ({
     .range([COLUMN_LABEL_SPACE, chartHeight + COLUMN_LABEL_SPACE])
     .paddingInner(0.03);
 
-  const groupedColumn = _.groupBy(data, column);
-  const freqMap = Object.keys(groupedColumn).reduce(
-    (currMap, columnName) => ({
+  const groupedRow = _.groupBy(data, row);
+
+  const freqMap = Object.keys(groupedRow).reduce(
+    (currMap, rowName) => ({
       ...currMap,
-      [columnName]: {
-        ..._.countBy(groupedColumn[columnName], row),
-        total: columnTotal
-          ? columnTotal[columnName]
-          : groupedColumn[columnName].length,
+      [rowName]: {
+        ..._.countBy(groupedRow[rowName], column),
+        total: rowTotal ? rowTotal[rowName] : groupedRow[rowName].length,
       },
     }),
     {}
   );
-
   const mostFreqCount = _.reduce(
     freqMap,
-    (currMax, columnData, key) => {
+    (currMax, rowData, key) => {
       return Math.max(
         currMax,
         _.reduce(
-          columnData,
+          rowData,
           (columnMax, value, key) => {
             return key === "total" ? columnMax : Math.max(value, columnMax);
           },
@@ -125,7 +123,8 @@ const Heatmap = ({
         columnScale,
         highlightedRow,
         highlightedColumn,
-        chartWidth
+        chartWidth,
+        chartDim
       );
     },
     canvasWidth,
@@ -184,7 +183,8 @@ const drawLabels = (
   columnScale,
   highlightedRow,
   highlightedColumn,
-  chartWidth
+  chartWidth,
+  chartDim
 ) => {
   context.font = LABEL_FONT;
   columnValues.forEach((columnData) => {
@@ -260,38 +260,38 @@ const drawHeatmap = (
   const cellWidth = columnScale.bandwidth();
   const cellHeight = rowScale.bandwidth();
 
-  columnValues.forEach((columnName) => {
-    const columnData = freqMap[columnName];
-    const xPos = columnScale(columnName);
-    const total = columnData["total"];
+  rowValues.forEach((rowName) => {
+    const rowData = freqMap[rowName];
+    const yPos = rowScale(rowName);
+    const total = rowData["total"];
 
-    rowValues.forEach((rowName) => {
-      const rowFreq = columnData[rowName];
-      const yPos = rowScale(rowName);
+    columnValues.forEach((columnName) => {
+      const colFreq = rowData[columnName];
+      const xPos = columnScale(columnName);
 
       context.globalAlpha = isHighlighted(
         highlightedColumn,
         highlightedRow,
-        columnName,
-        rowName
+        rowName,
+        columnName
       )
         ? 1
         : 0.2;
 
-      if (rowFreq) {
-        context.fillStyle = heatmapColor(rowFreq);
+      if (colFreq) {
+        context.fillStyle = heatmapColor(colFreq);
       } else {
         context.fillStyle = HEATMAP_NULL_COLOR;
       }
       context.fillRect(xPos, yPos, cellWidth, cellHeight);
 
-      if (rowFreq) {
+      if (colFreq) {
         context.fillStyle = "black";
         context.font = CELL_FONT;
         context.textAlign = "center";
         context.textBaseline = "middle";
         context.fillText(
-          `${rowFreq} (${Math.round((rowFreq * 100) / total)}%)`,
+          `${colFreq} (${Math.round((colFreq * 100) / total)}%)`,
           xPos + cellWidth / 2,
           yPos + cellHeight / 2
         );

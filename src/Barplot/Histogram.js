@@ -62,27 +62,31 @@ const Histogram = ({ chartName, data, chartDim, highlighted }) => {
     [highlighted]
   );
   function drawKde(context, data) {
-    const density = kde(epanechnikov(1), x.ticks(10), data);
+    const density = kde(
+      epanechnikov(1),
+      x.ticks(20),
+      data.map((row) => parseFloat(row["log10_probability"]))
+    );
     var line = d3
       .line()
       .curve(d3.curveBasis)
       .x(function(d) {
-        return x(d["X"]);
+        return x(d[0]);
       })
       .y(function(d) {
-        return y(d["Y"]);
+        return y(d[1]);
       })
       .context(context);
+
     context.beginPath();
-    line(data);
-    console.log(density);
-    context.lineWidth = 1.5;
+    line(density);
+    context.lineWidth = 2;
     context.strokeStyle = "steelblue";
     context.stroke();
   }
-  function kde(kernel, thresholds, data) {
-    return thresholds.map((t) => [t, d3.mean(data, (d) => kernel(t - d))]);
-  }
+  const kde = (kernel, thresholds, data) =>
+    thresholds.map((t) => [t, d3.mean(data, (d) => kernel(t - d))]);
+
   function epanechnikov(bandwidth) {
     return (x) =>
       Math.abs((x /= bandwidth)) <= 1 ? (0.75 * (1 - x * x)) / bandwidth : 0;

@@ -168,23 +168,23 @@ const NDV = ({ data }) => {
               chartDim={{
                 chart: {
                   x1: 30,
-                  x2: 850,
+                  x2: 550,
                   y1: 100,
                   y2: 550,
                 },
-                height: 500,
+                height: 550,
                 width: 750,
               }}
-              column={initialState["subtypeParam"]}
-              row={initialState["clonotypeParam"]}
+              column={initialState["clonotypeParam"]}
+              row={initialState["subtypeParam"]}
               highlightedColumn={
                 selectedSubtype["selected"] || selectedSubtype["hover"]
               }
               highlightedRow={
                 selectedClonotype["selected"] || selectedClonotype["hover"]
               }
-              rowLabels={clonotypeLabels}
-              columnTotal={subtypeTotals}
+              columnLabels={clonotypeLabels}
+              rowTotal={subtypeTotals}
             />
             <Layout
               chartName={"TABLE"}
