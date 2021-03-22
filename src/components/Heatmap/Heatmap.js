@@ -14,7 +14,7 @@ const HEATMAP_NULL_COLOR = "#eeeeee";
 const HEATMAP_COLOR = ["#ffec8b", "#d91e18"];
 const CELL_FONT = "normal 12px Helvetica";
 
-const COLUMN_LABEL_SPACE = 100;
+const COLUMN_LABEL_SPACE = 50;
 const ROW_LABEL_SPACE = 300;
 const DEFAULT_LABEL_COLOR = "#000000";
 const LABEL_FONT = "12px Helvetica";
@@ -33,52 +33,48 @@ const Heatmap = ({
   highlightedRow,
   columnLabels,
   rowLabels,
-  columnTotal
+  rowTotal
 }) => {
   const columnValues =
-    columnLabels || _.uniq(data.map(record => record[column])).sort();
-  const rowValues =
-    rowLabels.map(row => row["value"]) ||
-    _.uniq(data.map(record => record[row])).sort();
+    columnLabels.map(col => col["value"]) ||
+    _.uniq(data.map(record => record[column])).sort();
+
+  const rowValues = rowLabels || _.uniq(data.map(record => record[row])).sort();
+
   const chartWidth =
     chartDim["chart"]["x2"] - chartDim["chart"]["x1"] - ROW_LABEL_SPACE;
 
   const columnScale = d3
     .scaleBand()
     .domain(columnValues)
-    .range([chartDim["chart"]["x1"], chartWidth])
+    .range([chartDim["chart"]["y1"], chartDim["chart"]["y2"]])
     .paddingInner(0.03);
 
   const rowScale = d3
     .scaleBand()
     .domain(rowValues)
-    .range([
-      COLUMN_LABEL_SPACE,
-      chartDim["chart"]["y2"] - chartDim["chart"]["y1"]
-    ])
-    .paddingInner(0.03);
+    .range([chartDim["chart"]["x1"], chartDim["chart"]["x2"]])
+    .paddingInner(0.3);
 
-  const groupedColumn = _.groupBy(data, column);
-  const freqMap = Object.keys(groupedColumn).reduce(
-    (currMap, columnName) => ({
+  const groupedRow = _.groupBy(data, row);
+
+  const freqMap = Object.keys(groupedRow).reduce(
+    (currMap, rowName) => ({
       ...currMap,
-      [columnName]: {
-        ..._.countBy(groupedColumn[columnName], row),
-        total: columnTotal
-          ? columnTotal[columnName]
-          : groupedColumn[columnName].length
+      [rowName]: {
+        ..._.countBy(groupedRow[rowName], column),
+        total: rowTotal ? rowTotal[rowName] : groupedRow[rowName].length
       }
     }),
     {}
   );
-
   const mostFreqCount = _.reduce(
     freqMap,
-    (currMax, columnData, key) => {
+    (currMax, rowData, key) => {
       return Math.max(
         currMax,
         _.reduce(
-          columnData,
+          rowData,
           (columnMax, value, key) => {
             return key === "total" ? columnMax : Math.max(value, columnMax);
           },
@@ -121,7 +117,8 @@ const Heatmap = ({
         columnScale,
         highlightedRow,
         highlightedColumn,
-        chartWidth
+        chartWidth,
+        chartDim
       );
     },
     chartDim["chart"]["x2"] - chartDim["chart"]["x1"],
@@ -201,7 +198,8 @@ const drawLabels = (
   columnScale,
   highlightedRow,
   highlightedColumn,
-  chartWidth
+  chartWidth,
+  chartDim
 ) => {
   context.font = LABEL_FONT;
 
@@ -211,7 +209,7 @@ const drawLabels = (
     context.save();
     context.translate(
       columnScale(value) + columnScale.bandwidth() / 2,
-      COLUMN_LABEL_SPACE
+      chartDim["chart"]["y1"]
     );
 
     context.rotate((322 * Math.PI) / 180);
@@ -278,38 +276,41 @@ const drawHeatmap = (
   const cellWidth = columnScale.bandwidth();
   const cellHeight = rowScale.bandwidth();
 
-  columnValues.forEach(columnName => {
-    const columnData = freqMap[columnName];
-    const xPos = columnScale(columnName);
-    const total = columnData["total"];
+  rowValues.forEach(rowName => {
+    const rowData = freqMap[rowName];
+    const xPos = rowScale(rowName);
+    console.log(rowName);
+    console.log(rowData);
+    console.log(freqMap);
+    const total = rowData["total"];
 
-    rowValues.forEach(rowName => {
-      const rowFreq = columnData[rowName];
-      const yPos = rowScale(rowName);
+    columnValues.forEach(columnName => {
+      const colFreq = rowData[columnName];
+      const yPos = columnScale(columnName);
 
       context.globalAlpha = isHighlighted(
         highlightedColumn,
         highlightedRow,
-        columnName,
-        rowName
+        rowName,
+        columnName
       )
         ? 1
         : 0.2;
 
-      if (rowFreq) {
-        context.fillStyle = heatmapColor(rowFreq);
+      if (colFreq) {
+        context.fillStyle = heatmapColor(colFreq);
       } else {
         context.fillStyle = HEATMAP_NULL_COLOR;
       }
       context.fillRect(xPos, yPos, cellWidth, cellHeight);
 
-      if (rowFreq) {
+      if (colFreq) {
         context.fillStyle = "black";
         context.font = CELL_FONT;
         context.textAlign = "center";
         context.textBaseline = "middle";
         context.fillText(
-          `${rowFreq} (${Math.round((rowFreq * 100) / total)}%)`,
+          `${colFreq} (${Math.round((colFreq * 100) / total)}%)`,
           xPos + cellWidth / 2,
           yPos + cellHeight / 2
         );
