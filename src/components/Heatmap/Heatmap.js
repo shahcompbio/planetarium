@@ -15,9 +15,12 @@ const HEATMAP_COLOR = ["#ffec8b", "#d91e18"];
 const CELL_FONT = "normal 12px Helvetica";
 
 const COLUMN_LABEL_SPACE = 100;
-const ROW_LABEL_SPACE = 300;
+const ROW_LABEL_SPACE = 200;
 const DEFAULT_LABEL_COLOR = "#000000";
 const LABEL_FONT = "bold 12px Helvetica";
+
+const PADDING = 10;
+const TITLE_HEIGHT = 30;
 
 /*
 
@@ -40,21 +43,23 @@ const Heatmap = ({
   const rowValues =
     rowLabels.map((row) => row["value"]) ||
     _.uniq(data.map((record) => record[row])).sort();
-  const chartWidth = chartDim["width"] - ROW_LABEL_SPACE;
+
+  const canvasWidth = chartDim["width"] - PADDING - PADDING;
+  const canvasHeight = chartDim["height"] - PADDING - PADDING - TITLE_HEIGHT;
+
+  const chartWidth = canvasWidth - ROW_LABEL_SPACE;
+  const chartHeight = canvasHeight - COLUMN_LABEL_SPACE;
 
   const columnScale = d3
     .scaleBand()
     .domain(columnValues)
-    .range([chartDim["chart"]["x1"], chartWidth])
+    .range([0, chartWidth])
     .paddingInner(0.03);
 
   const rowScale = d3
     .scaleBand()
     .domain(rowValues)
-    .range([
-      COLUMN_LABEL_SPACE,
-      chartDim["chart"]["y2"] - chartDim["chart"]["y1"],
-    ])
+    .range([COLUMN_LABEL_SPACE, chartHeight + COLUMN_LABEL_SPACE])
     .paddingInner(0.03);
 
   const groupedColumn = _.groupBy(data, column);
@@ -123,8 +128,8 @@ const Heatmap = ({
         chartWidth
       );
     },
-    chartDim["chart"]["x2"] - chartDim["chart"]["x1"],
-    chartDim["chart"]["y2"] - chartDim["chart"]["y1"],
+    canvasWidth,
+    canvasHeight,
     [highlightedColumn, highlightedRow]
   );
 
@@ -132,49 +137,28 @@ const Heatmap = ({
     <Paper
       style={{
         margin: 10,
+        padding: PADDING,
         height: chartDim["height"],
         width: chartDim["width"],
-        padding: 10,
       }}
     >
       <Grid
         container
-        direction="row"
+        direction="column"
         justify="flex-start"
-        alignItems="flex-start"
-        style={{
-          width: chartDim["width"],
-          height: chartDim["height"],
-          position: "relative",
-        }}
+        alignItems="stretch"
       >
         <Grid
           item
-          xs={17}
-          sm={8}
-          id="heatmap"
           style={{
-            pointerEvents: "all",
-          }}
-        >
-          <canvas ref={ref} />
-        </Grid>
-        <Grid
-          item
-          xs={7}
-          sm={4}
-          style={{
-            width: "100%",
-            height: "100%",
-            textAlign: "left",
-            paddingTop: 20,
-            pointerEvents: "all",
-            curser: "pointer",
-            zIndex: 100,
+            textAlign: "right",
           }}
         >
           {infoText["HEATMAP"]["title"] + "    "}
           <Info name={"HEATMAP"} direction="s" />
+        </Grid>
+        <Grid item>
+          <canvas ref={ref} />
         </Grid>
       </Grid>
     </Paper>
