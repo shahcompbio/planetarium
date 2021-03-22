@@ -7,12 +7,9 @@ const tooltip = d3Tip()
   .style("width", 150)
   .style("box-shadow", "1px 1px 4px rgba(0,0,0,0.5)")
   .style("border-radius", "none")
+  .style("padding-bottom", "0px")
   .attr("class", "d3-tip s")
-  .attr("data-placement", "bottom")
-  .html(function(d) {
-    return "<p>" + d + "</p>";
-  })
-  .offset([-12, 0]);
+  .attr("data-placement", "bottom");
 
 const Info = ({ name, direction }) => {
   const [ref] = useHookWithRefCallback();

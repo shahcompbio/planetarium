@@ -12,22 +12,22 @@ const infoText = {
   HEATMAP: {
     title: "Subtype to Sequence Heatmap",
     text:
-      "Frequency of the top 10 TRB <br>sequences is shown for each of the identified subtypes. <br>The heatmap intensity captures <br>the relative proportion of the <br>given sequence with respect to <br>total number of TCR+ sequences within each subtype <br>(Frequency of Sequence in Subtype / Total <br>TCR+ Cells in Subtype)."
+      "Frequency of the top 10 TRB sequences is shown <br>for each of the identified subtypes. The heatmap <br>intensity captures the relative proportion of the <br>given sequence with respect to total number of<br> TCR+ sequences within each subtype (Frequency<br> of Sequence in Subtype / Total TCR+ Cells in Subtype)."
   },
   HISTOGRAM: {
     title: "Generation Probabilities",
     text:
-      "Distribution of log10 generation <br>probabilities generated from OLGA for all TRB sequences. <br>Description of the OLGA method can be found here: <br>https://academic.oup.com/bioinformatics/article/35/17/2974/5292315/. <br>The log10 probability of each top 10 TRB sequence <br>can be referenced with respect to the entire distribution<br> of the sample. Sequences with a lower <br>probability of generation will be found in the left<br> tail of the distribution."
+      "Distribution of log10 generation probabilities <br>generated from OLGA for all TRB sequences.<br>Description of the OLGA method can be found here: <br>https://academic.oup.com/bioinformatics/article/35/17/2974/5292315/. <br>The log10 probability of each top 10 TRB sequence <br>can be referenced with respect to the entire distribution<br> of the sample. Sequences with a lower probability of <br>generation will be found in the left tail of the distribution."
   },
   BARPLOT: {
     title: "Clonotype Expansion",
     text:
-      "Visualization of clonal expansion in <br>each subtype by plotting the fraction of <br>cells that belong to sequences expanded to N cells.<br> The fraction of cells with sequences that belong<br> to a single cell (labeled 1 in legend) describes<br> the relative proportion of unexpanded clonotypes.<br> The fraction of cells with sequences<br>that belong to >10 cells describes the relative proportion<br> of highly expanded clonotypes within the subtype."
+      "Visualization of clonal expansion in each subtype<br> by plotting the fraction of cells that belong to sequences <br>expanded to N cells. The fraction of cells with sequences<br> that belong to a single cell (labeled 1 in legend) describes<br> the relative proportion of unexpanded clonotypes. <br>The fraction of cells with sequences that belong <br>to >10 cells describes the relative proportion of highly<br> expanded clonotypes within the subtype."
   },
   TABLE: {
     title: "Differentially Expressed Genes",
     text:
-      "Differentially expressed genes for each subtype <br>(1 vs. All) using the Wilcoxon test.<br> The top 50 statistically significant (p < 0.001) with a minimum<br> log fold change of 0.25 and expression found in >= 50%<br> of the subtype cells are included for each subtype.<br>It is possible to sort DEGs by both p-value and log fold change."
+      "Differentially expressed genes for each subtype (1 vs. All)<br> using the Wilcoxon test. The top 50 statistically significant <br>(p < 0.001) with a minimum log fold change of 0.25 and <br>expression found in >= 50% of the subtype cells are included<br> for each subtype. It is possible to sort DEGs by both<br> p-value and log fold change."
   }
 };
 export default infoText;

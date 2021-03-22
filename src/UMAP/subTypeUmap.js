@@ -9,7 +9,7 @@ import Paper from "@material-ui/core/Paper";
 
 import { useDashboardState } from "../PlotState/dashboardState";
 import { drawPoint, clearAll } from "./Umap.js";
-import { canvasInit, drawAxis } from "../DrawingUtils/utils.js";
+import { canvasInit, drawMiniAxis } from "../DrawingUtils/utils.js";
 
 const SubtypeUmap = ({
   chartName,
@@ -76,7 +76,7 @@ const SubtypeUmap = ({
           : selectedSubtype !== null
           ? selectedSubtype
           : null;
-      console.log("sle", selection);
+
       if (selection !== null) {
         clearAll(context, chartDim);
         context.beginPath();
@@ -184,7 +184,7 @@ const SubtypeUmap = ({
     });
   }
   function reDraw(data, chartDim, context, x, y, selection) {
-    drawAxis(context, x, y, chartDim["chart"]);
+    drawMiniAxis(context, x, y, chartDim["chart"], xParam, yParam);
     drawPoints(data, chartDim, context, x, y, selection);
     appendSubtypeLabels(
       subTypes,
@@ -232,7 +232,7 @@ const SubtypeUmap = ({
       .attr("width", fontSize.legendSquare)
       .attr("height", fontSize.legendSquare)
       .attr("x", function(d) {
-        return chartDim["legend"]["x1"] + 20;
+        return 5;
       })
       .attr("y", function(d, i) {
         return chartDim["legend"].y1 + i * 20;
@@ -248,7 +248,7 @@ const SubtypeUmap = ({
       .attr("width", fontSize.legendSquare)
       .attr("height", fontSize.legendSquare)
       .attr("x", function(d) {
-        return chartDim["legend"]["x1"] + 20;
+        return 5;
       })
       .attr("y", function(d, i) {
         return chartDim["legend"].y1 + i * 20;
@@ -263,7 +263,7 @@ const SubtypeUmap = ({
     const legendTextEnter = legendText
       .append("text")
       .attr("x", function(d) {
-        return chartDim["legend"].x1 + 13 + 20;
+        return 17;
       })
       .attr("y", function(d, i) {
         return chartDim["legend"].y1 + i * 20 + 4;
@@ -285,7 +285,7 @@ const SubtypeUmap = ({
       .enter()
       .append("text")
       .attr("x", function(d) {
-        return chartDim["legend"].x1 + 13 + 20;
+        return 17;
       })
       .attr("y", function(d, i) {
         return chartDim["legend"].y1 + i * 20 + 4;
@@ -470,8 +470,6 @@ const SubtypeUmap = ({
               width: "100%",
               height: 80,
               paddingTop: 40,
-              marginLeft: -83,
-              paddingLeft: -50,
               textAlign: "left",
             }}
           >
@@ -479,8 +477,11 @@ const SubtypeUmap = ({
 
             <Info name={chartName} direction="s" />
           </Grid>
-          <Grid item style={{ marginLeft: -50, height: 250 }}>
-            <svg id="subTypeUmapLegend" style={{ float: "right" }} />
+          <Grid item style={{ height: 450 }}>
+            <svg
+              id="subTypeUmapLegend"
+              style={{ float: "right", height: "100%", width: "100%" }}
+            />
           </Grid>
         </Grid>
       </Grid>

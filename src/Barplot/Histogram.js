@@ -55,37 +55,39 @@ const Histogram = ({ chartName, data, chartDim, highlighted }) => {
 
       drawAxisLabels(context);
       drawBars(context, data);
+      drawKde(context, data);
     },
     chartDim["width"],
     chartDim["width"],
     [highlighted]
   );
   function drawKde(context, data) {
-    const kde = kernelDensityEstimator(kernelEpanechnikov(7), x.ticks(40));
-    const density = kde(
-      data.map(function(d) {
-        return d[logXParam];
+    const density = kde(epanechnikov(1), x.ticks(10), data);
+    var line = d3
+      .line()
+      .curve(d3.curveBasis)
+      .x(function(d) {
+        return x(d["X"]);
       })
-    );
+      .y(function(d) {
+        return y(d["Y"]);
+      })
+      .context(context);
+    context.beginPath();
+    line(data);
+    console.log(density);
+    context.lineWidth = 1.5;
+    context.strokeStyle = "steelblue";
+    context.stroke();
   }
-  // Function to compute density
-  function kernelDensityEstimator(kernel, X) {
-    return function(V) {
-      return X.map(function(x) {
-        return [
-          x,
-          d3.mean(V, function(v) {
-            return kernel(x - v);
-          }),
-        ];
-      });
-    };
+  function kde(kernel, thresholds, data) {
+    return thresholds.map((t) => [t, d3.mean(data, (d) => kernel(t - d))]);
   }
-  function kernelEpanechnikov(k) {
-    return function(v) {
-      return Math.abs((v /= k)) <= 1 ? (0.75 * (1 - v * v)) / k : 0;
-    };
+  function epanechnikov(bandwidth) {
+    return (x) =>
+      Math.abs((x /= bandwidth)) <= 1 ? (0.75 * (1 - x * x)) / bandwidth : 0;
   }
+
   function drawBars(context, data) {
     context.fillStyle = "#6bb9f0";
     context.strokeStyle = "#5c97bf";

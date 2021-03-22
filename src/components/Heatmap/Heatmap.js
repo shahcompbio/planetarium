@@ -17,7 +17,7 @@ const CELL_FONT = "normal 12px Helvetica";
 const COLUMN_LABEL_SPACE = 100;
 const ROW_LABEL_SPACE = 200;
 const DEFAULT_LABEL_COLOR = "#000000";
-const LABEL_FONT = "bold 12px Helvetica";
+const LABEL_FONT = "12px Helvetica";
 
 const PADDING = 10;
 const TITLE_HEIGHT = 30;
