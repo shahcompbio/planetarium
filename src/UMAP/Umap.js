@@ -182,16 +182,16 @@ const Umap = ({
   ) {
     const maxValue = Math.max(...Object.entries(topTen).map((row) => row[1]));
     const minValue = Math.min(...Object.entries(topTen).map((row) => row[1]));
-    console.log(minValue);
+
     const lineXFreq = d3
       .scaleLinear()
       .domain([minValue, maxValue])
-      .range([dimensions.x2, dimensions.x2 + 45]);
+      .range([dimensions.x2 + 20, dimensions.x2 + 65]);
 
     const lineYFreq = d3
       .scaleLinear()
       .domain([minValue, maxValue])
-      .range([dimensions.y1, dimensions.y1 - 45]);
+      .range([dimensions.y1 - 20, dimensions.y1 - 65]);
 
     const lineXaxis = d3
       .line()
