@@ -4,10 +4,9 @@ Histogram with kde curves
 
 */
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import * as d3 from "d3";
 import * as d3Array from "d3-array";
-import _ from "lodash";
 import { useDashboardState } from "../PlotState/dashboardState";
 
 import Grid from "@material-ui/core/Grid";
@@ -18,8 +17,6 @@ import { useCanvas } from "../components/utils/useCanvas";
 import Info from "../Info/Info.js";
 import infoText from "../Info/InfoText.js";
 
-import { canvasInit, drawAxis, changeFontSize } from "../DrawingUtils/utils.js";
-
 const HIGHLIGHTED_BAR_COLOR = "#eb5067";
 const HIGHLIGHTED_BAR_WIDTH = 2;
 
@@ -27,6 +24,15 @@ const PADDING = 10;
 const TITLE_HEIGHT = 30;
 const X_AXIS_HEIGHT = 50;
 const Y_AXIS_WIDTH = 50;
+
+const NUM_TICKS = 25;
+const LABEL_FONT = "normal 12px Helvetica";
+const TICK_FONT = "normal 10px Helvetica";
+
+const BAR_COLOR = "#6bb9f0";
+const BAR_STROKE_COLOR = "#5c97bf";
+
+const LINE_COLOR = "steelblue";
 
 const DataWrapper = ({
   chartName,
@@ -81,7 +87,7 @@ const Histogram = ({
     .bin()
     .value((d) => d[binParam])
     .domain(x.domain())
-    .thresholds(x.ticks(20))(data);
+    .thresholds(x.ticks(NUM_TICKS))(data);
 
   const maxY = Math.max(...bins.map((row) => row.length));
 
@@ -178,7 +184,7 @@ const drawAxisLabels = (
   context.fillStyle = "black";
   context.textAlign = "right";
 
-  context.font = "normal 10px Helvetica";
+  context.font = TICK_FONT;
 
   x.ticks(10).forEach((tick) => {
     context.fillText(tick, x(tick), y(0) + 15);
@@ -186,7 +192,7 @@ const drawAxisLabels = (
 
   const format = (tick) => (tick === 0 ? "0" : d3.format(".2f")(tick / maxBin));
 
-  y.ticks(10).map((tick) => {
+  y.ticks(10).forEach((tick) => {
     context.globalAlpha = 1;
     context.textBaseline = "middle";
     context.fillText(format(tick), x(xMin), y(tick));
@@ -199,26 +205,26 @@ const drawAxisLabels = (
   });
 
   context.globalAlpha = 1;
-  context.font = "normal 12px Helvetica";
+  context.font = LABEL_FONT;
   context.textAlign = "center";
   context.textBaseline = "hanging";
-  context.fillText(binParam, chartWidth / 2, chartHeight + PADDING * 2);
+  context.fillText(binParam, chartWidth / 2, chartHeight + 20);
 
   context.save();
   context.rotate((270 * Math.PI) / 180);
-  context.fillText("Probability", -(chartHeight / 2), PADDING);
+  context.fillText("Density", -(chartHeight / 2), 10);
   context.restore();
 };
 
 const drawBars = (context, bins, x, y, barScale) => {
   context.globalAlpha = 1;
-  context.fillStyle = "#6bb9f0";
-  context.strokeStyle = "#5c97bf";
+  context.fillStyle = BAR_COLOR;
+  context.strokeStyle = BAR_STROKE_COLOR;
 
   bins.forEach((bin) => {
-    const xPos = x(bin["x0"]);
+    const xPos = x(bin["x0"]) + 1;
     const yPos = y(bin.length);
-    const width = x(bin["x1"]) - x(bin["x0"]);
+    const width = x(bin["x1"]) - x(bin["x0"]) - 2;
     const height = barScale(bin.length);
     context.fillRect(xPos, yPos, width, height);
     context.strokeRect(xPos, yPos, width, height);
@@ -269,7 +275,7 @@ const drawKde = (context, data, x, y, binParam, lineParam, highlightedLine) => {
 
   const density = kde(
     epanechnikov(1),
-    x.ticks(20),
+    x.ticks(NUM_TICKS),
     densityData.map((row) => parseFloat(row[binParam]))
   );
   var line = d3
@@ -286,215 +292,8 @@ const drawKde = (context, data, x, y, binParam, lineParam, highlightedLine) => {
   context.beginPath();
   line(density);
   context.lineWidth = 2;
-  context.strokeStyle = "steelblue";
+  context.strokeStyle = LINE_COLOR;
   context.stroke();
 };
 
-const Histogram2 = ({ chartName, data, chartDim, highlighted }) => {
-  const [
-    { logXParam, logYParam, fontSize, clonotypeParam },
-  ] = useDashboardState();
-  const [drawReady, setDrawReady] = useState(false);
-  const [context, saveContext] = useState(null);
-
-  const allX = data.map((row) => parseFloat(row[logXParam]));
-  const allY = data.map((row) => parseFloat(row[logYParam]));
-  const xMax = Math.max(...allX);
-  const xMin = Math.min(...allX);
-
-  const x = d3
-    .scaleLinear()
-    .domain([xMin, xMax])
-    .range([chartDim["chart"]["x1"], chartDim["chart"]["x2"] - 50]);
-
-  const bins = d3Array
-    .bin()
-    .value((d) => d[logXParam])
-    .domain(x.domain())
-    .thresholds(x.ticks(10));
-
-  const buckets = bins(data);
-  const maxY = Math.max(...buckets.map((row) => row.length));
-
-  // Y axis
-  const y = d3
-    .scaleLinear()
-    .domain([0, maxY / data.length])
-    .range([chartDim["chart"]["y2"], chartDim["chart"]["y1"]]);
-
-  const ref = useCanvas(
-    (canvas) => {
-      const context = canvas.getContext("2d");
-
-      drawAxisLabels(context);
-      drawBars(context, data);
-      drawKde(context, data);
-    },
-    chartDim["width"],
-    chartDim["width"],
-    [highlighted]
-  );
-  function drawKde(context, data) {
-    const density = kde(
-      epanechnikov(1),
-      x.ticks(20),
-      data.map((row) => parseFloat(row["log10_probability"]))
-    );
-    var line = d3
-      .line()
-      .curve(d3.curveBasis)
-      .x(function(d) {
-        return x(d[0]);
-      })
-      .y(function(d) {
-        return y(d[1]);
-      })
-      .context(context);
-
-    context.beginPath();
-    line(density);
-    context.lineWidth = 2;
-    context.strokeStyle = "steelblue";
-    context.stroke();
-  }
-  const kde = (kernel, thresholds, data) =>
-    thresholds.map((t) => [t, d3.mean(data, (d) => kernel(t - d))]);
-
-  function epanechnikov(bandwidth) {
-    return (x) =>
-      Math.abs((x /= bandwidth)) <= 1 ? (0.75 * (1 - x * x)) / bandwidth : 0;
-  }
-
-  function drawBars(context, data) {
-    context.fillStyle = "#6bb9f0";
-    context.strokeStyle = "#5c97bf";
-    buckets.map((bar) => {
-      const yPos = y(bar.length / data.length);
-      context.fillRect(
-        x(bar["x0"]) - 5,
-        yPos,
-        x(bar["x1"]) - x(bar["x0"]) - 5,
-        y(0) - yPos
-      );
-      context.strokeRect(
-        x(bar["x0"]) - 5,
-        yPos,
-        x(bar["x1"]) - x(bar["x0"]) - 5,
-        y(0) - yPos
-      );
-      context.fill();
-    });
-
-    if (highlighted) {
-      const highlightedData = data.filter(
-        (datum) => datum[clonotypeParam] === highlighted
-      );
-
-      if (highlightedData.length > 0) {
-        const highlightedProbability = highlightedData[0][logXParam];
-
-        context.fillStyle = HIGHLIGHTED_BAR_COLOR;
-        context.fillRect(
-          x(highlightedProbability),
-          y(maxY / data.length),
-          HIGHLIGHTED_BAR_WIDTH,
-          y(0) - y(maxY / data.length)
-        );
-      }
-    }
-  }
-
-  function drawAxisLabels(context) {
-    const format = (tick) => (tick === 0 ? "0" : d3.format(".2f")(tick));
-    context.beginPath();
-    context.globalAlpha = 1;
-    //context.lineWidth = 1;
-    context.fillStyle = "black";
-    context.textAlign = "right";
-    const xMinValue = x(xMin) - 10;
-    changeFontSize(context, fontSize["tickLabelFontSize"]);
-    x.ticks(10).map((tick) => {
-      context.fillText(tick, x(tick), y(0) + 15);
-    });
-    changeFontSize(context, fontSize["axisLabelFontSize"]);
-    context.fillText(
-      logXParam,
-      (chartDim["chart"]["x2"] - chartDim["chart"]["x1"]) / 2 +
-        chartDim["chart"]["x1"],
-      chartDim["chart"]["y2"] + 50
-    );
-
-    context.restore();
-    y.ticks(10).map((tick) => {
-      context.globalAlpha = 1;
-      changeFontSize(context, fontSize["tickLabelFontSize"]);
-      context.fillText(format(tick), xMinValue, y(tick) + 3);
-      context.fill();
-      context.save();
-      //  context.strokeStyle = "rgba(0, 0, 0, 0.5)";
-      context.globalAlpha = 0.2;
-      context.lineWidth = 0.5;
-      context.beginPath();
-      context.moveTo(xMinValue + 3, y(tick));
-      context.lineTo(x(xMax), y(tick));
-      context.stroke();
-      context.restore();
-    });
-
-    context.globalAlpha = 1;
-    context.save();
-    context.rotate((270 * Math.PI) / 180);
-    changeFontSize(context, fontSize["axisLabelFontSize"]);
-    context.fillText(
-      "Probability",
-      -(chartDim["chart"]["y2"] - chartDim["chart"]["y1"]) / 2 - 15,
-      chartDim["chart"]["x1"] - 50
-    );
-    context.restore();
-  }
-
-  return (
-    <Paper>
-      <Grid
-        container
-        direction="row"
-        justify="flex-start"
-        alignItems="flex-start"
-        style={{
-          width: chartDim["width"],
-          height: chartDim["height"],
-          position: "relative",
-        }}
-      >
-        <Grid
-          item
-          xs={17}
-          sm={8}
-          id="histogram"
-          style={{
-            pointerEvents: "all",
-          }}
-        >
-          <canvas ref={ref} />
-        </Grid>
-        <Grid
-          item
-          xs={7}
-          sm={4}
-          style={{
-            textAlign: "right",
-            marginTop: 10,
-            paddingRight: 15,
-            pointerEvents: "all",
-            curser: "pointer",
-            zIndex: 100,
-          }}
-        >
-          {infoText[chartName]["title"] + "    "}
-          <Info name={chartName} direction="s" />
-        </Grid>
-      </Grid>
-    </Paper>
-  );
-};
 export default DataWrapper;
