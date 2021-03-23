@@ -7,7 +7,6 @@ Probability distribution with kde curves
 import React from "react";
 import * as d3 from "d3";
 import * as d3Array from "d3-array";
-import { useDashboardState } from "../../PlotState/dashboardState";
 
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
