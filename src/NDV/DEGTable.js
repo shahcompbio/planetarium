@@ -5,7 +5,6 @@ import Info from "../Info/Info.js";
 import infoText from "../Info/InfoText.js";
 
 import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
 import ClearIcon from "@material-ui/icons/Clear";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
@@ -14,8 +13,9 @@ import GetAppIcon from "@material-ui/icons/GetApp";
 import * as d3Dsv from "d3-dsv";
 import DataTable from "react-data-table-component";
 const formatCols = ["adj_pval", "log_fc"];
-const formatDecimal = d3.format(",.4f");
-const Table = ({ chartName, data, chartDim, selectedSubtype }) => {
+const formatDecimal = [(num) => num.toExponential(2), d3.format(",.4f")];
+
+const DEGTable = ({ chartName, data, chartDim, selectedSubtype }) => {
   const [filterText, setFilterText] = useState("");
   const [{ subtypeParam }] = useDashboardState();
 
@@ -51,14 +51,14 @@ const Table = ({ chartName, data, chartDim, selectedSubtype }) => {
         margin: 10,
         height: chartDim["height"],
         width: chartDim["width"],
-        padding: 15,
+        padding: "10px 15px",
       }}
     >
       <Grid
         container
         direction="column"
         justify="flex-start"
-        alignItems="flex-start"
+        alignItems="stretch"
         style={{
           width: "100%",
         }}
@@ -66,9 +66,8 @@ const Table = ({ chartName, data, chartDim, selectedSubtype }) => {
         <Grid
           item
           style={{
-            width: "100%",
-            textAlign: "left",
-            paddingTop: 15,
+            textAlign: "right",
+            paddingBottom: 5,
           }}
         >
           {infoText[chartName]["title"] + "    "}
@@ -93,14 +92,18 @@ const Table = ({ chartName, data, chartDim, selectedSubtype }) => {
             subHeaderComponent={subHeaderComponentMemo}
             compact
             columns={columns.map((col) => {
-              return formatCols.indexOf(col) !== -1
+              const formatIndex = formatCols.indexOf(col);
+
+              return formatIndex !== -1
                 ? {
                     name: col,
                     selector: col,
                     sortable: true,
                     right: true,
                     cell: (row) => (
-                      <span>{formatDecimal(parseFloat(row[col]))}</span>
+                      <span>
+                        {formatDecimal[formatIndex](parseFloat(row[col]))}
+                      </span>
                     ),
                   }
                 : {
@@ -123,8 +126,6 @@ const FilterComponent = ({ filterText, onFilter, onClear, data }) => (
     <TextField
       color="primary"
       type="text"
-      placeholder="Gene"
-      aria-label="Gene"
       id="searchGenes"
       placeholder="Filter By Gene"
       aria-label="Search Input"
@@ -165,4 +166,4 @@ const FilterComponent = ({ filterText, onFilter, onClear, data }) => (
     </Button>
   </div>
 );
-export default Table;
+export default DEGTable;

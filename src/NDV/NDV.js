@@ -8,6 +8,7 @@ import { DashboardProvider } from "../PlotState/dashboardState";
 import Heatmap from "../components/Heatmap/Heatmap";
 import ClonotypeExpansion from "./ClonotypeExpansion";
 import ProbabilityHistogram from "../components/Bar/ProbabilityHistogram";
+import DEGTable from "./DEGTable";
 
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
@@ -182,7 +183,7 @@ const NDV = ({ data }) => {
               columnLabels={clonotypeLabels}
               rowTotal={subtypeTotals}
             />
-            <Layout
+            <DEGTable
               chartName={"TABLE"}
               data={degs}
               selectedSubtype={
@@ -190,13 +191,7 @@ const NDV = ({ data }) => {
                   ? selectedSubtype["selected"]
                   : selectedSubtype["hover"]
               }
-              dim={{
-                chart: {
-                  x1: 50,
-                  y1: 50,
-                  x2: 600,
-                  y2: 400,
-                },
+              chartDim={{
                 height: 500,
                 width: 750,
               }}
