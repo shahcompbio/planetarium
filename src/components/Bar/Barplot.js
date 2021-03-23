@@ -1,14 +1,13 @@
 import React from "react";
 import * as d3 from "d3";
 import _ from "lodash";
-import { useDashboardState } from "../PlotState/dashboardState";
 
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 
-import { useCanvas } from "../components/utils/useCanvas";
-import Info from "../Info/Info.js";
-import infoText from "../Info/InfoText.js";
+import { useCanvas } from "../utils/useCanvas";
+import Info from "../../Info/Info.js";
+import infoText from "../../Info/InfoText.js";
 
 /*
 
@@ -40,35 +39,6 @@ const TITLE_HEIGHT = 30;
 
 const LEGEND_SQUARE_LENGTH = 12;
 const LEGEND_SQUARE_PADDING = 10;
-
-const DataWrapper = ({ data, chartDim, chartName }) => {
-  const [{ clonotypeParam, subtypeParam }] = useDashboardState();
-
-  const groupedSubtype = _.groupBy(data, subtypeParam);
-  const subtypes = Object.keys(groupedSubtype).sort();
-
-  const countedClonotypes = subtypes.reduce((countMap, subtype) => {
-    const clonotypeCount = _.countBy(groupedSubtype[subtype], clonotypeParam);
-
-    const countFreq = _.countBy(Object.values(clonotypeCount), (value) =>
-      Math.min(value, 10)
-    );
-
-    return { ...countMap, [subtype]: countFreq };
-  }, {});
-
-  return (
-    <StackedBarProportion
-      data={countedClonotypes}
-      chartDim={chartDim}
-      barLabels={Array.from(Array(10).keys()).map((value) => ({
-        value: value + 1,
-        label: value === 9 ? "≥10" : value + 1,
-      }))}
-      chartName={chartName}
-    />
-  );
-};
 
 const StackedBarProportion = ({ data, chartDim, barLabels, chartName }) => {
   const categoryValues = Object.keys(data).sort();
@@ -265,4 +235,4 @@ const drawLegend = (context, barValues, colors, canvasWidth) => {
   });
 };
 
-export default DataWrapper;
+export default StackedBarProportion;

@@ -6,6 +6,7 @@ import "./App.css";
 import dashboardReducer, { initialState } from "../PlotState/dashboardReducer";
 import { DashboardProvider } from "../PlotState/dashboardState";
 import Heatmap from "../components/Heatmap/Heatmap";
+import ClonotypeExpansion from "./ClonotypeExpansion";
 
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
@@ -91,6 +92,7 @@ const NDV = ({ data }) => {
 
   const subtypeTotals = _.countBy(metadata, initialState["subtypeParam"]);
 
+  console.log(data);
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
@@ -166,12 +168,6 @@ const NDV = ({ data }) => {
             <Heatmap
               data={probabilities}
               chartDim={{
-                chart: {
-                  x1: 30,
-                  x2: 550,
-                  y1: 100,
-                  y2: 550,
-                },
                 height: 550,
                 width: 750,
               }}
@@ -213,16 +209,10 @@ const NDV = ({ data }) => {
             justify="flex-start"
             alignItems="flex-start"
           >
-            <Layout
+            <ClonotypeExpansion
               chartName={"BARPLOT"}
               data={probabilities}
               dim={{
-                chart: {
-                  x1: 50,
-                  x2: 600,
-                  y1: 50,
-                  y2: 400,
-                },
                 height: 475,
                 width: 750,
               }}
