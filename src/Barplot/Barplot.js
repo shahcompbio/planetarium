@@ -9,11 +9,10 @@ import Paper from "@material-ui/core/Paper";
 import { useCanvas } from "../components/utils/useCanvas";
 import Info from "../Info/Info.js";
 import infoText from "../Info/InfoText.js";
-import { changeFontSize } from "../DrawingUtils/utils.js";
 
 /*
 
-Stacked bar chart of proportions (so they all add to 100%)
+Stacked horizontal bar chart of proportions (so they all add to 100%)
 
 */
 
@@ -31,15 +30,19 @@ const BAR_COLORS = [
   "#9E0142",
 ];
 
-const LEGEND_WIDTH = 250;
-const Y_AXIS_FONT = "normal 10px Helvetica";
+const LEGEND_HEIGHT = 50;
 
-const CAT_LABEL_SPACE = 100;
-const CAT_LABEL_FONT = "bold 12px Helvetica";
-const TOP_PADDING = 5;
+const PROP_AXIS_FONT = "normal 10px Helvetica";
+const CAT_LABEL_SPACE = 150;
+const CAT_LABEL_FONT = "normal 12px Helvetica";
+const PADDING = 10;
+const TITLE_HEIGHT = 30;
 
-const DataWrapper = ({ data, chartDim }) => {
-  const [{ clonotypeParam, subtypeParam, fontSize }] = useDashboardState();
+const LEGEND_SQUARE_LENGTH = 12;
+const LEGEND_SQUARE_PADDING = 10;
+
+const DataWrapper = ({ data, chartDim, chartName }) => {
+  const [{ clonotypeParam, subtypeParam }] = useDashboardState();
 
   const groupedSubtype = _.groupBy(data, subtypeParam);
   const subtypes = Object.keys(groupedSubtype).sort();
@@ -58,33 +61,48 @@ const DataWrapper = ({ data, chartDim }) => {
     <StackedBarProportion
       data={countedClonotypes}
       chartDim={chartDim}
-      barValues={Array.from(Array(10).keys()).map((value) => value + 1)}
+      barLabels={Array.from(Array(10).keys()).map((value) => ({
+        value: value + 1,
+        label: value === 9 ? "≥10" : value + 1,
+      }))}
+      chartName={chartName}
     />
   );
 };
 
-const StackedBarProportion = ({ data, chartDim, barValues }) => {
-  // make this flexible
-  const categoryValues = Object.keys(data);
+const StackedBarProportion = ({ data, chartDim, barLabels, chartName }) => {
+  const categoryValues = Object.keys(data).sort();
+  const barValues =
+    typeof barLabels[0] === "string"
+      ? barLabels
+      : barLabels.map((obj) => obj["value"]);
+  const legendLabels =
+    typeof barLabels[0] === "string"
+      ? barLabels.map((str) => ({ value: str, label: str }))
+      : barLabels;
 
-  const chartWidth = chartDim["width"] - LEGEND_WIDTH;
-  const chartHeight = chartDim["height"] - CAT_LABEL_SPACE - TOP_PADDING;
+  const canvasWidth = chartDim["width"] - PADDING - PADDING;
+  const canvasHeight = chartDim["height"] - PADDING - PADDING - TITLE_HEIGHT;
+
+  const chartWidth = canvasWidth - CAT_LABEL_SPACE;
+  const chartHeight = canvasHeight - LEGEND_HEIGHT;
 
   const catScale = d3
     .scaleBand()
     .domain(categoryValues)
-    .range([0, chartWidth])
+    .range([LEGEND_HEIGHT, LEGEND_HEIGHT + chartHeight])
     .paddingInner(0.03)
     .paddingOuter(0.25);
 
-  const barYScale = d3
+  const barPosScale = d3
     .scaleLinear()
-    .domain([1, 0])
-    .range([TOP_PADDING, chartHeight + TOP_PADDING]);
+    .domain([0, 1])
+    .range([PADDING, PADDING + chartWidth]);
+
   const barSizeScale = d3
     .scaleLinear()
     .domain([0, 1])
-    .range([0, chartHeight]);
+    .range([0, chartWidth]);
 
   const colors = d3
     .scaleOrdinal()
@@ -101,45 +119,57 @@ const StackedBarProportion = ({ data, chartDim, barValues }) => {
         categoryValues,
         barValues,
         catScale,
-        barYScale,
+        barPosScale,
         barSizeScale,
         colors
       );
       drawLabels(
         context,
-        data,
         categoryValues,
-        barValues,
         catScale,
-        barYScale,
-        colors
+        barPosScale,
+        chartWidth + PADDING + 2,
+        chartHeight + LEGEND_HEIGHT
       );
+
+      drawLegend(context, legendLabels, colors, canvasWidth);
     },
 
-    chartDim["chart"]["x2"] - chartDim["chart"]["x1"],
-    chartDim["chart"]["y2"] - chartDim["chart"]["y1"],
+    canvasWidth,
+    canvasHeight,
     []
   );
 
   return (
-    <div
+    <Paper
       style={{
-        width: chartDim["width"],
+        margin: 10,
+        padding: PADDING,
         height: chartDim["height"],
-        position: "relative",
+        width: chartDim["width"],
       }}
     >
-      <div
-        id="barchart"
-        style={{
-          position: "absolute",
-          pointerEvents: "all",
-          display: "flex",
-        }}
+      <Grid
+        container
+        direction="column"
+        justify="flex-start"
+        alignItems="stretch"
       >
-        <canvas ref={ref} />
-      </div>
-    </div>
+        <Grid
+          item
+          style={{
+            textAlign: "right",
+          }}
+        >
+          {infoText[chartName]["title"] + "    "}
+
+          <Info name={chartName} direction="s" />
+        </Grid>
+        <Grid item>
+          <canvas ref={ref} />
+        </Grid>
+      </Grid>
+    </Paper>
   );
 };
 
@@ -149,30 +179,25 @@ const drawBars = (
   categoryValues,
   barValues,
   catScale,
-  barYScale,
+  barPosScale,
   barSizeScale,
   colors
 ) => {
-  categoryValues.map((cValue) => {
+  categoryValues.forEach((cValue) => {
     const categoryData = data[cValue];
     const total = Object.values(categoryData).reduce((sum, x) => sum + x, 0);
 
-    var currHeight = barYScale(0);
-    const xPos = catScale(cValue);
+    var currPos = barPosScale(0);
+    const yPos = catScale(cValue);
 
-    barValues.map((bValue) => {
+    barValues.forEach((bValue) => {
       if (categoryData.hasOwnProperty(bValue)) {
         context.fillStyle = colors(bValue);
-        const barHeight = barSizeScale(categoryData[bValue] / total);
+        const barSize = barSizeScale(categoryData[bValue] / total);
 
-        context.fillRect(
-          xPos,
-          currHeight - barHeight,
-          catScale.bandwidth(),
-          barHeight
-        );
+        context.fillRect(currPos, yPos, barSize, catScale.bandwidth());
 
-        currHeight += barHeight * -1;
+        currPos += barSize;
       }
     });
   });
@@ -180,236 +205,64 @@ const drawBars = (
 
 const drawLabels = (
   context,
-  data,
   categoryValues,
-  barValues,
   catScale,
   barScale,
-  colors
+  xAxisPos,
+  yAxisPos
 ) => {
   const values = barScale.ticks(10);
-  context.font = Y_AXIS_FONT;
+  context.font = PROP_AXIS_FONT;
   context.fillStyle = "black";
-  context.textAlign = "right";
+  context.textAlign = "center";
   context.lineWidth = 1;
-  context.textBaseline = "middle";
+  context.textBaseline = "bottom";
 
   values.forEach((value) => {
-    context.fillText(
-      value * 100,
-      catScale(categoryValues[0]) - 2,
-      barScale(value)
-    );
+    context.fillText(value * 100, barScale(value), yAxisPos);
   });
 
   context.font = CAT_LABEL_FONT;
+  context.textAlign = "left";
+  context.textBaseline = "middle";
 
   categoryValues.forEach((cValue) => {
-    context.save();
-    context.translate(
-      catScale(cValue) + catScale.bandwidth() / 2,
-      barScale(0) + 7
+    context.fillText(
+      cValue,
+      xAxisPos,
+      catScale(cValue) + catScale.bandwidth() / 2
     );
-    context.rotate((322 * Math.PI) / 180);
-    if (cValue.indexOf("/") !== -1) {
-      context.fillText(cValue.split("/")[0] + "/", -5, 0);
-      context.fillText(cValue.split("/")[1], -5, 10);
-    } else {
-      context.fillText(cValue, -5, 5);
-    }
-    context.stroke();
-    context.restore();
   });
 };
 
-const StackedBar = ({ chartName, data, chartDim }) => {
-  const [{ clonotypeParam, subtypeParam, fontSize }] = useDashboardState();
+const drawLegend = (context, barValues, colors, canvasWidth) => {
+  context.textAlign = "center";
+  context.textBaseline = "top";
+  context.font = PROP_AXIS_FONT;
 
-  const barWidth = 67;
-  const groupedData = _.groupBy(data, subtypeParam);
-  // console.log(groupedData);
-  const subtypes = Object.keys(groupedData).sort();
-  const stackedBarData = subtypes.reduce((final, subtype) => {
-    const groupedClonotypes = _.groupBy(groupedData[subtype], clonotypeParam);
-    // console.log(_.countBy(groupedData[subtype], clonotypeParam));
-    var counter = {};
-    const hitList = Object.entries(groupedClonotypes).map(
-      (cellHits) => cellHits[1].length
+  const START_X = canvasWidth - 30;
+  const START_Y = 20;
+
+  barValues.reverse().forEach((labelObj, index) => {
+    const { value, label } = labelObj;
+    context.fillStyle = colors(value);
+
+    context.fillRect(
+      START_X - (LEGEND_SQUARE_LENGTH + LEGEND_SQUARE_PADDING) * (index + 1),
+      START_Y,
+      LEGEND_SQUARE_LENGTH,
+      LEGEND_SQUARE_LENGTH
     );
-    // console.log(hitList);
-    hitList.forEach((x) => (counter[x] = (counter[x] || 0) + 1));
-    final[subtype] = {
-      total: hitList.length,
-      counts: counter,
-    };
-    return final;
-  }, []);
 
-  // X axis
-  const x = d3
-    .scaleBand()
-    .domain(subtypes)
-    .range([chartDim["chart"]["x1"], chartDim["chart"]["x2"] - 30]);
-  // Y axis
-  const y = d3
-    .scaleLinear()
-    .domain([100, 0])
-    .range([chartDim["chart"]["y1"], chartDim["chart"]["y2"]]);
-
-  var colors = d3
-    .scaleOrdinal()
-    .domain([...Array.from(Array(10).keys())])
-    .range(BAR_COLORS);
-
-  const ref = useCanvas(
-    (canvas) => {
-      const context = canvas.getContext("2d");
-      drawLegend(context);
-      drawBars(context);
-      drawAxisLabels(context);
-      drawYAxisLabels(context);
-    },
-    chartDim["width"],
-    chartDim["height"],
-    []
-  );
-
-  function drawBars(context) {
-    context.beginPath();
-    context.lineWidth = 1;
-    context.strokeStyle = "black";
-    subtypes.forEach((subtype, subIndex) => {
-      var currentHeight = 0;
-      [...Array.from(Array(10).keys())].map((key, index) => {
-        const { counts, total } = stackedBarData[subtype];
-        var height;
-        if (index === 9) {
-          const allOther = Object.entries(counts)
-            .filter((row) => row[0] > 9)
-            .map((row) => row[1]);
-          height =
-            allOther.length > 0
-              ? (allOther.reduce((a, b) => a + b) / total) * 100
-              : 0;
-        } else {
-          height = counts[key + 1] ? (counts[key + 1] / total) * 100 : 0;
-        }
-        context.fillStyle = colors(key);
-        context.fillRect(
-          x(subtype),
-          y(height + currentHeight),
-          barWidth,
-          y(0) - y(height)
-        );
-        currentHeight += height;
-        context.fill();
-      });
-    });
-  }
-  function drawLegend(context) {
-    changeFontSize(context, fontSize.legendFontSize);
-    [...Array.from(Array(10).keys())]
-      .sort((a, b) => b - a)
-      .map((key, index) => {
-        context.fillStyle = colors(key);
-        context.fillRect(
-          chartDim["chart"]["x2"] - 20,
-          chartDim["chart"]["y1"] + index * 14 + index * 2,
-          9,
-          9
-        );
-        context.fillStyle = "#000000";
-        const legendText = key + 1 >= 10 ? "≥10" : key + 1;
-        context.fillText(
-          legendText,
-          chartDim["chart"]["x2"] - 5,
-          chartDim["chart"]["y1"] + index * 14 + index * 2 + 8
-        );
-        context.fill();
-      });
-  }
-
-  function drawYAxisLabels(context) {
     context.fillStyle = "black";
-    context.textAlign = "right";
-    context.lineWidth = 1;
-    context.textBaseline = "middle";
-    const ticks = y.ticks(10);
-
-    context.beginPath();
-    ticks.forEach(function(d) {
-      changeFontSize(context, fontSize["tickLabelFontSize"]);
-      context.fillText(d, chartDim["margin"]["left"] + 15, y(d));
-      context.stroke();
-    });
-  }
-  function drawAxisLabels(context) {
-    context.beginPath();
-    context.globalAlpha = 1;
-    context.lineWidth = 1;
-    context.fillStyle = "black";
-    context.textAlign = "right";
-
-    changeFontSize(context, fontSize["axisLabelFontSize"]);
-    subtypes.map((subtype) => {
-      context.save();
-      context.translate(x(subtype) + barWidth / 2, y(0) + 7);
-      context.rotate((322 * Math.PI) / 180);
-      if (subtype.indexOf("/") !== -1) {
-        context.fillText(subtype.split("/")[0] + "/", -5, 0);
-        context.fillText(subtype.split("/")[1], -5, 10);
-      } else {
-        context.fillText(subtype, -5, 5);
-      }
-      context.stroke();
-      context.restore();
-    });
-  }
-
-  return (
-    <Paper style={{ margin: 10 }}>
-      <Grid
-        container
-        direction="row"
-        justify="flex-start"
-        alignItems="flex-start"
-        style={{
-          width: chartDim["width"],
-          height: chartDim["height"],
-          position: "relative",
-        }}
-      >
-        <Grid
-          item
-          xs={17}
-          sm={8}
-          id="barchart"
-          style={{
-            pointerEvents: "all",
-            paddingRight: 0,
-          }}
-        >
-          <canvas ref={ref} />
-        </Grid>
-        <Grid
-          item
-          xs={7}
-          sm={4}
-          style={{
-            textAlign: "right",
-            marginTop: 10,
-            paddingRight: 15,
-            pointerEvents: "all",
-            curser: "pointer",
-            zIndex: 100,
-          }}
-        >
-          {infoText[chartName]["title"] + "    "}
-
-          <Info name={chartName} direction="s" />
-        </Grid>
-      </Grid>
-    </Paper>
-  );
+    context.fillText(
+      label,
+      START_X -
+        (LEGEND_SQUARE_LENGTH + LEGEND_SQUARE_PADDING) * (index + 1) +
+        LEGEND_SQUARE_LENGTH / 2,
+      START_Y + LEGEND_SQUARE_LENGTH + 3
+    );
+  });
 };
-export default StackedBar;
+
+export default DataWrapper;
