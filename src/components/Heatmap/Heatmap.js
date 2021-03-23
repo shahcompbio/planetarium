@@ -17,7 +17,7 @@ const CELL_FONT = "normal 12px Helvetica";
 const COLUMN_LABEL_SPACE = 150;
 const ROW_LABEL_SPACE = 150;
 const DEFAULT_LABEL_COLOR = "#000000";
-const LABEL_FONT = "12px Helvetica";
+const LABEL_FONT = "normal 12px Helvetica";
 
 const PADDING = 10;
 const TITLE_HEIGHT = 30;
@@ -224,7 +224,7 @@ const drawLabels = (
 
   rowValues.forEach((rowData) => {
     const { value, label, color } = rowData;
-    context.font = "bold 12px Helvetica";
+    context.font = LABEL_FONT;
     context.fillStyle = color;
     context.globalAlpha = isHighlighted(
       highlightedColumn,
