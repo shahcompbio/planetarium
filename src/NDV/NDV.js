@@ -92,7 +92,6 @@ const NDV = ({ data }) => {
 
   const subtypeTotals = _.countBy(metadata, initialState["subtypeParam"]);
 
-  console.log(data);
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
