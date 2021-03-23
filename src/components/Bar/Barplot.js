@@ -1,6 +1,5 @@
 import React from "react";
 import * as d3 from "d3";
-import _ from "lodash";
 
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
