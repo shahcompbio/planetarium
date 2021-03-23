@@ -39,7 +39,7 @@ const TITLE_HEIGHT = 30;
 const LEGEND_SQUARE_LENGTH = 12;
 const LEGEND_SQUARE_PADDING = 10;
 
-const StackedBarProportion = ({ data, chartDim, barLabels, chartName }) => {
+const StackedHorizontalBar = ({ data, chartDim, barLabels, chartName }) => {
   const categoryValues = Object.keys(data).sort();
   const barValues =
     typeof barLabels[0] === "string"
@@ -234,4 +234,4 @@ const drawLegend = (context, barValues, colors, canvasWidth) => {
   });
 };
 
-export default StackedBarProportion;
+export default StackedHorizontalBar;

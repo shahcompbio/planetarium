@@ -1,6 +1,6 @@
 import React from "react";
 
-import StackedHorizontalBar from "../components/Bar/Barplot";
+import StackedHorizontalBar from "../components/Bar/StackedHorizontalBar";
 import { useDashboardState } from "../PlotState/dashboardState";
 import _ from "lodash";
 

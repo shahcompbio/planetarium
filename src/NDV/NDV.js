@@ -7,6 +7,7 @@ import dashboardReducer, { initialState } from "../PlotState/dashboardReducer";
 import { DashboardProvider } from "../PlotState/dashboardState";
 import Heatmap from "../components/Heatmap/Heatmap";
 import ClonotypeExpansion from "./ClonotypeExpansion";
+import ProbabilityHistogram from "../components/Bar/ProbabilityHistogram";
 
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
@@ -222,10 +223,10 @@ const NDV = ({ data }) => {
                 setSelectedClonotype(clonotype)
               }
             />
-            <Layout
+            <ProbabilityHistogram
               chartName={"HISTOGRAM"}
               data={probabilities}
-              dim={{
+              chartDim={{
                 chart: {
                   x1: 100,
                   y1: 50,
@@ -235,14 +236,14 @@ const NDV = ({ data }) => {
                 height: 475,
                 width: 750,
               }}
-              highlighted={
+              binParam={initialState["logXParam"]}
+              lineParam={initialState["subtypeParam"]}
+              highlightBarParam={initialState["clonotypeParam"]}
+              highlightedBar={
                 selectedClonotype["hover"] || selectedClonotype["selected"]
               }
-              selectedSubtype={selectedSubtype}
-              selectedClonotype={selectedClonotype}
-              setSelectedSubtype={(subtype) => setSelectedSubtype(subtype)}
-              setSelectedClonotype={(clonotype) =>
-                setSelectedClonotype(clonotype)
+              highlightedLine={
+                selectedSubtype["hover"] || selectedSubtype["selected"]
               }
             />
           </Grid>

@@ -1,21 +1,21 @@
 /*
 
-Histogram with kde curves
+Probability distribution with kde curves
 
 */
 
 import React from "react";
 import * as d3 from "d3";
 import * as d3Array from "d3-array";
-import { useDashboardState } from "../PlotState/dashboardState";
+import { useDashboardState } from "../../PlotState/dashboardState";
 
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 
-import { useCanvas } from "../components/utils/useCanvas";
+import { useCanvas } from "../utils/useCanvas";
 
-import Info from "../Info/Info.js";
-import infoText from "../Info/InfoText.js";
+import Info from "../../Info/Info.js";
+import infoText from "../../Info/InfoText.js";
 
 const HIGHLIGHTED_BAR_COLOR = "#eb5067";
 const HIGHLIGHTED_BAR_WIDTH = 2;
@@ -34,31 +34,7 @@ const BAR_STROKE_COLOR = "#5c97bf";
 
 const LINE_COLOR = "steelblue";
 
-const DataWrapper = ({
-  chartName,
-  data,
-  chartDim,
-  selectedSubtype,
-  selectedClonotype,
-}) => {
-  const [{ logXParam, clonotypeParam, subtypeParam }] = useDashboardState();
-  return (
-    <Histogram
-      data={data}
-      binParam={logXParam}
-      lineParam={subtypeParam}
-      highlightBarParam={clonotypeParam}
-      chartDim={chartDim}
-      chartName={chartName}
-      highlightedBar={
-        selectedClonotype["hover"] || selectedClonotype["selected"]
-      }
-      highlightedLine={selectedSubtype["hover"] || selectedSubtype["selected"]}
-    />
-  );
-};
-
-const Histogram = ({
+const ProbabilityHistogram = ({
   data,
   binParam,
   lineParam,
@@ -296,4 +272,4 @@ const drawKde = (context, data, x, y, binParam, lineParam, highlightedLine) => {
   context.stroke();
 };
 
-export default DataWrapper;
+export default ProbabilityHistogram;
