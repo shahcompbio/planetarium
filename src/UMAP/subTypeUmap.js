@@ -18,8 +18,10 @@ const TITLE_HEIGHT = 30;
 
 const LEGEND_WIDTH = 180;
 const AXIS_SPACE = 20;
-
+const AXIS_FONT = "normal 10px Helvetica";
 const AXIS_COLOR = "#000000";
+
+const LABEL_FONT = "500 12px Helvetica";
 
 const COLOR_ARRAY = [
   "#5E4FA2",
@@ -158,15 +160,10 @@ const UMAP = ({
   );
   const svgRef = useD3(
     (svg) => {
-      drawLegend(
-        svg,
-        subsetValues,
-        subsetColors,
-        canvasHeight,
-        highlighted,
-        setHighlighted
-      );
+      drawLegend(svg, subsetValues, subsetColors, setHighlighted);
     },
+    LEGEND_WIDTH,
+    chartHeight,
     [highlighted]
   );
 
@@ -245,6 +242,8 @@ const drawPoints = (
 
 const drawUMAPAxis = (context, chartHeight, xParam, yParam) => {
   context.beginPath();
+  context.font = AXIS_FONT;
+  context.globalAlpha = 1;
 
   const START_X = AXIS_SPACE / 2;
   const START_Y = chartHeight + AXIS_SPACE / 2;
@@ -299,7 +298,7 @@ const drawSubsetLabels = (
     const width = Math.abs(x2 - x1);
     const height = Math.abs(y2 - y1);
 
-    context.font = "500 12px Helvetica";
+    context.font = LABEL_FONT;
     const textWidth = context.measureText(subset).width;
     context.globalAlpha = isHighlighted(subset, highlighted) ? 0.8 : 0.2;
     context.fillStyle = "white";
@@ -360,21 +359,13 @@ const getBoxBounds = (data, xParam, yParam) => {
   return { xMin, xMax, yMin, yMax };
 };
 
-const drawLegend = (
-  svg,
-  subsetValues,
-  colors,
-  chartHeight,
-  highlighted,
-  setHighlighted
-) => {
-  svg.attr("width", LEGEND_WIDTH).attr("height", chartHeight);
-
+const drawLegend = (svg, subsetValues, colors, setHighlighted) => {
   const subsets = svg
     .selectAll("g")
     .data(subsetValues)
     .enter()
-    .append("g");
+    .append("g")
+    .attr("cursor", "pointer");
 
   subsets
     .append("rect")
