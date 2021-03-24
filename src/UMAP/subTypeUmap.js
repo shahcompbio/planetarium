@@ -30,6 +30,12 @@ const COLOR_ARRAY = [
   "#F46D43",
   "#D53E4F",
   "#9E0142",
+  "#c370e0",
+  "#234db8",
+  "#1d7d53",
+  "#cf9b0a",
+  "#e34732",
+  "#cf0aa4",
 ];
 
 const NULL_POINT_COLOR = "#e8e8e8";
@@ -116,7 +122,9 @@ const UMAP = ({
   const subsetColors = d3
     .scaleOrdinal()
     .domain(subsetValues)
-    .range(COLOR_ARRAY.slice(0, subsetValues.length));
+    .range(
+      COLOR_ARRAY.slice(0, Math.min(subsetValues.length, COLOR_ARRAY.length))
+    );
 
   const canvasRef = useCanvas(
     (canvas) => {
