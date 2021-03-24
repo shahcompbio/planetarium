@@ -3,6 +3,7 @@ import * as d3 from "d3";
 import _ from "lodash";
 
 import { useCanvas } from "../utils/useCanvas";
+import { isHighlighted } from "../utils/isHighlighted";
 
 import Info from "../../Info/Info";
 import infoText from "../../Info/InfoText";
@@ -37,18 +38,18 @@ const Heatmap = ({
   columnLabels,
   rowLabels,
   rowTotal,
+  test
 }) => {
   const columnValues =
-    columnLabels.map((col) => col["value"]) ||
-    _.uniq(data.map((record) => record[column])).sort();
-  const rowValues =
-    rowLabels || _.uniq(data.map((record) => record[row])).sort();
+    columnLabels.map(col => col["value"]) ||
+    _.uniq(data.map(record => record[column])).sort();
+  const rowValues = rowLabels || _.uniq(data.map(record => record[row])).sort();
 
   const canvasWidth = chartDim["width"] - PADDING - PADDING;
   const canvasHeight = chartDim["height"] - PADDING - PADDING - TITLE_HEIGHT;
 
   const chartWidth = canvasWidth - ROW_LABEL_SPACE;
-  const chartHeight = canvasHeight - COLUMN_LABEL_SPACE;
+  const chartHeight = canvasHeight - COLUMN_LABEL_SPACE - PADDING;
 
   const columnScale = d3
     .scaleBand()
@@ -69,8 +70,8 @@ const Heatmap = ({
       ...currMap,
       [rowName]: {
         ..._.countBy(groupedRow[rowName], column),
-        total: rowTotal ? rowTotal[rowName] : groupedRow[rowName].length,
-      },
+        total: rowTotal ? rowTotal[rowName] : groupedRow[rowName].length
+      }
     }),
     {}
   );
@@ -97,7 +98,7 @@ const Heatmap = ({
     .domain([0, mostFreqCount]);
 
   const ref = useCanvas(
-    (canvas) => {
+    canvas => {
       const context = canvas.getContext("2d");
       drawHeatmap(
         context,
@@ -138,7 +139,7 @@ const Heatmap = ({
         margin: 10,
         padding: PADDING,
         height: chartDim["height"],
-        width: chartDim["width"],
+        width: chartDim["width"]
       }}
     >
       <Grid
@@ -150,7 +151,7 @@ const Heatmap = ({
         <Grid
           item
           style={{
-            textAlign: "right",
+            textAlign: "right"
           }}
         >
           {infoText["HEATMAP"]["title"] + "    "}
@@ -164,12 +165,12 @@ const Heatmap = ({
   );
 };
 
-const formatLabelData = (values) => {
+const formatLabelData = values => {
   if (typeof values[0] === "string") {
-    return values.map((value) => ({
+    return values.map(value => ({
       value,
       label: value,
-      color: DEFAULT_LABEL_COLOR,
+      color: DEFAULT_LABEL_COLOR
     }));
   }
   return values;
@@ -187,7 +188,8 @@ const drawLabels = (
   chartDim
 ) => {
   context.font = LABEL_FONT;
-  columnValues.forEach((columnData) => {
+
+  columnValues.forEach(columnData => {
     const { value, label, color } = columnData;
 
     context.save();
@@ -222,10 +224,11 @@ const drawLabels = (
     context.fill();
   });
 
-  rowValues.forEach((rowData) => {
+  rowValues.forEach(rowData => {
     const { value, label, color } = rowData;
     context.font = LABEL_FONT;
     context.fillStyle = color;
+
     context.globalAlpha = isHighlighted(
       highlightedColumn,
       highlightedRow,
@@ -259,25 +262,22 @@ const drawHeatmap = (
 ) => {
   const cellWidth = columnScale.bandwidth();
   const cellHeight = rowScale.bandwidth();
-
-  rowValues.forEach((rowName) => {
+  rowValues.forEach(rowName => {
     const rowData = freqMap[rowName];
     const yPos = rowScale(rowName);
     const total = rowData["total"];
 
-    columnValues.forEach((columnName) => {
+    columnValues.forEach(columnName => {
       const colFreq = rowData[columnName];
       const xPos = columnScale(columnName);
-
       context.globalAlpha = isHighlighted(
-        highlightedColumn,
         highlightedRow,
+        highlightedColumn,
         rowName,
         columnName
       )
         ? 1
         : 0.2;
-
       if (colFreq) {
         context.fillStyle = heatmapColor(colFreq);
       } else {
@@ -300,15 +300,4 @@ const drawHeatmap = (
   });
 };
 
-const isHighlighted = (highlightedColumn, highlightedRow, column, row) => {
-  if (highlightedColumn !== null || highlightedRow !== null) {
-    if (highlightedColumn === column || highlightedRow === row) {
-      return true;
-    } else {
-      return false;
-    }
-  } else {
-    return true;
-  }
-};
 export default Heatmap;

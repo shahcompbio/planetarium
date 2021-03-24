@@ -41,7 +41,7 @@ const ProbabilityHistogram = ({
   chartDim,
   highlightedBar,
   highlightedLine,
-  chartName,
+  chartName
 }) => {
   const canvasWidth = chartDim["width"] - PADDING - PADDING;
   const canvasHeight = chartDim["height"] - PADDING - PADDING - TITLE_HEIGHT;
@@ -49,7 +49,7 @@ const ProbabilityHistogram = ({
   const chartWidth = canvasWidth - Y_AXIS_WIDTH;
   const chartHeight = canvasHeight - X_AXIS_HEIGHT;
 
-  const allX = data.map((row) => parseFloat(row[binParam]));
+  const allX = data.map(row => parseFloat(row[binParam]));
   const xMax = Math.max(...allX);
   const xMin = Math.min(...allX);
 
@@ -60,11 +60,11 @@ const ProbabilityHistogram = ({
 
   const bins = d3Array
     .bin()
-    .value((d) => d[binParam])
+    .value(d => d[binParam])
     .domain(x.domain())
     .thresholds(x.ticks(NUM_TICKS))(data);
 
-  const maxY = Math.max(...bins.map((row) => row.length));
+  const maxY = Math.max(...bins.map(row => row.length));
 
   const y = d3
     .scaleLinear()
@@ -77,7 +77,7 @@ const ProbabilityHistogram = ({
     .range([0, chartHeight - PADDING]);
 
   const ref = useCanvas(
-    (canvas) => {
+    canvas => {
       const context = canvas.getContext("2d");
 
       drawAxisLabels(
@@ -116,7 +116,7 @@ const ProbabilityHistogram = ({
         margin: 10,
         padding: PADDING,
         height: chartDim["height"],
-        width: chartDim["width"],
+        width: chartDim["width"]
       }}
     >
       <Grid
@@ -128,7 +128,7 @@ const ProbabilityHistogram = ({
         <Grid
           item
           style={{
-            textAlign: "right",
+            textAlign: "right"
           }}
         >
           {infoText[chartName]["title"] + "    "}
@@ -161,13 +161,13 @@ const drawAxisLabels = (
 
   context.font = TICK_FONT;
 
-  x.ticks(10).forEach((tick) => {
+  x.ticks(10).forEach(tick => {
     context.fillText(tick, x(tick), y(0) + 15);
   });
 
-  const format = (tick) => (tick === 0 ? "0" : d3.format(".2f")(tick / maxBin));
+  const format = tick => (tick === 0 ? "0" : d3.format(".2f")(tick / maxBin));
 
-  y.ticks(10).forEach((tick) => {
+  y.ticks(10).forEach(tick => {
     context.globalAlpha = 1;
     context.textBaseline = "middle";
     context.fillText(format(tick), x(xMin), y(tick));
@@ -196,7 +196,7 @@ const drawBars = (context, bins, x, y, barScale) => {
   context.fillStyle = BAR_COLOR;
   context.strokeStyle = BAR_STROKE_COLOR;
 
-  bins.forEach((bin) => {
+  bins.forEach(bin => {
     const xPos = x(bin["x0"]) + 1;
     const yPos = y(bin.length);
     const width = x(bin["x1"]) - x(bin["x0"]) - 2;
@@ -219,7 +219,7 @@ const drawHighlightedBar = (
 ) => {
   if (highlightedBar) {
     const highlightedData = data.filter(
-      (datum) => datum[barParam] === highlightedBar
+      datum => datum[barParam] === highlightedBar
     );
 
     if (highlightedData.length > 0) {
@@ -238,20 +238,20 @@ const drawHighlightedBar = (
 
 const drawKde = (context, data, x, y, binParam, lineParam, highlightedLine) => {
   const kde = (kernel, thresholds, data) =>
-    thresholds.map((t) => [t, d3.mean(data, (d) => kernel(t - d))]);
+    thresholds.map(t => [t, d3.mean(data, d => kernel(t - d))]);
 
   function epanechnikov(bandwidth) {
-    return (x) =>
+    return x =>
       Math.abs((x /= bandwidth)) <= 1 ? (0.75 * (1 - x * x)) / bandwidth : 0;
   }
   const densityData = highlightedLine
-    ? data.filter((datum) => datum[lineParam] === highlightedLine)
+    ? data.filter(datum => datum[lineParam] === highlightedLine)
     : data;
 
   const density = kde(
     epanechnikov(1),
     x.ticks(NUM_TICKS),
-    densityData.map((row) => parseFloat(row[binParam]))
+    densityData.map(row => parseFloat(row[binParam]))
   );
   var line = d3
     .line()

@@ -18,9 +18,11 @@ import Typography from "@material-ui/core/Typography";
 
 import Grid from "@material-ui/core/Grid";
 
+import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
+import CardActions from "@material-ui/core/CardActions";
 
 import { theme } from "../theme/theme.js";
 import { MuiThemeProvider } from "@material-ui/core/styles";
@@ -37,12 +39,10 @@ const NDV = ({ data }) => {
   const { metadata, probabilities, degs } = data;
 
   const filteredMetadata = metadata.filter(
-    (row) => row[initialState["clonotypeParam"]] !== "None"
+    row => row[initialState["clonotypeParam"]] !== "None"
   );
   const topTen = Object.entries(
-    _.countBy(
-      filteredMetadata.map((row) => row[initialState["clonotypeParam"]])
-    )
+    _.countBy(filteredMetadata.map(row => row[initialState["clonotypeParam"]]))
   )
     .sort(([, a], [, b]) => b - a)
     .slice(0, 10);
@@ -53,7 +53,7 @@ const NDV = ({ data }) => {
   }, {});
 
   const sampleData = metadata.filter(
-    (row) =>
+    row =>
       sampleTen.hasOwnProperty(row[initialState["clonotypeParam"]]) &&
       row[initialState["clonotypeParam"]] !== "None"
   );
@@ -77,7 +77,7 @@ const NDV = ({ data }) => {
     "#b5762a",
     "#5aebed",
     "#8f8f3f",
-    "#ed1a1a",
+    "#ed1a1a"
   ];
   var colors = d3
     .scaleOrdinal()
@@ -89,11 +89,11 @@ const NDV = ({ data }) => {
     .map((clonotype, index) => ({
       value: clonotype,
       label: `SEQ${index + 1} - ${clonotype}`,
-      color: colors(clonotype),
+      color: colors(clonotype)
     }));
 
   const subtypeTotals = _.countBy(metadata, initialState["subtypeParam"]);
-
+  console.log(selectedClonotype);
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
@@ -105,7 +105,7 @@ const NDV = ({ data }) => {
           topTenNumbering: topTenNumbering,
           topTen: topTen,
           colors: colors,
-          clonotypes: clonotypes,
+          clonotypes: clonotypes
         }}
         reducer={dashboardReducer}
       >
@@ -139,10 +139,11 @@ const NDV = ({ data }) => {
               data={metadata}
               selectedClonotype={selectedClonotype["selected"]}
               hoveredClonotype={selectedClonotype["hover"]}
-              setSelectedClonotype={(clonotype) => {
+              setSelectedClonotype={clonotype => {
                 if (clonotype["selected"]) {
                   setSelectedSubtype(initialState["defaultSelectedObject"]);
                 }
+
                 setSelectedClonotype({ ...clonotype });
               }}
             />
@@ -151,13 +152,13 @@ const NDV = ({ data }) => {
               data={metadata}
               selectedSubtype={selectedSubtype["selected"]}
               hoveredSubtype={selectedSubtype["hover"]}
-              setSelectedSubtype={(subtype) => {
+              setSelectedSubtype={subtype => {
                 if (subtype["selected"]) {
                   setSelectedClonotype(initialState["defaultSelectedObject"]);
                 }
-                setSelectedSubtype((prevState) => ({
+                setSelectedSubtype(prevState => ({
                   ...prevState,
-                  ...subtype,
+                  ...subtype
                 }));
               }}
               dim={{ width: 750, height: 600 }}
@@ -168,25 +169,51 @@ const NDV = ({ data }) => {
             container
             direction="row"
             justify="flex-start"
-            alignItems="flex-start"
+            alignItems="flex-end"
           >
             <Heatmap
               data={probabilities}
               chartDim={{
                 height: 550,
-                width: 750,
+                width: 750
               }}
               column={initialState["clonotypeParam"]}
               row={initialState["subtypeParam"]}
-              highlightedColumn={
+              highlightedRow={
                 selectedSubtype["selected"] || selectedSubtype["hover"]
               }
-              highlightedRow={
+              highlightedColumn={
                 selectedClonotype["selected"] || selectedClonotype["hover"]
               }
+              test={selectedClonotype}
               columnLabels={clonotypeLabels}
               rowTotal={subtypeTotals}
             />
+            <ClonotypeExpansion
+              chartName={"BARPLOT"}
+              data={probabilities}
+              dim={{
+                height: 455,
+                width: 750
+              }}
+              highlightedRow={
+                selectedSubtype["selected"] || selectedSubtype["hover"]
+              }
+              selectedSubtype={selectedSubtype}
+              selectedClonotype={selectedClonotype}
+              setSelectedSubtype={subtype => setSelectedSubtype(subtype)}
+              setSelectedClonotype={clonotype =>
+                setSelectedClonotype(clonotype)
+              }
+            />
+          </Grid>
+          <Grid
+            item
+            container
+            direction="row"
+            justify="flex-start"
+            alignItems="flex-start"
+          >
             <DEGTable
               chartName={"TABLE"}
               data={degs}
@@ -197,30 +224,8 @@ const NDV = ({ data }) => {
               }
               chartDim={{
                 height: 500,
-                width: 750,
+                width: 750
               }}
-            />
-          </Grid>
-          <Grid
-            item
-            container
-            direction="row"
-            justify="flex-start"
-            alignItems="flex-start"
-          >
-            <ClonotypeExpansion
-              chartName={"BARPLOT"}
-              data={probabilities}
-              dim={{
-                height: 475,
-                width: 750,
-              }}
-              selectedSubtype={selectedSubtype}
-              selectedClonotype={selectedClonotype}
-              setSelectedSubtype={(subtype) => setSelectedSubtype(subtype)}
-              setSelectedClonotype={(clonotype) =>
-                setSelectedClonotype(clonotype)
-              }
             />
             <ProbabilityHistogram
               chartName={"HISTOGRAM"}
@@ -230,10 +235,10 @@ const NDV = ({ data }) => {
                   x1: 100,
                   y1: 50,
                   x2: 600,
-                  y2: 400,
+                  y2: 400
                 },
                 height: 475,
-                width: 750,
+                width: 750
               }}
               binParam={initialState["logXParam"]}
               lineParam={initialState["subtypeParam"]}
@@ -253,15 +258,22 @@ const NDV = ({ data }) => {
 };
 const useStyles = makeStyles({
   root: {
-    minWidth: 275,
+    minWidth: 275
   },
+  header: { padding: 10, paddingBottom: 0 },
+  body: {
+    padding: 5,
+    paddingLeft: 20
+  },
+  button: { margin: 5, float: "right" },
   poppr: {
     width: 150,
     float: "right",
     right: "100px",
     top: "10px",
     left: "auto",
-  },
+    margin: 10
+  }
 });
 const Popup = ({ selected, setSelected, type }) => {
   const classes = useStyles();
@@ -273,17 +285,19 @@ const Popup = ({ selected, setSelected, type }) => {
       className={classes.popper}
     >
       <Card className={classes.root} variant="outlined">
-        <CardHeader
-          action={
-            <IconButton aria-label="settings">
-              <CloseIcon onClick={setSelected} />
-            </IconButton>
-          }
-          title={"Selected " + type}
-        />
-        <CardContent>
+        <CardHeader className={classes.header} title={"Selected " + type} />
+        <CardContent className={classes.body}>
           <Typography variant="body">{selected}</Typography>
         </CardContent>
+        <Button
+          color="primary"
+          size="small"
+          variant="outlined"
+          className={classes.button}
+          onClick={setSelected}
+        >
+          Clear
+        </Button>
       </Card>
     </Popper>
   );

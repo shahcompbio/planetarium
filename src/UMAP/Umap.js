@@ -39,7 +39,7 @@ const Umap = ({
   chartDim,
   selectedClonotype,
   hoveredClonotype,
-  setSelectedClonotype,
+  setSelectedClonotype
 }) => {
   const [
     {
@@ -50,14 +50,14 @@ const Umap = ({
       fontSize,
       topTen,
       colors,
-      topTenNumbering,
-    },
+      topTenNumbering
+    }
   ] = useDashboardState();
   const [context, saveContext] = useState(null);
-  console.log(chartDim);
+
   const [radiusAdjust, setRadius] = useState(10);
-  const yData = data.map((d) => parseFloat(d[yParam]));
-  const xData = data.map((d) => parseFloat(d[xParam]));
+  const yData = data.map(d => parseFloat(d[yParam]));
+  const xData = data.map(d => parseFloat(d[xParam]));
 
   const yMin = Math.min(...yData);
   const yMax = Math.max(...yData);
@@ -69,7 +69,7 @@ const Umap = ({
     return final;
   }, {});
 
-  const sampleData = data.filter((row) =>
+  const sampleData = data.filter(row =>
     sampleTen.hasOwnProperty(row[clonotypeParam])
   );
 
@@ -152,7 +152,7 @@ const Umap = ({
     context.lineWidth = 1;
     context.strokeStyle = "black";
     context.globalAlpha = 0.5;
-    data.forEach((point) => {
+    data.forEach(point => {
       context.beginPath();
       context.arc(
         x(point[xParam]),
@@ -180,8 +180,8 @@ const Umap = ({
     topTenNumbering,
     selectedClonotype
   ) {
-    const maxValue = Math.max(...Object.entries(topTen).map((row) => row[1]));
-    const minValue = Math.min(...Object.entries(topTen).map((row) => row[1]));
+    const maxValue = Math.max(...Object.entries(topTen).map(row => row[1]));
+    const minValue = Math.min(...Object.entries(topTen).map(row => row[1]));
 
     const lineXFreq = d3
       .scaleLinear()
@@ -218,23 +218,23 @@ const Umap = ({
       .context(context);
 
     var nestedSamples = Array.from(
-      d3Array.group(data, (d) => d[clonotypeParam]),
+      d3Array.group(data, d => d[clonotypeParam]),
       ([key, value]) => ({ key, value })
     );
 
     //if selected, move to end so it's drawn last
     if (selectedClonotype) {
-      const keys = nestedSamples.map((row) => row["key"]);
+      const keys = nestedSamples.map(row => row["key"]);
 
       nestedSamples = [
-        ...nestedSamples.filter((row) => row["key"] !== selectedClonotype),
-        nestedSamples[keys.indexOf(selectedClonotype)],
+        ...nestedSamples.filter(row => row["key"] !== selectedClonotype),
+        nestedSamples[keys.indexOf(selectedClonotype)]
       ];
     }
     nestedSamples.reduce((final, clonotype) => {
       const xBins = d3Array
         .bin()
-        .value((d) => d[xParam])
+        .value(d => d[xParam])
         .domain(x.domain())
         .thresholds(x.ticks(10))(clonotype["value"]);
 
@@ -256,7 +256,7 @@ const Umap = ({
 
       const yBins = d3Array
         .bin()
-        .value((d) => d[yParam])
+        .value(d => d[yParam])
         .domain(y.domain())
         .thresholds(y.ticks(10))(clonotype["value"]);
 
@@ -288,7 +288,7 @@ const Umap = ({
     selectedClonotype
   ) {
     var nestedSamples = Array.from(
-      d3Array.group(data, (d) => d[clonotypeParam]),
+      d3Array.group(data, d => d[clonotypeParam]),
       ([key, value]) => ({ key, value })
     );
 
@@ -299,13 +299,13 @@ const Umap = ({
     const merge = nestedSamples.map((clonotype, i) => {
       const xBins = d3Array
         .bin()
-        .value((d) => d[xParam])
+        .value(d => d[xParam])
         .domain(x.domain())
         .thresholds(x.ticks(8))(clonotype["value"]);
 
       const yBins = d3Array
         .bin()
-        .value((d) => d[yParam])
+        .value(d => d[yParam])
         .domain(y.domain())
         .thresholds(y.ticks(8))(clonotype["value"]);
 
@@ -326,7 +326,7 @@ const Umap = ({
             ...rows.reduce((finalRow, row) => {
               finalRow[row[1][cellIdParam]] = { ...row[1], xRadius: freq };
               return finalRow;
-            }, {}),
+            }, {})
           };
         }
         return final;
@@ -349,7 +349,7 @@ const Umap = ({
             ...rows.reduce((finalRow, row) => {
               finalRow[row[1][cellIdParam]] = { ...row[1], yRadius: freq };
               return finalRow;
-            }, {}),
+            }, {})
           };
         }
         return final;
@@ -363,21 +363,21 @@ const Umap = ({
 
     const sortedmerge = merge
       .flat(1)
-      .filter((point) => point.hasOwnProperty(cellIdParam))
-      .map((point) => ({
+      .filter(point => point.hasOwnProperty(cellIdParam))
+      .map(point => ({
         ...point,
-        radius: (point["xRadius"] + point["yRadius"]) / radiusAdjust,
+        radius: (point["xRadius"] + point["yRadius"]) / radiusAdjust
       }))
       .sort((a, b) => b.radius - a.radius);
 
     const isCountInsignificant =
-      Math.max(...sortedmerge.map((point) => point["radius"])) < 1
+      Math.max(...sortedmerge.map(point => point["radius"])) < 1
         ? true
         : radiusAdjust == radiusMax
         ? true
         : false;
 
-    sortedmerge.map((point) => {
+    sortedmerge.map(point => {
       const fill = selectedClonotype ? "grey" : colors(point[clonotypeParam]);
       context.globalAlpha = selectedClonotype ? 0.5 : 1;
       drawPoint(
@@ -396,8 +396,8 @@ const Umap = ({
     //if selected, move to end so it's drawn last
     if (selectedClonotype) {
       sortedmerge
-        .filter((row) => row[clonotypeParam] === selectedClonotype)
-        .map((point) => {
+        .filter(row => row[clonotypeParam] === selectedClonotype)
+        .map(point => {
           const fill = colors(point[clonotypeParam]);
           drawPoint(
             context,
@@ -452,25 +452,25 @@ const Umap = ({
     //  requestAnimationFrame(reDraw);
   }
   function drawLegend(context) {
-    const mouseInteractions = (element) =>
+    const mouseInteractions = element =>
       element
         .on("mouseenter", function(d) {
           setSelectedClonotype({
             hover: d[0],
-            selected: selectedClonotype,
+            selected: selectedClonotype
           });
         })
         .on("mousedown", function(d, i) {
           d3.event.stopPropagation();
           setSelectedClonotype({
             hover: null,
-            selected: d[0],
+            selected: d[0]
           });
         })
         .on("mouseout", function(event, d) {
           setSelectedClonotype({
             hover: null,
-            selected: selectedClonotype,
+            selected: selectedClonotype
           });
         });
     var legend = d3.select("#umapLegend");
@@ -589,7 +589,7 @@ const Umap = ({
         style={{
           width: chartDim["width"] + 250,
           height: chartDim["height"],
-          position: "relative",
+          position: "relative"
         }}
       >
         <Grid
@@ -600,7 +600,7 @@ const Umap = ({
           style={{
             pointerEvents: "all",
             display: "flex",
-            paddingRight: 0,
+            paddingRight: 0
           }}
         >
           <canvas id="umapCanvas" />
@@ -623,7 +623,7 @@ const Umap = ({
               height: 80,
               paddingTop: 40,
               marginLeft: -38,
-              textAlign: "left",
+              textAlign: "left"
             }}
           >
             {infoText[chartName]["title"] + "    "}
@@ -649,7 +649,7 @@ const Umap = ({
               max={radiusMax}
               step="0.5"
               value={radiusAdjust}
-              onChange={(event) => {
+              onChange={event => {
                 setRadius(event.target.value);
               }}
               style={{ direction: "rtl" }}
