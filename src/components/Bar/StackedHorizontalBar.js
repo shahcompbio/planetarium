@@ -35,6 +35,7 @@ const CAT_LABEL_SPACE = 150;
 const CAT_LABEL_FONT = "normal 12px Helvetica";
 const PADDING = 10;
 const TITLE_HEIGHT = 30;
+const LABEL_PADDING = 5;
 
 const LEGEND_SQUARE_LENGTH = 12;
 const LEGEND_SQUARE_PADDING = 10;
@@ -54,7 +55,7 @@ const StackedHorizontalBar = ({ data, chartDim, barLabels, chartName }) => {
   const canvasHeight = chartDim["height"] - PADDING - PADDING - TITLE_HEIGHT;
 
   const chartWidth = canvasWidth - CAT_LABEL_SPACE;
-  const chartHeight = canvasHeight - LEGEND_HEIGHT;
+  const chartHeight = canvasHeight - LEGEND_HEIGHT - LABEL_PADDING;
 
   const catScale = d3
     .scaleBand()
@@ -98,7 +99,7 @@ const StackedHorizontalBar = ({ data, chartDim, barLabels, chartName }) => {
         catScale,
         barPosScale,
         chartWidth + PADDING + 2,
-        chartHeight + LEGEND_HEIGHT
+        chartHeight + LEGEND_HEIGHT + LABEL_PADDING
       );
 
       drawLegend(context, legendLabels, colors, canvasWidth);
