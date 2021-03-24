@@ -6,7 +6,9 @@ export const useD3 = (renderChartFn, dependencies) => {
   const ref = useRef();
 
   useEffect(() => {
-    renderChartFn(d3.select(ref.current));
+    const svg = d3.select(ref.current);
+    svg.selectAll("*").remove();
+    renderChartFn(svg);
     return () => {};
   }, dependencies);
   return ref;

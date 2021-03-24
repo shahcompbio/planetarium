@@ -155,8 +155,12 @@ const NDV = ({ data }) => {
                 if (subtype["selected"]) {
                   setSelectedClonotype(initialState["defaultSelectedObject"]);
                 }
-                setSelectedSubtype({ ...subtype });
+                setSelectedSubtype((prevState) => ({
+                  ...prevState,
+                  ...subtype,
+                }));
               }}
+              dim={{ width: 750, height: 600 }}
             />
           </Grid>
           <Grid
