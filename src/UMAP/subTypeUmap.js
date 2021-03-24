@@ -30,12 +30,12 @@ const COLOR_ARRAY = [
   "#F46D43",
   "#D53E4F",
   "#9E0142",
-  "#c370e0",
-  "#234db8",
-  "#1d7d53",
-  "#cf9b0a",
-  "#e34732",
-  "#cf0aa4",
+  "#C6AEFF",
+  "#BDD8FF",
+  "#BDFFB2",
+  "#FCFFA6",
+  "#FFC8AE",
+  "#FF9FBB",
 ];
 
 const NULL_POINT_COLOR = "#e8e8e8";
@@ -142,7 +142,15 @@ const UMAP = ({
         subsetColors
       );
 
-      drawSubsetLabels(context, subsetGroups, xScale, yScale, xParam, yParam);
+      drawSubsetLabels(
+        context,
+        subsetGroups,
+        xScale,
+        yScale,
+        xParam,
+        yParam,
+        highlighted
+      );
     },
     canvasWidth,
     canvasHeight,
@@ -215,6 +223,7 @@ const drawPoints = (
 ) => {
   context.beginPath();
   context.lineWidth = 1;
+  context.globalAlpha = 1;
 
   data.forEach((point) => {
     context.fillStyle = isHighlighted(point[subsetParam], highlighted)
@@ -266,7 +275,8 @@ const drawSubsetLabels = (
   xScale,
   yScale,
   xParam,
-  yParam
+  yParam,
+  highlighted
 ) => {
   const subsetValues = Object.keys(subsetGroups);
 
@@ -291,7 +301,7 @@ const drawSubsetLabels = (
 
     context.font = "500 12px Helvetica";
     const textWidth = context.measureText(subset).width;
-    context.globalAlpha = 0.8;
+    context.globalAlpha = isHighlighted(subset, highlighted) ? 0.8 : 0.2;
     context.fillStyle = "white";
     context.fillRect(
       x1 + (width - textWidth) / 2 - 1,
@@ -300,7 +310,7 @@ const drawSubsetLabels = (
       14
     );
 
-    context.globalAlpha = 1;
+    context.globalAlpha = isHighlighted(subset, highlighted) ? 1 : 0.2;
     context.textAlign = "center";
     context.textBaseline = "middle";
     context.fillStyle = "black";
