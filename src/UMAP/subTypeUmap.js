@@ -323,17 +323,17 @@ const filterOutliers = (data, xParam, yParam) => {
     quantileSorted(yValues, range)
   );
 
-  const xstd = Math.abs(xMax - xMin) * 1.5;
-  const ystd = Math.abs(yMax - yMin) * 1.5;
+  const xiqr = Math.abs(xMax - xMin) * 1.5;
+  const yiqr = Math.abs(yMax - yMin) * 1.5;
 
   return data.filter((datum) => {
     const x = datum[xParam];
     const y = datum[yParam];
 
     return (
-      xMin - xstd <= x &&
-      x <= xMax + xstd &&
-      (yMin - ystd <= y && y <= yMax + ystd)
+      xMin - xiqr <= x &&
+      x <= xMax + xiqr &&
+      (yMin - yiqr <= y && y <= yMax + yiqr)
     );
   });
 };
