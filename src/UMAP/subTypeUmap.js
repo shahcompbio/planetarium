@@ -29,13 +29,15 @@ const COLOR_ARRAY = [
   "#FDAE61",
   "#F46D43",
   "#D53E4F",
+  "#c9cc76",
   "#9E0142",
   "#C6AEFF",
   "#BDD8FF",
   "#BDFFB2",
-  "#FCFFA6",
   "#FFC8AE",
   "#FF9FBB",
+  "#b2dbd6",
+  "#ffd470"
 ];
 
 const NULL_POINT_COLOR = "#e8e8e8";
@@ -50,7 +52,7 @@ const DataWrapper = ({
   chartDim,
   selectedSubtype,
   hoveredSubtype,
-  setSelectedSubtype,
+  setSelectedSubtype
 }) => {
   const [{ xParam, yParam, subtypeParam }] = useDashboardState();
 
@@ -60,11 +62,11 @@ const DataWrapper = ({
     } else if (event === "mousedown") {
       setSelectedSubtype({
         hover: null,
-        selected: value,
+        selected: value
       });
     } else if (event === "mouseout") {
       setSelectedSubtype({
-        hover: null,
+        hover: null
       });
     }
   };
@@ -90,7 +92,7 @@ const UMAP = ({
   xParam,
   yParam,
   subsetParam,
-  setHighlighted,
+  setHighlighted
 }) => {
   const canvasWidth = chartDim["width"] - LEGEND_WIDTH - PADDING - PADDING;
   const canvasHeight = chartDim["height"] - TITLE_HEIGHT;
@@ -98,8 +100,8 @@ const UMAP = ({
   const chartWidth = canvasWidth - AXIS_SPACE;
   const chartHeight = canvasHeight - AXIS_SPACE - PADDING - PADDING;
 
-  const yData = data.map((d) => parseFloat(d[yParam]));
-  const xData = data.map((d) => parseFloat(d[xParam]));
+  const yData = data.map(d => parseFloat(d[yParam]));
+  const xData = data.map(d => parseFloat(d[xParam]));
 
   const yMin = Math.min(...yData);
   const yMax = Math.max(...yData);
@@ -127,7 +129,7 @@ const UMAP = ({
     );
 
   const canvasRef = useCanvas(
-    (canvas) => {
+    canvas => {
       const context = canvas.getContext("2d");
       drawUMAPAxis(context, chartHeight, xParam, yParam);
       drawPoints(
@@ -157,7 +159,7 @@ const UMAP = ({
     [highlighted]
   );
   const svgRef = useD3(
-    (svg) => {
+    svg => {
       drawLegend(
         svg,
         subsetValues,
@@ -176,7 +178,7 @@ const UMAP = ({
         margin: 10,
         padding: "10px 0px",
         height: chartDim["height"],
-        width: chartDim["width"],
+        width: chartDim["width"]
       }}
     >
       <Grid
@@ -190,7 +192,7 @@ const UMAP = ({
           style={{
             textAlign: "right",
             paddingRight: PADDING,
-            marginBottom: 10,
+            marginBottom: 10
           }}
         >
           {infoText[chartName]["title"] + "    "}
@@ -225,7 +227,7 @@ const drawPoints = (
   context.lineWidth = 1;
   context.globalAlpha = 1;
 
-  data.forEach((point) => {
+  data.forEach(point => {
     context.fillStyle = isHighlighted(point[subsetParam], highlighted)
       ? colorScale(point[subsetParam])
       : NULL_POINT_COLOR;
@@ -280,7 +282,7 @@ const drawSubsetLabels = (
 ) => {
   const subsetValues = Object.keys(subsetGroups);
 
-  subsetValues.forEach((subset) => {
+  subsetValues.forEach(subset => {
     const subsetData = subsetGroups[subset];
 
     const filteredData = filterOutliers(subsetData, xParam, yParam);
@@ -294,7 +296,7 @@ const drawSubsetLabels = (
       xScale(xMin),
       xScale(xMax),
       yScale(yMin),
-      yScale(yMax),
+      yScale(yMax)
     ];
     const width = Math.abs(x2 - x1);
     const height = Math.abs(y2 - y1);
@@ -320,23 +322,23 @@ const drawSubsetLabels = (
 
 const filterOutliers = (data, xParam, yParam) => {
   const xValues = data
-    .map((datum) => parseFloat(datum[xParam]))
+    .map(datum => parseFloat(datum[xParam]))
     .sort((a, b) => a - b);
   const yValues = data
-    .map((datum) => parseFloat(datum[yParam]))
+    .map(datum => parseFloat(datum[yParam]))
     .sort((a, b) => a - b);
 
-  const [xMin, xMax] = PERCENTILE_RANGE.map((range) =>
+  const [xMin, xMax] = PERCENTILE_RANGE.map(range =>
     quantileSorted(xValues, range)
   );
-  const [yMin, yMax] = PERCENTILE_RANGE.map((range) =>
+  const [yMin, yMax] = PERCENTILE_RANGE.map(range =>
     quantileSorted(yValues, range)
   );
 
   const xiqr = Math.abs(xMax - xMin) * 1.5;
   const yiqr = Math.abs(yMax - yMin) * 1.5;
 
-  return data.filter((datum) => {
+  return data.filter(datum => {
     const x = datum[xParam];
     const y = datum[yParam];
 
@@ -349,8 +351,8 @@ const filterOutliers = (data, xParam, yParam) => {
 };
 
 const getBoxBounds = (data, xParam, yParam) => {
-  const xValues = data.map((datum) => datum[xParam]);
-  const yValues = data.map((datum) => datum[yParam]);
+  const xValues = data.map(datum => datum[xParam]);
+  const yValues = data.map(datum => datum[yParam]);
 
   const xMin = Math.min(...xValues);
   const xMax = Math.max(...xValues);
@@ -382,7 +384,7 @@ const drawLegend = (
     .attr("height", LEGEND_SQUARE_LENGTH)
     .attr("x", 5)
     .attr("y", (d, i) => i * (LEGEND_SQUARE_LENGTH + LEGEND_SQUARE_SPACING) + 5)
-    .attr("fill", (d) => colors(d));
+    .attr("fill", d => colors(d));
 
   subsets
     .append("text")
@@ -394,9 +396,9 @@ const drawLegend = (
     .attr("fill", "#000000")
     .attr("x", LEGEND_SQUARE_LENGTH + 10)
     .attr("y", (d, i) => i * (LEGEND_SQUARE_LENGTH + LEGEND_SQUARE_SPACING) + 5)
-    .text((d) => d);
+    .text(d => d);
 
-  subsets.call((element) =>
+  subsets.call(element =>
     element
       .on("mouseenter", function(d) {
         d3.event.stopPropagation();

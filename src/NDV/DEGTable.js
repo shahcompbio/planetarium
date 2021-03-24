@@ -13,7 +13,7 @@ import GetAppIcon from "@material-ui/icons/GetApp";
 import * as d3Dsv from "d3-dsv";
 import DataTable from "react-data-table-component";
 const formatCols = ["adj_pval", "log_fc"];
-const formatDecimal = [(num) => num.toExponential(2), d3.format(",.4f")];
+const formatDecimal = [num => num.toExponential(2), d3.format(",.4f")];
 
 const DEGTable = ({ chartName, data, chartDim, selectedSubtype }) => {
   const [filterText, setFilterText] = useState("");
@@ -21,10 +21,10 @@ const DEGTable = ({ chartName, data, chartDim, selectedSubtype }) => {
 
   const columns = Object.keys(data[0]);
   const dataSource = selectedSubtype
-    ? data.filter((row) => row[subtypeParam] === selectedSubtype)
+    ? data.filter(row => row[subtypeParam] === selectedSubtype)
     : data;
   const filteredItems = dataSource.filter(
-    (item) =>
+    item =>
       item["gene"] &&
       item["gene"].toLowerCase().includes(filterText.toLowerCase())
   );
@@ -38,7 +38,7 @@ const DEGTable = ({ chartName, data, chartDim, selectedSubtype }) => {
 
     return (
       <FilterComponent
-        onFilter={(e) => setFilterText(e.target.value)}
+        onFilter={e => setFilterText(e.target.value)}
         onClear={handleClear}
         filterText={filterText}
         data={data}
@@ -51,7 +51,7 @@ const DEGTable = ({ chartName, data, chartDim, selectedSubtype }) => {
         margin: 10,
         height: chartDim["height"],
         width: chartDim["width"],
-        padding: "10px 15px",
+        padding: "10px 15px"
       }}
     >
       <Grid
@@ -60,14 +60,14 @@ const DEGTable = ({ chartName, data, chartDim, selectedSubtype }) => {
         justify="flex-start"
         alignItems="stretch"
         style={{
-          width: "100%",
+          width: "100%"
         }}
       >
         <Grid
           item
           style={{
             textAlign: "right",
-            paddingBottom: 5,
+            paddingBottom: 5
           }}
         >
           {infoText[chartName]["title"] + "    "}
@@ -79,7 +79,7 @@ const DEGTable = ({ chartName, data, chartDim, selectedSubtype }) => {
           style={{
             overflowY: "hidden",
             height: chartDim["height"] - 70,
-            width: "100%",
+            width: "100%"
           }}
         >
           <DataTable
@@ -91,7 +91,7 @@ const DEGTable = ({ chartName, data, chartDim, selectedSubtype }) => {
             overflowY
             subHeaderComponent={subHeaderComponentMemo}
             compact
-            columns={columns.map((col) => {
+            columns={columns.map(col => {
               const formatIndex = formatCols.indexOf(col);
 
               return formatIndex !== -1
@@ -100,17 +100,17 @@ const DEGTable = ({ chartName, data, chartDim, selectedSubtype }) => {
                     selector: col,
                     sortable: true,
                     right: true,
-                    cell: (row) => (
+                    cell: row => (
                       <span>
                         {formatDecimal[formatIndex](parseFloat(row[col]))}
                       </span>
-                    ),
+                    )
                   }
                 : {
                     name: col,
                     selector: col,
                     sortable: true,
-                    right: true,
+                    right: true
                   };
             })}
             data={filteredItems}
@@ -122,7 +122,7 @@ const DEGTable = ({ chartName, data, chartDim, selectedSubtype }) => {
 };
 
 const FilterComponent = ({ filterText, onFilter, onClear, data }) => (
-  <div style={{ display: "flex" }}>
+  <div style={{ display: "flex", width: "100%" }}>
     <TextField
       color="primary"
       type="text"
@@ -138,11 +138,14 @@ const FilterComponent = ({ filterText, onFilter, onClear, data }) => (
             color="primary"
             variant="outlined"
             onClick={onClear}
-            style={{ marginLeft: 15, marginBottom: 5 }}
+            style={{
+              marginLeft: 15,
+              marginBottom: 5
+            }}
           >
             <ClearIcon />
           </Button>
-        ),
+        )
       }}
     />
     <Button
@@ -151,7 +154,7 @@ const FilterComponent = ({ filterText, onFilter, onClear, data }) => (
       id="tsv-download"
       onClick={() => {
         const dataSource = new Blob([d3Dsv.tsvFormat(data)], {
-          type: "text/tsv",
+          type: "text/tsv"
         });
         const tsvURL = window.URL.createObjectURL(dataSource);
         const tempLink = document.createElement("a");
@@ -160,7 +163,7 @@ const FilterComponent = ({ filterText, onFilter, onClear, data }) => (
         tempLink.click();
       }}
       color="secondary"
-      style={{ marginLeft: 15 }}
+      style={{ marginLeft: 15, right: 0, position: "absolute" }}
     >
       <GetAppIcon />
     </Button>

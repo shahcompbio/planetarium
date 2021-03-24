@@ -6,8 +6,9 @@ Probability distribution with kde curves
 
 import React from "react";
 import * as d3 from "d3";
+import d3Tip from "d3-tip";
 import * as d3Array from "d3-array";
-
+import * as _ from "lodash";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 
@@ -32,6 +33,7 @@ const BAR_COLOR = "#6bb9f0";
 const BAR_STROKE_COLOR = "#5c97bf";
 
 const LINE_COLOR = "steelblue";
+const format = d3.format(".3f");
 
 const ProbabilityHistogram = ({
   data,
@@ -56,7 +58,7 @@ const ProbabilityHistogram = ({
   const x = d3
     .scaleLinear()
     .domain([xMin, xMax])
-    .range([Y_AXIS_WIDTH, Y_AXIS_WIDTH + chartWidth - PADDING]);
+    .range([Y_AXIS_WIDTH, Y_AXIS_WIDTH + chartWidth - PADDING - PADDING]);
 
   const bins = d3Array
     .bin()
@@ -135,8 +137,9 @@ const ProbabilityHistogram = ({
 
           <Info name={chartName} direction="s" />
         </Grid>
-        <Grid item>
-          <canvas ref={ref} />
+        <Grid item style={{ position: "absolute" }}>
+          <canvas ref={ref} id="probabilityCanvas" />
+          <div id="probabilityTooltip" />
         </Grid>
       </Grid>
     </Paper>
@@ -183,7 +186,7 @@ const drawAxisLabels = (
   context.font = LABEL_FONT;
   context.textAlign = "center";
   context.textBaseline = "hanging";
-  context.fillText(binParam, chartWidth / 2, chartHeight + 20);
+  context.fillText(binParam, chartWidth / 2, chartHeight + 30);
 
   context.save();
   context.rotate((270 * Math.PI) / 180);
@@ -203,6 +206,56 @@ const drawBars = (context, bins, x, y, barScale) => {
     const height = barScale(bin.length);
     context.fillRect(xPos, yPos, width, height);
     context.strokeRect(xPos, yPos, width, height);
+  });
+
+  d3.select("#probabilityCanvas").on("mousemove", function() {
+    var mouseX = d3.event.layerX || d3.event.offsetX;
+    var mouseY = d3.event.layerY || d3.event.offsety;
+    if (mouseX >= x.range()[0] && mouseX <= x.range()[1]) {
+      const tickSize = (x.range()[1] - x.range()[0]) / NUM_TICKS;
+      x.ticks(NUM_TICKS).map((tick, index) => {
+        if (mouseX >= x(tick) && mouseX <= x(tick) + tickSize) {
+          //show tip
+          const bin = bins.filter(bin => bin["x0"] === tick)[0];
+          if (bin.length > 0) {
+            const yPos = y(bins[index].length);
+
+            const subtypeGroups = _.groupBy(bin, "subtype");
+            d3.select("#probabilityTooltip")
+              .style("opacity", 0.8)
+              .style("left", x(tick) - 60 + "px")
+              .style(
+                "top",
+                y(bin.length) -
+                  Object.keys(subtypeGroups).length * 20 -
+                  55 +
+                  "px"
+              )
+              .html(function(d) {
+                return (
+                  "<p><ul>" +
+                  Object.keys(subtypeGroups)
+                    .sort((a, b) => a.length - b.length)
+                    .map(
+                      group =>
+                        "<li>" +
+                        group +
+                        " : " +
+                        format(subtypeGroups[group].length / bin.length) +
+                        "</li>"
+                    )
+                    .join("") +
+                  "</ul></p>"
+                );
+              });
+          } else {
+            hideTooltip();
+          }
+        }
+      });
+    } else {
+      hideTooltip();
+    }
   });
 };
 
@@ -250,7 +303,7 @@ const drawKde = (context, data, x, y, binParam, lineParam, highlightedLine) => {
 
   const density = kde(
     epanechnikov(1),
-    x.ticks(NUM_TICKS),
+    x.ticks(NUM_TICKS * 2),
     densityData.map(row => parseFloat(row[binParam]))
   );
   var line = d3
@@ -270,5 +323,5 @@ const drawKde = (context, data, x, y, binParam, lineParam, highlightedLine) => {
   context.strokeStyle = LINE_COLOR;
   context.stroke();
 };
-
+const hideTooltip = () => d3.select("#probabilityTooltip").style("opacity", 0);
 export default ProbabilityHistogram;
