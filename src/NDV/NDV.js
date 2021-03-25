@@ -136,14 +136,19 @@ const NDV = ({ data }) => {
           >
             <Layout
               chartName={"UMAP"}
+              // dim={{ width: 750, height: 600 }}
               data={metadata}
+              clonotypeLabels={clonotypeLabels}
               selectedClonotype={selectedClonotype["selected"]}
               hoveredClonotype={selectedClonotype["hover"]}
               setSelectedClonotype={(clonotype) => {
                 if (clonotype["selected"]) {
                   setSelectedSubtype(initialState["defaultSelectedObject"]);
                 }
-                setSelectedClonotype({ ...clonotype });
+                setSelectedClonotype((prevState) => ({
+                  ...prevState,
+                  ...clonotype,
+                }));
               }}
             />
             <Layout
