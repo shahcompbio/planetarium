@@ -231,6 +231,29 @@ const NDV = ({ data }) => {
             justify="flex-start"
             alignItems="flex-start"
           >
+            <ProbabilityHistogram
+              chartName={"HISTOGRAM"}
+              data={probabilities}
+              chartDim={{
+                chart: {
+                  x1: 100,
+                  y1: 70,
+                  x2: 600,
+                  y2: 450,
+                },
+                height: 500,
+                width: 750,
+              }}
+              binParam={initialState["logXParam"]}
+              lineParam={initialState["subtypeParam"]}
+              highlightBarParam={initialState["clonotypeParam"]}
+              highlightedBar={
+                selectedClonotype["hover"] || selectedClonotype["selected"]
+              }
+              highlightedLine={
+                selectedSubtype["hover"] || selectedSubtype["selected"]
+              }
+            />{" "}
             <DEGTable
               chartName={"TABLE"}
               data={degs}
@@ -243,29 +266,6 @@ const NDV = ({ data }) => {
                 height: 500,
                 width: 750,
               }}
-            />
-            <ProbabilityHistogram
-              chartName={"HISTOGRAM"}
-              data={probabilities}
-              chartDim={{
-                chart: {
-                  x1: 100,
-                  y1: 50,
-                  x2: 600,
-                  y2: 400,
-                },
-                height: 475,
-                width: 750,
-              }}
-              binParam={initialState["logXParam"]}
-              lineParam={initialState["subtypeParam"]}
-              highlightBarParam={initialState["clonotypeParam"]}
-              highlightedBar={
-                selectedClonotype["hover"] || selectedClonotype["selected"]
-              }
-              highlightedLine={
-                selectedSubtype["hover"] || selectedSubtype["selected"]
-              }
             />
           </Grid>
         </Grid>
