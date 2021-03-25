@@ -93,7 +93,7 @@ const NDV = ({ data }) => {
     }));
 
   const subtypeTotals = _.countBy(metadata, initialState["subtypeParam"]);
-  console.log(selectedClonotype);
+
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
@@ -137,6 +137,14 @@ const NDV = ({ data }) => {
             <Layout
               chartName={"UMAP"}
               data={metadata}
+              dim={{
+                chart: {
+                  x1: 10,
+                  y1: 80,
+                  x2: 475,
+                  y2: 550
+                }
+              }}
               selectedClonotype={selectedClonotype["selected"]}
               hoveredClonotype={selectedClonotype["hover"]}
               setSelectedClonotype={clonotype => {
@@ -161,7 +169,10 @@ const NDV = ({ data }) => {
                   ...subtype
                 }));
               }}
-              dim={{ width: 750, height: 600 }}
+              dim={{
+                width: 750,
+                height: 600
+              }}
             />
           </Grid>
           <Grid

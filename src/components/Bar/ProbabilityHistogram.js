@@ -221,9 +221,20 @@ const drawBars = (context, bins, x, y, barScale) => {
             const yPos = y(bins[index].length);
 
             const subtypeGroups = _.groupBy(bin, "subtype");
+
+            const tooltipWidth =
+              Math.max(
+                ...Object.keys(subtypeGroups).map(group => group.length)
+              ) > 15
+                ? 250
+                : 150;
             d3.select("#probabilityTooltip")
+              .style("width", tooltipWidth)
               .style("opacity", 0.8)
-              .style("left", x(tick) - 60 + "px")
+              .style(
+                "left",
+                x(tick) - tooltipWidth / 2 + tickSize / 2 + PADDING / 2 + "px"
+              )
               .style(
                 "top",
                 y(bin.length) -

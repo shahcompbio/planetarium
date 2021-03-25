@@ -186,12 +186,12 @@ const Umap = ({
     const lineXFreq = d3
       .scaleLinear()
       .domain([minValue, maxValue])
-      .range([dimensions.x2 + 20, dimensions.x2 + 65]);
+      .range([dimensions.x2 + 30, dimensions.x2 + 65]);
 
     const lineYFreq = d3
       .scaleLinear()
-      .domain([minValue, maxValue])
-      .range([dimensions.y1 - 20, dimensions.y1 - 65]);
+      .domain([maxValue, minValue])
+      .range([dimensions.y1 - 65, dimensions.y1 - 30]);
 
     const lineXaxis = d3
       .line()
@@ -474,11 +474,7 @@ const Umap = ({
           });
         });
     var legend = d3.select("#umapLegend");
-    legend
-      .selectAll("text")
-      .on("mouseenter", null)
-      .on("mousedown", null)
-      .on("mouseout", null);
+
     legend.selectAll("*").remove();
 
     const legendRect = legend.selectAll("rect").data(topTen);
@@ -513,9 +509,11 @@ const Umap = ({
       })
       .call(mouseInteractions);
 
-    const legendText = legend.selectAll("text").data(topTen);
-
-    legendText
+    const legendText = legend.selectAll("text").data(topTen, function(d) {
+      return d[0] + "-legendText";
+    });
+    legendText.exit().remove();
+    /*  legendText
       .append("text")
       .attr("x", function(d) {
         return chartDim["legend"].x1 + 20;
@@ -535,11 +533,19 @@ const Umap = ({
       .attr("cursor", "pointer")
       .on("mouseenter", null)
       .on("mousedown", null)
-      .on("mouseout", null);
+      .on("mouseout", null);*/
 
     legendText
       .enter()
+      .merge(legendText)
+      .on("mouseenter", null)
+      .on("mousedown", null)
+      .on("mouseout", null);
+    //  if (legendText.size())
+    legendText
+      .enter()
       .append("text")
+      .merge(legendText)
       .attr("x", function(d) {
         return chartDim["legend"].x1 + 20;
       })
@@ -567,7 +573,7 @@ const Umap = ({
 
     saveContext(currContext);
 
-    reDraw(
+    /*  reDraw(
       currContext,
       x,
       y,
@@ -576,7 +582,7 @@ const Umap = ({
       sampleTen,
       colors,
       topTenNumbering
-    );
+    );*/
   }
 
   return (
