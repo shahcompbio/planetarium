@@ -22,8 +22,8 @@ const HIGHLIGHTED_BAR_WIDTH = 2;
 
 const PADDING = 10;
 const TITLE_HEIGHT = 30;
-const X_AXIS_HEIGHT = 50;
-const Y_AXIS_WIDTH = 50;
+const X_AXIS_HEIGHT = 20;
+const Y_AXIS_WIDTH = 20;
 
 const NUM_TICKS = 25;
 const LABEL_FONT = "normal 12px Helvetica";
@@ -54,12 +54,16 @@ const ProbabilityHistogram = ({
   const allX = data.map(row => parseFloat(row[binParam]));
   const xMax = Math.max(...allX);
   const xMin = Math.min(...allX);
+  const xTickSize = (xMax - xMin) / NUM_TICKS;
 
   const x = d3
     .scaleLinear()
-    .domain([xMin, xMax])
-    .range([Y_AXIS_WIDTH, Y_AXIS_WIDTH + chartWidth - PADDING - PADDING]);
-
+    .domain([xMin - xTickSize, xMax + xTickSize])
+    .range([
+      Y_AXIS_WIDTH + PADDING * 2,
+      Y_AXIS_WIDTH + chartWidth - PADDING - PADDING
+    ]);
+  const xTickWidth = (x.range()[1] - x.range()[0]) / NUM_TICKS;
   const bins = d3Array
     .bin()
     .value(d => d[binParam])
@@ -71,12 +75,12 @@ const ProbabilityHistogram = ({
   const y = d3
     .scaleLinear()
     .domain([0, maxY])
-    .range([chartHeight, PADDING]);
+    .range([chartHeight, PADDING * 3]);
 
   const barScale = d3
     .scaleLinear()
     .domain([0, maxY])
-    .range([0, chartHeight - PADDING]);
+    .range([0, chartHeight - PADDING * 3]);
 
   const ref = useCanvas(
     canvas => {
@@ -91,6 +95,7 @@ const ProbabilityHistogram = ({
         chartHeight,
         xMin,
         xMax,
+        xTickWidth,
         data.length
       );
       drawBars(context, bins, x, y, barScale);
@@ -130,7 +135,9 @@ const ProbabilityHistogram = ({
         <Grid
           item
           style={{
-            textAlign: "right"
+            textAlign: "right",
+            position: "absolute",
+            zIndex: 100
           }}
         >
           {infoText[chartName]["title"] + "    "}
@@ -155,6 +162,7 @@ const drawAxisLabels = (
   chartHeight,
   xMin,
   xMax,
+  xTickWidth,
   maxBin
 ) => {
   context.beginPath();
@@ -173,7 +181,7 @@ const drawAxisLabels = (
   y.ticks(10).forEach(tick => {
     context.globalAlpha = 1;
     context.textBaseline = "middle";
-    context.fillText(format(tick), x(xMin), y(tick));
+    context.fillText(format(tick), x(xMin) - xTickWidth, y(tick));
     context.globalAlpha = 0.2;
     context.lineWidth = 0.5;
     context.beginPath();
@@ -190,7 +198,7 @@ const drawAxisLabels = (
 
   context.save();
   context.rotate((270 * Math.PI) / 180);
-  context.fillText("Density", -(chartHeight / 2), 10);
+  context.fillText("Density", -(chartHeight / 2), 3);
   context.restore();
 };
 
@@ -228,12 +236,18 @@ const drawBars = (context, bins, x, y, barScale) => {
               ) > 15
                 ? 250
                 : 150;
+
             d3.select("#probabilityTooltip")
-              .style("width", tooltipWidth)
+              .attr("width", tooltipWidth + "px")
               .style("opacity", 0.8)
               .style(
                 "left",
-                x(tick) - tooltipWidth / 2 + tickSize / 2 + PADDING / 2 + "px"
+                x(tick) -
+                  tooltipWidth / 2 +
+                  tickSize / 2 +
+                  PADDING / 2 -
+                  (tooltipWidth === 250 ? 14 : 0) +
+                  "px"
               )
               .style(
                 "top",
@@ -244,7 +258,9 @@ const drawBars = (context, bins, x, y, barScale) => {
               )
               .html(function(d) {
                 return (
-                  "<p><ul>" +
+                  "<p><ul style='width:" +
+                  tooltipWidth +
+                  "px'>" +
                   Object.keys(subtypeGroups)
                     .sort((a, b) => a.length - b.length)
                     .map(

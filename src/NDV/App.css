@@ -24,7 +24,7 @@
 }
 #probabilityTooltip {
   position: absolute;
-  display: inline-block;
+  display: block;
   padding: 5px;
   opacity: 0.5;
   color: #ffffff;
