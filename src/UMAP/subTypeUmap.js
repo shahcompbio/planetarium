@@ -158,19 +158,16 @@ const UMAP = ({
     canvasHeight,
     [highlighted]
   );
-  const svgRef = useD3(
-    svg => {
-      drawLegend(
-        svg,
-        subsetValues,
-        subsetColors,
-        canvasHeight,
-        highlighted,
-        setHighlighted
-      );
-    },
-    [highlighted]
-  );
+  const svgRef = useD3(svg => {
+    drawLegend(
+      svg,
+      subsetValues,
+      subsetColors,
+      canvasHeight,
+      highlighted,
+      setHighlighted
+    );
+  }, []);
 
   return (
     <Paper
@@ -243,6 +240,23 @@ const drawPoints = (
     );
     context.fill();
   });
+  if (highlighted) {
+    data
+      .filter(row => row[subsetParam] === highlighted)
+      .forEach(point => {
+        context.fillStyle = colorScale(point[subsetParam]);
+        context.beginPath();
+        context.arc(
+          xScale(point[xParam]),
+          yScale(point[yParam]),
+          POINT_RADIUS,
+          0,
+          Math.PI * 2,
+          true
+        );
+        context.fill();
+      });
+  }
 };
 
 const drawUMAPAxis = (context, chartHeight, xParam, yParam) => {
@@ -370,24 +384,41 @@ const drawLegend = (
   highlighted,
   setHighlighted
 ) => {
+  const mouseEvents = element =>
+    element.call(element =>
+      element
+        .on("mouseenter", function(d) {
+          d3.event.stopPropagation();
+          setHighlighted("mouseenter", d);
+        })
+        .on("mousedown", function(d, i) {
+          d3.event.stopPropagation();
+          setHighlighted("mousedown", d);
+        })
+        .on("mouseout", function(d, i) {
+          d3.event.stopPropagation();
+          setHighlighted("mouseout", d);
+        })
+    );
   svg.attr("width", LEGEND_WIDTH).attr("height", chartHeight);
 
-  const subsets = svg
-    .selectAll("g")
-    .data(subsetValues)
-    .enter()
-    .append("g");
+  const subsets = svg.selectAll("g").data(subsetValues);
 
   subsets
+    .enter()
     .append("rect")
+    .merge(subsets)
     .attr("width", LEGEND_SQUARE_LENGTH)
     .attr("height", LEGEND_SQUARE_LENGTH)
     .attr("x", 5)
     .attr("y", (d, i) => i * (LEGEND_SQUARE_LENGTH + LEGEND_SQUARE_SPACING) + 5)
-    .attr("fill", d => colors(d));
+    .attr("fill", d => colors(d))
+    .call(mouseEvents);
 
   subsets
+    .enter()
     .append("text")
+    .merge(subsets)
     .attr("alignment-baseline", "hanging")
     .attr("text-align", "left")
     .attr("font", "Helvetica")
@@ -396,23 +427,8 @@ const drawLegend = (
     .attr("fill", "#000000")
     .attr("x", LEGEND_SQUARE_LENGTH + 10)
     .attr("y", (d, i) => i * (LEGEND_SQUARE_LENGTH + LEGEND_SQUARE_SPACING) + 5)
-    .text(d => d);
-
-  subsets.call(element =>
-    element
-      .on("mouseenter", function(d) {
-        d3.event.stopPropagation();
-        setHighlighted("mouseenter", d);
-      })
-      .on("mousedown", function(d, i) {
-        d3.event.stopPropagation();
-        setHighlighted("mousedown", d);
-      })
-      .on("mouseout", function(d, i) {
-        d3.event.stopPropagation();
-        setHighlighted("mouseout", d);
-      })
-  );
+    .text(d => d)
+    .call(mouseEvents);
 };
 
 const isHighlighted = (datumValue, highlighted) =>
