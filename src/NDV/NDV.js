@@ -18,9 +18,11 @@ import Typography from "@material-ui/core/Typography";
 
 import Grid from "@material-ui/core/Grid";
 
+import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
+import CardActions from "@material-ui/core/CardActions";
 
 import { theme } from "../theme/theme.js";
 import { MuiThemeProvider } from "@material-ui/core/styles";
@@ -139,6 +141,14 @@ const NDV = ({ data }) => {
               // dim={{ width: 750, height: 600 }}
               data={metadata}
               clonotypeLabels={clonotypeLabels}
+              dim={{
+                chart: {
+                  x1: 10,
+                  y1: 80,
+                  x2: 475,
+                  y2: 550,
+                },
+              }}
               selectedClonotype={selectedClonotype["selected"]}
               hoveredClonotype={selectedClonotype["hover"]}
               setSelectedClonotype={(clonotype) => {
@@ -165,7 +175,10 @@ const NDV = ({ data }) => {
                   ...subtype,
                 }));
               }}
-              dim={{ width: 750, height: 600 }}
+              dim={{
+                width: 750,
+                height: 600,
+              }}
             />
           </Grid>
           <Grid
@@ -173,7 +186,7 @@ const NDV = ({ data }) => {
             container
             direction="row"
             justify="flex-start"
-            alignItems="flex-start"
+            alignItems="flex-end"
           >
             <Heatmap
               data={probabilities}
@@ -183,15 +196,41 @@ const NDV = ({ data }) => {
               }}
               column={initialState["clonotypeParam"]}
               row={initialState["subtypeParam"]}
-              highlightedColumn={
+              highlightedRow={
                 selectedSubtype["selected"] || selectedSubtype["hover"]
               }
-              highlightedRow={
+              highlightedColumn={
                 selectedClonotype["selected"] || selectedClonotype["hover"]
               }
+              test={selectedClonotype}
               columnLabels={clonotypeLabels}
               rowTotal={subtypeTotals}
             />
+            <ClonotypeExpansion
+              chartName={"BARPLOT"}
+              data={probabilities}
+              dim={{
+                height: 455,
+                width: 750,
+              }}
+              highlightedRow={
+                selectedSubtype["selected"] || selectedSubtype["hover"]
+              }
+              selectedSubtype={selectedSubtype}
+              selectedClonotype={selectedClonotype}
+              setSelectedSubtype={(subtype) => setSelectedSubtype(subtype)}
+              setSelectedClonotype={(clonotype) =>
+                setSelectedClonotype(clonotype)
+              }
+            />
+          </Grid>
+          <Grid
+            item
+            container
+            direction="row"
+            justify="flex-start"
+            alignItems="flex-start"
+          >
             <DEGTable
               chartName={"TABLE"}
               data={degs}
@@ -204,28 +243,6 @@ const NDV = ({ data }) => {
                 height: 500,
                 width: 750,
               }}
-            />
-          </Grid>
-          <Grid
-            item
-            container
-            direction="row"
-            justify="flex-start"
-            alignItems="flex-start"
-          >
-            <ClonotypeExpansion
-              chartName={"BARPLOT"}
-              data={probabilities}
-              dim={{
-                height: 475,
-                width: 750,
-              }}
-              selectedSubtype={selectedSubtype}
-              selectedClonotype={selectedClonotype}
-              setSelectedSubtype={(subtype) => setSelectedSubtype(subtype)}
-              setSelectedClonotype={(clonotype) =>
-                setSelectedClonotype(clonotype)
-              }
             />
             <ProbabilityHistogram
               chartName={"HISTOGRAM"}
@@ -260,12 +277,19 @@ const useStyles = makeStyles({
   root: {
     minWidth: 275,
   },
+  header: { padding: 10, paddingBottom: 0 },
+  body: {
+    padding: 5,
+    paddingLeft: 20,
+  },
+  button: { margin: 5, float: "right" },
   poppr: {
     width: 150,
     float: "right",
     right: "100px",
     top: "10px",
     left: "auto",
+    margin: 10,
   },
 });
 const Popup = ({ selected, setSelected, type }) => {
@@ -278,17 +302,19 @@ const Popup = ({ selected, setSelected, type }) => {
       className={classes.popper}
     >
       <Card className={classes.root} variant="outlined">
-        <CardHeader
-          action={
-            <IconButton aria-label="settings">
-              <CloseIcon onClick={setSelected} />
-            </IconButton>
-          }
-          title={"Selected " + type}
-        />
-        <CardContent>
+        <CardHeader className={classes.header} title={"Selected " + type} />
+        <CardContent className={classes.body}>
           <Typography variant="body">{selected}</Typography>
         </CardContent>
+        <Button
+          color="primary"
+          size="small"
+          variant="outlined"
+          className={classes.button}
+          onClick={setSelected}
+        >
+          Clear
+        </Button>
       </Card>
     </Popper>
   );

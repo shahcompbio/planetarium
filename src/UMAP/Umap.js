@@ -482,12 +482,12 @@ const Umap2 = ({
     const lineXFreq = d3
       .scaleLinear()
       .domain([minValue, maxValue])
-      .range([dimensions.x2 + 20, dimensions.x2 + 65]);
+      .range([dimensions.x2 + 30, dimensions.x2 + 65]);
 
     const lineYFreq = d3
       .scaleLinear()
-      .domain([minValue, maxValue])
-      .range([dimensions.y1 - 20, dimensions.y1 - 65]);
+      .domain([maxValue, minValue])
+      .range([dimensions.y1 - 65, dimensions.y1 - 30]);
 
     const lineXaxis = d3
       .line()
