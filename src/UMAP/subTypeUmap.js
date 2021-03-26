@@ -424,6 +424,7 @@ const drawLegend = (
     .append("text")
     .merge(subsets)
     .attr("alignment-baseline", "hanging")
+    .attr("dominant-baseline", "hanging")
     .attr("text-align", "left")
     .attr("font", "Helvetica")
     .attr("font-weight", "500")
