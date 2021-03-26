@@ -389,40 +389,40 @@ const drawLegend = (
   setHighlighted
 ) => {
   const mouseEvents = (element) =>
-    element.call((element) =>
-      element
-        .on("mouseenter", function(d) {
-          d3.event.stopPropagation();
-          setHighlighted("mouseenter", d);
-        })
-        .on("mousedown", function(d, i) {
-          d3.event.stopPropagation();
-          setHighlighted("mousedown", d);
-        })
-        .on("mouseout", function(d, i) {
-          d3.event.stopPropagation();
-          setHighlighted("mouseout", d);
-        })
-    );
+    element
+      .on("mouseenter", function(d) {
+        d3.event.stopPropagation();
+        setHighlighted("mouseenter", d);
+      })
+      .on("mousedown", function(d, i) {
+        d3.event.stopPropagation();
+        setHighlighted("mousedown", d);
+      })
+      .on("mouseout", function(d, i) {
+        d3.event.stopPropagation();
+        setHighlighted("mouseout", d);
+      });
+
   svg.attr("width", LEGEND_WIDTH).attr("height", chartHeight);
 
-  const subsets = svg.selectAll("g").data(subsetValues);
+  const subsets = svg
+    .selectAll("g")
+    .data(subsetValues)
+    .enter()
+    .append("g")
+    .attr("cursor", "pointer")
+    .call(mouseEvents);
 
   subsets
-    .enter()
     .append("rect")
-    .merge(subsets)
     .attr("width", LEGEND_SQUARE_LENGTH)
     .attr("height", LEGEND_SQUARE_LENGTH)
     .attr("x", 5)
     .attr("y", (d, i) => i * (LEGEND_SQUARE_LENGTH + LEGEND_SQUARE_SPACING) + 5)
-    .attr("fill", (d) => colors(d))
-    .call(mouseEvents);
+    .attr("fill", (d) => colors(d));
 
   subsets
-    .enter()
     .append("text")
-    .merge(subsets)
     .attr("alignment-baseline", "hanging")
     .attr("dominant-baseline", "hanging")
     .attr("text-align", "left")
@@ -432,8 +432,7 @@ const drawLegend = (
     .attr("fill", "#000000")
     .attr("x", LEGEND_SQUARE_LENGTH + 10)
     .attr("y", (d, i) => i * (LEGEND_SQUARE_LENGTH + LEGEND_SQUARE_SPACING) + 5)
-    .text((d) => d)
-    .call(mouseEvents);
+    .text((d) => d);
 };
 
 const isHighlighted = (datumValue, highlighted) =>
