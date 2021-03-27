@@ -148,6 +148,8 @@ const NDV = ({ data }) => {
                   x2: 475,
                   y2: 550,
                 },
+                width: 800,
+                height: 600,
               }}
               selectedClonotype={selectedClonotype["selected"]}
               hoveredClonotype={selectedClonotype["hover"]}
@@ -235,12 +237,6 @@ const NDV = ({ data }) => {
               chartName={"HISTOGRAM"}
               data={probabilities}
               chartDim={{
-                chart: {
-                  x1: 100,
-                  y1: 70,
-                  x2: 600,
-                  y2: 450,
-                },
                 height: 500,
                 width: 750,
               }}
