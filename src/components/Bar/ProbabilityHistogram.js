@@ -4,7 +4,7 @@ Probability distribution with kde curves
 
 */
 
-import React from "react";
+import React, { useRef } from "react";
 import * as d3 from "d3";
 import * as d3Array from "d3-array";
 import * as _ from "lodash";
@@ -44,6 +44,8 @@ const ProbabilityHistogram = ({
   highlightedLine,
   chartName,
 }) => {
+  const tooltipRef = useRef();
+
   const canvasWidth = chartDim["width"] - PADDING - PADDING;
   const canvasHeight = chartDim["height"] - PADDING - PADDING - TITLE_HEIGHT;
 
@@ -97,7 +99,7 @@ const ProbabilityHistogram = ({
         xMax,
         5
       );
-      drawBars(context, bins, x, y, barScale, data.length);
+      drawBars(canvas, bins, x, y, barScale, data.length, tooltipRef.current);
       drawHighlightedBar(
         context,
         data,
@@ -142,9 +144,14 @@ const ProbabilityHistogram = ({
 
           <Info name={chartName} direction="s" />
         </Grid>
-        <Grid item>
-          <canvas ref={ref} id="probabilityCanvas" />
-          <div id="probabilityTooltip" />
+        <Grid
+          item
+          style={{
+            position: "relative",
+          }}
+        >
+          <canvas ref={ref} />
+          <div ref={tooltipRef} id="probabilityTooltip" />
         </Grid>
       </Grid>
     </Paper>
@@ -199,7 +206,9 @@ const drawAxisLabels = (
   context.restore();
 };
 
-const drawBars = (context, bins, x, y, barScale, total) => {
+const drawBars = (canvas, bins, x, y, barScale, total, tooltip) => {
+  const context = canvas.getContext("2d");
+
   context.globalAlpha = 1;
   context.fillStyle = BAR_COLOR;
   context.strokeStyle = BAR_STROKE_COLOR;
@@ -213,7 +222,8 @@ const drawBars = (context, bins, x, y, barScale, total) => {
     context.strokeRect(xPos, yPos, width, height);
   });
 
-  d3.select("#probabilityCanvas").on("mousemove", function() {
+  // Maaybe it's better to just draw on canvas
+  d3.select(canvas).on("mousemove", function() {
     var mouseX = d3.event.layerX || d3.event.offsetX;
     var mouseY = d3.event.layerY || d3.event.offsety;
     if (mouseX >= x.range()[0] && mouseX <= x.range()[1]) {
@@ -234,7 +244,7 @@ const drawBars = (context, bins, x, y, barScale, total) => {
                 ? 250
                 : 150;
 
-            d3.select("#probabilityTooltip")
+            d3.select(tooltip)
               .attr("width", tooltipWidth + "px")
               .style("opacity", 0.8)
               .style(
@@ -273,15 +283,17 @@ const drawBars = (context, bins, x, y, barScale, total) => {
                 );
               });
           } else {
-            hideTooltip();
+            hideTooltip(tooltip);
           }
         }
       });
     } else {
-      hideTooltip();
+      hideTooltip(tooltip);
     }
   });
 };
+
+const hideTooltip = (tooltip) => d3.select(tooltip).style("opacity", 0);
 
 const drawHighlightedBar = (
   context,
@@ -364,5 +376,4 @@ const drawKde = (context, data, x, y, binParam, lineParam, highlightedLine) => {
   context.strokeStyle = LINE_COLOR;
   context.stroke();
 };
-const hideTooltip = () => d3.select("#probabilityTooltip").style("opacity", 0);
 export default ProbabilityHistogram;
