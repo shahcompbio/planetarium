@@ -59,14 +59,14 @@ const ProbabilityHistogram = ({
     .scaleLinear()
     .domain([xMin, xMax])
     .range([startX, startX + chartWidth]);
-  const xTickWidth = (x.range()[1] - x.range()[0]) / NUM_TICKS;
+
   const bins = d3Array
     .bin()
     .value((d) => d[binParam])
     .domain(x.domain())
     .thresholds(x.ticks(NUM_TICKS))(data);
 
-  const maxYData = Math.max(...bins.map((row) => row.length));
+  const maxYData = Math.max(...bins.map((row) => row.length / data.length));
   const density = getDensity(data, x, binParam, 1000);
   const maxYDensity = Math.max(...density.map((datum) => datum[1]));
 
@@ -95,10 +95,9 @@ const ProbabilityHistogram = ({
         chartHeight,
         xMin,
         xMax,
-        5,
-        data.length
+        5
       );
-      drawBars(context, bins, x, y, barScale);
+      drawBars(context, bins, x, y, barScale, data.length);
       drawHighlightedBar(
         context,
         data,
@@ -161,8 +160,7 @@ const drawAxisLabels = (
   chartHeight,
   xMin,
   xMax,
-  xTickWidth,
-  maxBin
+  xTickWidth
 ) => {
   context.beginPath();
   context.globalAlpha = 1;
@@ -175,7 +173,7 @@ const drawAxisLabels = (
     context.fillText(tick, x(tick), y(0) + 15);
   });
 
-  const format = (tick) => (tick === 0 ? "0" : d3.format(".2f")(tick / maxBin));
+  const format = (tick) => (tick === 0 ? "0" : d3.format(".2f")(tick));
 
   y.ticks(10).forEach((tick) => {
     context.globalAlpha = 1;
@@ -201,16 +199,16 @@ const drawAxisLabels = (
   context.restore();
 };
 
-const drawBars = (context, bins, x, y, barScale) => {
+const drawBars = (context, bins, x, y, barScale, total) => {
   context.globalAlpha = 1;
   context.fillStyle = BAR_COLOR;
   context.strokeStyle = BAR_STROKE_COLOR;
 
   bins.forEach((bin) => {
     const xPos = x(bin["x0"]) + 1;
-    const yPos = y(bin.length);
+    const yPos = y(bin.length / total);
     const width = x(bin["x1"]) - x(bin["x0"]) - 2;
-    const height = barScale(bin.length);
+    const height = barScale(bin.length / total);
     context.fillRect(xPos, yPos, width, height);
     context.strokeRect(xPos, yPos, width, height);
   });
@@ -225,7 +223,7 @@ const drawBars = (context, bins, x, y, barScale) => {
           //show tip
           const bin = bins.filter((bin) => bin["x0"] === tick)[0];
           if (bin.length > 0) {
-            const yPos = y(bins[index].length);
+            const yPos = y(bins[index].length / total);
 
             const subtypeGroups = _.groupBy(bin, "subtype");
 
@@ -250,7 +248,7 @@ const drawBars = (context, bins, x, y, barScale) => {
               )
               .style(
                 "top",
-                y(bin.length) -
+                y(bin.length / total) -
                   Object.keys(subtypeGroups).length * 20 -
                   55 +
                   "px"
@@ -356,7 +354,7 @@ const drawKde = (context, data, x, y, binParam, lineParam, highlightedLine) => {
       return x(d[0]);
     })
     .y(function(d) {
-      return y(d[1] * densityData.length);
+      return y(d[1]);
     })
     .context(context);
 
