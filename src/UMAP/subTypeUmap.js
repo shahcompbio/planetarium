@@ -133,7 +133,12 @@ const UMAP = ({
   const canvasRef = useCanvas(
     (canvas) => {
       const context = canvas.getContext("2d");
-      drawUMAPAxis(context, chartHeight, xParam, yParam);
+      drawUMAPAxis(
+        context,
+        canvasHeight - AXIS_SPACE - PADDING,
+        xParam,
+        yParam
+      );
       drawPoints(
         context,
         data,
