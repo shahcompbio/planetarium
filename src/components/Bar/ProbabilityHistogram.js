@@ -222,75 +222,71 @@ const drawBars = (canvas, bins, x, y, barScale, total, tooltip) => {
     context.strokeRect(xPos, yPos, width, height);
   });
 
-  // Maaybe it's better to just draw on canvas
-  d3.select(canvas).on("mousemove", function() {
-    var mouseX = d3.event.layerX || d3.event.offsetX;
-    var mouseY = d3.event.layerY || d3.event.offsety;
-    if (mouseX >= x.range()[0] && mouseX <= x.range()[1]) {
-      const tickSize = (x.range()[1] - x.range()[0]) / NUM_TICKS;
-      x.ticks(NUM_TICKS).map((tick, index) => {
-        if (mouseX >= x(tick) && mouseX <= x(tick) + tickSize) {
-          //show tip
-          const bin = bins.filter((bin) => bin["x0"] === tick)[0];
-          if (bin.length > 0) {
-            const yPos = y(bins[index].length / total);
+  d3.select(canvas)
+    .on("mousemove", function() {
+      var mouseX = d3.event.layerX || d3.event.offsetX;
+      if (mouseX >= x.range()[0] && mouseX <= x.range()[1]) {
+        const tickSize = (x.range()[1] - x.range()[0]) / NUM_TICKS;
+        x.ticks(NUM_TICKS).map((tick, index) => {
+          if (mouseX >= x(tick) && mouseX <= x(tick) + tickSize) {
+            //show tip
+            const bin = bins.filter((bin) => bin["x0"] === tick)[0];
+            if (bin.length > 0) {
+              const yPos = y(bins[index].length / total);
 
-            const subtypeGroups = _.groupBy(bin, "subtype");
+              const subtypeGroups = _.groupBy(bin, "subtype");
 
-            const tooltipWidth =
-              Math.max(
-                ...Object.keys(subtypeGroups).map((group) => group.length)
-              ) > 15
-                ? 250
-                : 150;
+              const tooltipWidth =
+                Math.max(
+                  ...Object.keys(subtypeGroups).map((group) => group.length)
+                ) > 15
+                  ? 250
+                  : 150;
 
-            d3.select(tooltip)
-              .attr("width", tooltipWidth + "px")
-              .style("opacity", 0.8)
-              .style(
-                "left",
-                x(tick) -
-                  tooltipWidth / 2 +
-                  tickSize / 2 +
-                  PADDING / 2 -
-                  (tooltipWidth === 250 ? 14 : 0) +
-                  "px"
-              )
-              .style(
-                "top",
-                y(bin.length / total) -
-                  Object.keys(subtypeGroups).length * 20 -
-                  55 +
-                  "px"
-              )
-              .html(function(d) {
-                return (
-                  "<p><ul style='width:" +
-                  tooltipWidth +
-                  "px'>" +
-                  Object.keys(subtypeGroups)
-                    .sort((a, b) => a.length - b.length)
-                    .map(
-                      (group) =>
-                        "<li>" +
-                        group +
-                        " : " +
-                        format(subtypeGroups[group].length / bin.length) +
-                        "</li>"
-                    )
-                    .join("") +
-                  "</ul></p>"
-                );
-              });
-          } else {
-            hideTooltip(tooltip);
+              d3.select(tooltip)
+                .attr("width", tooltipWidth + "px")
+                .style("opacity", 0.8)
+                .style(
+                  "left",
+                  x(tick) -
+                    tooltipWidth / 2 +
+                    tickSize / 2 +
+                    PADDING / 2 -
+                    (tooltipWidth === 250 ? 14 : 0) +
+                    "px"
+                )
+                .style(
+                  "top",
+                  y(bin.length / total) -
+                    Object.keys(subtypeGroups).length * 20 -
+                    55 +
+                    "px"
+                )
+                .html(function(d) {
+                  return (
+                    "<p><ul style='width:" +
+                    tooltipWidth +
+                    "px'>" +
+                    Object.keys(subtypeGroups)
+                      .sort((a, b) => a.length - b.length)
+                      .map(
+                        (group) =>
+                          "<li>" +
+                          group +
+                          " : " +
+                          format(subtypeGroups[group].length / bin.length) +
+                          "</li>"
+                      )
+                      .join("") +
+                    "</ul></p>"
+                  );
+                });
+            }
           }
-        }
-      });
-    } else {
-      hideTooltip(tooltip);
-    }
-  });
+        });
+      }
+    })
+    .on("mouseout", () => hideTooltip(tooltip));
 };
 
 const hideTooltip = (tooltip) => d3.select(tooltip).style("opacity", 0);
