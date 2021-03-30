@@ -5,12 +5,6 @@ import _ from "lodash";
 import { useCanvas } from "../utils/useCanvas";
 import { isHighlighted } from "../utils/isHighlighted";
 
-import Info from "../../Info/Info";
-import infoText from "../../Info/InfoText";
-
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-
 const HEATMAP_NULL_COLOR = "#eeeeee";
 const HEATMAP_COLOR = ["#ffec8b", "#d91e18"];
 const CELL_FONT = "normal 12px Helvetica";
@@ -21,7 +15,6 @@ const DEFAULT_LABEL_COLOR = "#000000";
 const LABEL_FONT = "normal 12px Helvetica";
 
 const PADDING = 10;
-const TITLE_HEIGHT = 30;
 
 /*
 
@@ -30,7 +23,8 @@ This heatmap calculates it by total row value (or given total row value)
 */
 const Heatmap = ({
   data,
-  chartDim,
+  width,
+  height,
   column,
   row,
   highlightedColumn,
@@ -38,18 +32,15 @@ const Heatmap = ({
   columnLabels,
   rowLabels,
   rowTotal,
-  test
 }) => {
   const columnValues =
-    columnLabels.map(col => col["value"]) ||
-    _.uniq(data.map(record => record[column])).sort();
-  const rowValues = rowLabels || _.uniq(data.map(record => record[row])).sort();
+    columnLabels.map((col) => col["value"]) ||
+    _.uniq(data.map((record) => record[column])).sort();
+  const rowValues =
+    rowLabels || _.uniq(data.map((record) => record[row])).sort();
 
-  const canvasWidth = chartDim["width"] - PADDING - PADDING;
-  const canvasHeight = chartDim["height"] - PADDING - PADDING - TITLE_HEIGHT;
-
-  const chartWidth = canvasWidth - ROW_LABEL_SPACE;
-  const chartHeight = canvasHeight - COLUMN_LABEL_SPACE - PADDING;
+  const chartWidth = width - ROW_LABEL_SPACE;
+  const chartHeight = height - COLUMN_LABEL_SPACE - PADDING;
 
   const columnScale = d3
     .scaleBand()
@@ -70,8 +61,8 @@ const Heatmap = ({
       ...currMap,
       [rowName]: {
         ..._.countBy(groupedRow[rowName], column),
-        total: rowTotal ? rowTotal[rowName] : groupedRow[rowName].length
-      }
+        total: rowTotal ? rowTotal[rowName] : groupedRow[rowName].length,
+      },
     }),
     {}
   );
@@ -98,7 +89,7 @@ const Heatmap = ({
     .domain([0, mostFreqCount]);
 
   const ref = useCanvas(
-    canvas => {
+    (canvas) => {
       const context = canvas.getContext("2d");
       drawHeatmap(
         context,
@@ -124,53 +115,23 @@ const Heatmap = ({
         columnScale,
         highlightedRow,
         highlightedColumn,
-        chartWidth,
-        chartDim
+        chartWidth
       );
     },
-    canvasWidth,
-    canvasHeight,
+    width,
+    height,
     [highlightedColumn, highlightedRow]
   );
 
-  return (
-    <Paper
-      style={{
-        margin: 10,
-        padding: PADDING,
-        height: chartDim["height"],
-        width: chartDim["width"]
-      }}
-    >
-      <Grid
-        container
-        direction="column"
-        justify="flex-start"
-        alignItems="stretch"
-      >
-        <Grid
-          item
-          style={{
-            textAlign: "right"
-          }}
-        >
-          {infoText["HEATMAP"]["title"] + "    "}
-          <Info name={"HEATMAP"} direction="s" />
-        </Grid>
-        <Grid item>
-          <canvas ref={ref} />
-        </Grid>
-      </Grid>
-    </Paper>
-  );
+  return <canvas ref={ref} />;
 };
 
-const formatLabelData = values => {
+const formatLabelData = (values) => {
   if (typeof values[0] === "string") {
-    return values.map(value => ({
+    return values.map((value) => ({
       value,
       label: value,
-      color: DEFAULT_LABEL_COLOR
+      color: DEFAULT_LABEL_COLOR,
     }));
   }
   return values;
@@ -184,12 +145,11 @@ const drawLabels = (
   columnScale,
   highlightedRow,
   highlightedColumn,
-  chartWidth,
-  chartDim
+  chartWidth
 ) => {
   context.font = LABEL_FONT;
 
-  columnValues.forEach(columnData => {
+  columnValues.forEach((columnData) => {
     const { value, label, color } = columnData;
 
     context.save();
@@ -224,7 +184,7 @@ const drawLabels = (
     context.fill();
   });
 
-  rowValues.forEach(rowData => {
+  rowValues.forEach((rowData) => {
     const { value, label, color } = rowData;
     context.font = LABEL_FONT;
     context.fillStyle = color;
@@ -262,12 +222,12 @@ const drawHeatmap = (
 ) => {
   const cellWidth = columnScale.bandwidth();
   const cellHeight = rowScale.bandwidth();
-  rowValues.forEach(rowName => {
+  rowValues.forEach((rowName) => {
     const rowData = freqMap[rowName];
     const yPos = rowScale(rowName);
     const total = rowData["total"];
 
-    columnValues.forEach(columnName => {
+    columnValues.forEach((columnName) => {
       const colFreq = rowData[columnName];
       const xPos = columnScale(columnName);
       context.globalAlpha = isHighlighted(

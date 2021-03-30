@@ -6,6 +6,10 @@ import * as d3 from "d3";
 // import probabilitiesSource from "./test/probabilities.tsv";
 // import degsSource from "./test/deg.tsv";
 
+// import metadataSource from "./large/metadata.tsv";
+// import probabilitiesSource from "./large/probabilities.tsv";
+// import degsSource from "./large/degs.tsv";
+
 import metadataSource from "./metadata.tsv";
 import probabilitiesSource from "./probabilities.tsv";
 import degsSource from "./degs.tsv";

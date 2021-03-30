@@ -2,19 +2,18 @@ import React from "react";
 import * as d3 from "d3";
 import { quantileSorted } from "d3-array";
 import _ from "lodash";
-import Info from "../Info/Info.js";
-import infoText from "../Info/InfoText.js";
+import infoText from "./InfoText.js";
+
+import Layout from "../components/InfoBar/Layout";
 
 import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
 
-import { useDashboardState } from "../PlotState/dashboardState";
+import { CONSTANTS } from "./config";
 
 import { useCanvas } from "../components/utils/useCanvas";
 import { useD3 } from "../components/utils/useD3";
 
 const PADDING = 10;
-const TITLE_HEIGHT = 30;
 
 const LEGEND_WIDTH = 180;
 const AXIS_SPACE = 20;
@@ -56,7 +55,7 @@ const DataWrapper = ({
   hoveredSubtype,
   setSelectedSubtype,
 }) => {
-  const [{ xParam, yParam, subtypeParam }] = useDashboardState();
+  const { xParam, yParam, subtypeParam } = CONSTANTS;
 
   const setHighlighted = (event, value) => {
     if (event === "mouseenter") {
@@ -73,22 +72,28 @@ const DataWrapper = ({
     }
   };
   return (
-    <UMAP
-      chartDim={chartDim}
-      chartName={chartName}
-      data={data}
-      highlighted={hoveredSubtype || selectedSubtype}
-      xParam={xParam}
-      yParam={yParam}
-      subsetParam={subtypeParam}
-      setHighlighted={setHighlighted}
-    />
+    <Layout
+      title={infoText["SUBTYPEUMAP"]["title"]}
+      infoText={infoText["SUBTYPEUMAP"]["text"]}
+    >
+      <UMAP
+        width={chartDim["width"]}
+        height={chartDim["height"]}
+        chartName={chartName}
+        data={data}
+        highlighted={hoveredSubtype || selectedSubtype}
+        xParam={xParam}
+        yParam={yParam}
+        subsetParam={subtypeParam}
+        setHighlighted={setHighlighted}
+      />
+    </Layout>
   );
 };
 
 const UMAP = ({
-  chartDim,
-  chartName,
+  width,
+  height,
   data,
   highlighted,
   xParam,
@@ -96,8 +101,8 @@ const UMAP = ({
   subsetParam,
   setHighlighted,
 }) => {
-  const canvasWidth = chartDim["width"] - LEGEND_WIDTH - PADDING - PADDING;
-  const canvasHeight = chartDim["height"] - TITLE_HEIGHT;
+  const canvasWidth = width - LEGEND_WIDTH;
+  const canvasHeight = height;
 
   const chartWidth = canvasWidth - AXIS_SPACE;
   const chartHeight = canvasHeight - AXIS_SPACE - PADDING - PADDING;
@@ -133,12 +138,7 @@ const UMAP = ({
   const canvasRef = useCanvas(
     (canvas) => {
       const context = canvas.getContext("2d");
-      drawUMAPAxis(
-        context,
-        canvasHeight - AXIS_SPACE - PADDING,
-        xParam,
-        yParam
-      );
+      drawUMAPAxis(context, canvasHeight - AXIS_SPACE, xParam, yParam);
       drawPoints(
         context,
         data,
@@ -177,42 +177,14 @@ const UMAP = ({
   }, []);
 
   return (
-    <Paper
-      style={{
-        margin: 10,
-        padding: "10px 0px",
-        height: chartDim["height"],
-        width: chartDim["width"],
-      }}
-    >
-      <Grid
-        container
-        direction="column"
-        justify="flex-start"
-        alignItems="stretch"
-      >
-        <Grid
-          item
-          style={{
-            textAlign: "right",
-            paddingRight: PADDING,
-            marginBottom: 10,
-          }}
-        >
-          {infoText[chartName]["title"] + "    "}
-
-          <Info name={chartName} direction="s" />
-        </Grid>
-        <Grid container direction="row" style={{ padding: 0 }}>
-          <Grid item>
-            <canvas ref={canvasRef} />
-          </Grid>
-          <Grid item>
-            <svg ref={svgRef} />
-          </Grid>
-        </Grid>
+    <Grid container direction="row" style={{ padding: 0 }}>
+      <Grid item>
+        <canvas ref={canvasRef} />
       </Grid>
-    </Paper>
+      <Grid item>
+        <svg ref={svgRef} />
+      </Grid>
+    </Grid>
   );
 };
 

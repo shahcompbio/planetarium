@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import * as d3 from "d3";
 import * as d3Hexbin from "d3-hexbin";
-import Info from "../Info/Info.js";
-import infoText from "../Info/InfoText.js";
+import infoText from "./InfoText.js";
+
+import Layout from "../components/InfoBar/Layout";
 
 import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
 import Slider from "@material-ui/core/Slider";
 
-import { useDashboardState } from "../PlotState/dashboardState";
+import { CONSTANTS } from "./config";
 
 import _ from "lodash";
 
@@ -16,7 +16,6 @@ import { useCanvas } from "../components/utils/useCanvas";
 import { useD3 } from "../components/utils/useD3";
 
 const PADDING = 10;
-const TITLE_HEIGHT = 30;
 const AXIS_SPACE = 20;
 const LEGEND_WIDTH = 220;
 
@@ -41,7 +40,7 @@ const DataWrapper = ({
   hoveredClonotype,
   setSelectedClonotype,
 }) => {
-  const [{ xParam, yParam, clonotypeParam }] = useDashboardState();
+  const { xParam, yParam, clonotypeParam } = CONSTANTS;
 
   const setHighlighted = (event, value) => {
     if (event === "mouseenter") {
@@ -58,23 +57,29 @@ const DataWrapper = ({
     }
   };
   return (
-    <UMAP
-      chartDim={chartDim}
-      chartName={chartName}
-      data={data}
-      highlighted={hoveredClonotype || selectedClonotype}
-      xParam={xParam}
-      yParam={yParam}
-      subsetParam={clonotypeParam}
-      subsetLabels={clonotypeLabels}
-      setHighlighted={setHighlighted}
-    />
+    <Layout
+      title={infoText["UMAP"]["title"]}
+      infoText={infoText["UMAP"]["text"]}
+    >
+      <UMAP
+        width={chartDim["width"]}
+        height={chartDim["height"]}
+        chartName={chartName}
+        data={data}
+        highlighted={hoveredClonotype || selectedClonotype}
+        xParam={xParam}
+        yParam={yParam}
+        subsetParam={clonotypeParam}
+        subsetLabels={clonotypeLabels}
+        setHighlighted={setHighlighted}
+      />
+    </Layout>
   );
 };
 
 const UMAP = ({
-  chartDim,
-  chartName,
+  width,
+  height,
   data,
   highlighted,
   xParam,
@@ -84,8 +89,8 @@ const UMAP = ({
   setHighlighted,
 }) => {
   const [radiusRatio, setRadiusRatio] = useState(1);
-  const canvasWidth = chartDim["width"] - LEGEND_WIDTH - PADDING - PADDING;
-  const canvasHeight = chartDim["height"] - TITLE_HEIGHT;
+  const canvasWidth = width - LEGEND_WIDTH - PADDING;
+  const canvasHeight = height;
 
   const chartWidth =
     canvasWidth - AXIS_SPACE - PADDING - PADDING - LINE_GRAPH_SPACE;
@@ -123,12 +128,7 @@ const UMAP = ({
   const canvasRef = useCanvas(
     (canvas) => {
       const context = canvas.getContext("2d");
-      drawUMAPAxis(
-        context,
-        canvasHeight - AXIS_SPACE - PADDING,
-        xParam,
-        yParam
-      );
+      drawUMAPAxis(context, canvasHeight - AXIS_SPACE, xParam, yParam);
       drawPoints(
         context,
         data,
@@ -171,61 +171,33 @@ const UMAP = ({
   );
 
   return (
-    <Paper
-      style={{
-        margin: 10,
-        padding: "10px 0px",
-        height: chartDim["height"],
-        width: chartDim["width"],
-      }}
-    >
+    <Grid container direction="row" style={{ padding: 0 }}>
+      <Grid item>
+        <canvas ref={canvasRef} />
+      </Grid>
       <Grid
         container
         direction="column"
-        justify="flex-start"
-        alignItems="stretch"
+        style={{ padding: 0, width: LEGEND_WIDTH }}
       >
-        <Grid
-          item
-          style={{
-            textAlign: "right",
-            paddingRight: PADDING,
-            marginBottom: 10,
-          }}
-        >
-          {infoText[chartName]["title"] + "    "}
-
-          <Info name={chartName} direction="s" />
+        <Grid item>
+          <svg ref={svgRef} />
         </Grid>
-        <Grid container direction="row" style={{ padding: 0 }}>
-          <Grid item>
-            <canvas ref={canvasRef} />
-          </Grid>
-          <Grid
-            container
-            direction="column"
-            style={{ padding: 0, width: LEGEND_WIDTH }}
-          >
-            <Grid item>
-              <svg ref={svgRef} />
-            </Grid>
-            <Grid item>
-              Radius Adjustment
-              <Slider
-                min={0}
-                max={3}
-                step={0.05}
-                value={radiusRatio}
-                disabled={highlighted}
-                onChange={(event, newValue) => {
-                  setRadiusRatio(newValue);
-                }}
-              />
-            </Grid>
-          </Grid>
+        <Grid item>
+          Radius Adjustment
+          <Slider
+            min={0}
+            max={3}
+            step={0.05}
+            value={radiusRatio}
+            disabled={highlighted}
+            onChange={(event, newValue) => {
+              setRadiusRatio(newValue);
+            }}
+          />
         </Grid>
       </Grid>
-    </Paper>
+    </Grid>
   );
 };
 
@@ -343,6 +315,7 @@ const drawUMAPAxis = (context, startY, xParam, yParam) => {
   context.beginPath();
   context.font = AXIS_FONT;
   context.globalAlpha = 1;
+  context.lineWidth = 1;
 
   const START_X = AXIS_SPACE / 2;
   const START_Y = startY + AXIS_SPACE / 2;

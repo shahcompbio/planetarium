@@ -1,30 +1,29 @@
 import React, { useState, useMemo } from "react";
 import * as d3 from "d3";
-import { useDashboardState } from "../PlotState/dashboardState";
-import Info from "../Info/Info.js";
-import infoText from "../Info/InfoText.js";
+import { CONSTANTS } from "./config";
+import Layout from "../components/InfoBar/Layout";
+import infoText from "./InfoText.js";
 
 import Button from "@material-ui/core/Button";
 import ClearIcon from "@material-ui/icons/Clear";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import * as d3Dsv from "d3-dsv";
 import DataTable from "react-data-table-component";
 const formatCols = ["adj_pval", "log_fc"];
-const formatDecimal = [num => num.toExponential(2), d3.format(",.4f")];
+const formatDecimal = [(num) => num.toExponential(2), d3.format(",.4f")];
 
-const DEGTable = ({ chartName, data, chartDim, selectedSubtype }) => {
+const DEGTable = ({ data, chartDim, selectedSubtype }) => {
   const [filterText, setFilterText] = useState("");
-  const [{ subtypeParam }] = useDashboardState();
+  const { subtypeParam } = CONSTANTS;
 
   const columns = Object.keys(data[0]);
   const dataSource = selectedSubtype
-    ? data.filter(row => row[subtypeParam] === selectedSubtype)
+    ? data.filter((row) => row[subtypeParam] === selectedSubtype)
     : data;
   const filteredItems = dataSource.filter(
-    item =>
+    (item) =>
       item["gene"] &&
       item["gene"].toLowerCase().includes(filterText.toLowerCase())
   );
@@ -38,7 +37,7 @@ const DEGTable = ({ chartName, data, chartDim, selectedSubtype }) => {
 
     return (
       <FilterComponent
-        onFilter={e => setFilterText(e.target.value)}
+        onFilter={(e) => setFilterText(e.target.value)}
         onClear={handleClear}
         filterText={filterText}
         data={data}
@@ -46,78 +45,53 @@ const DEGTable = ({ chartName, data, chartDim, selectedSubtype }) => {
     );
   }, [filterText]);
   return (
-    <Paper
-      style={{
-        margin: 10,
-        height: chartDim["height"],
-        width: chartDim["width"],
-        padding: "10px 15px"
-      }}
+    <Layout
+      title={infoText["TABLE"]["title"]}
+      infoText={infoText["TABLE"]["text"]}
     >
       <Grid
-        container
-        direction="column"
-        justify="flex-start"
-        alignItems="stretch"
+        item
         style={{
-          width: "100%"
+          overflowY: "hidden",
+          width: chartDim["width"],
+          height: chartDim["height"],
         }}
       >
-        <Grid
-          item
-          style={{
-            textAlign: "right",
-            paddingBottom: 5
-          }}
-        >
-          {infoText[chartName]["title"] + "    "}
+        <DataTable
+          subHeader
+          fixedHeader
+          dense
+          noHeader
+          defaultSortAsc
+          overflowY
+          subHeaderComponent={subHeaderComponentMemo}
+          compact
+          columns={columns.map((col) => {
+            const formatIndex = formatCols.indexOf(col);
 
-          <Info name={chartName} direction="s" />
-        </Grid>
-        <Grid
-          item
-          style={{
-            overflowY: "hidden",
-            height: chartDim["height"] - 70,
-            width: "100%"
-          }}
-        >
-          <DataTable
-            subHeader
-            fixedHeader
-            dense
-            noHeader
-            defaultSortAsc
-            overflowY
-            subHeaderComponent={subHeaderComponentMemo}
-            compact
-            columns={columns.map(col => {
-              const formatIndex = formatCols.indexOf(col);
-
-              return formatIndex !== -1
-                ? {
-                    name: col,
-                    selector: col,
-                    sortable: true,
-                    right: true,
-                    cell: row => (
-                      <span>
-                        {formatDecimal[formatIndex](parseFloat(row[col]))}
-                      </span>
-                    )
-                  }
-                : {
-                    name: col,
-                    selector: col,
-                    sortable: true,
-                    right: true
-                  };
-            })}
-            data={filteredItems}
-          />
-        </Grid>
+            return formatIndex !== -1
+              ? {
+                  name: col,
+                  selector: col,
+                  sortable: true,
+                  right: true,
+                  cell: (row) => (
+                    <span>
+                      {formatDecimal[formatIndex](parseFloat(row[col]))}
+                    </span>
+                  ),
+                }
+              : {
+                  name: col,
+                  selector: col,
+                  sortable: true,
+                  right: true,
+                };
+          })}
+          data={filteredItems}
+        />
       </Grid>
-    </Paper>
+    </Layout>
   );
 };
 
@@ -140,12 +114,12 @@ const FilterComponent = ({ filterText, onFilter, onClear, data }) => (
             onClick={onClear}
             style={{
               marginLeft: 15,
-              marginBottom: 5
+              marginBottom: 5,
             }}
           >
             <ClearIcon />
           </Button>
-        )
+        ),
       }}
     />
     <Button
@@ -154,7 +128,7 @@ const FilterComponent = ({ filterText, onFilter, onClear, data }) => (
       id="tsv-download"
       onClick={() => {
         const dataSource = new Blob([d3Dsv.tsvFormat(data)], {
-          type: "text/tsv"
+          type: "text/tsv",
         });
         const tsvURL = window.URL.createObjectURL(dataSource);
         const tempLink = document.createElement("a");

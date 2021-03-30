@@ -9,18 +9,13 @@ import * as d3 from "d3";
 import * as d3Array from "d3-array";
 import * as _ from "lodash";
 import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
 
 import { useCanvas } from "../utils/useCanvas";
-
-import Info from "../../Info/Info.js";
-import infoText from "../../Info/InfoText.js";
 
 const HIGHLIGHTED_BAR_COLOR = "#eb5067";
 const HIGHLIGHTED_BAR_WIDTH = 2;
 
 const PADDING = 10;
-const TITLE_HEIGHT = 30;
 const X_AXIS_HEIGHT = 40;
 const Y_AXIS_WIDTH = 50;
 
@@ -36,21 +31,18 @@ const format = d3.format(".3f");
 
 const ProbabilityHistogram = ({
   data,
+  width,
+  height,
   binParam,
   lineParam,
   highlightBarParam,
-  chartDim,
   highlightedBar,
   highlightedLine,
-  chartName,
 }) => {
   const tooltipRef = useRef();
 
-  const canvasWidth = chartDim["width"] - PADDING - PADDING;
-  const canvasHeight = chartDim["height"] - PADDING - PADDING - TITLE_HEIGHT;
-
-  const chartWidth = canvasWidth - Y_AXIS_WIDTH;
-  const chartHeight = canvasHeight - X_AXIS_HEIGHT;
+  const chartWidth = width - Y_AXIS_WIDTH;
+  const chartHeight = height - X_AXIS_HEIGHT;
 
   const allX = data.map((row) => parseFloat(row[binParam]));
   const xMax = Math.max(...allX);
@@ -113,48 +105,21 @@ const ProbabilityHistogram = ({
       );
       drawKde(context, data, x, y, binParam, lineParam, highlightedLine);
     },
-    canvasWidth,
-    canvasHeight,
+    width,
+    height,
     [highlightedBar, highlightedLine]
   );
 
   return (
-    <Paper
+    <Grid
+      item
       style={{
-        margin: 10,
-        padding: PADDING,
-        height: chartDim["height"],
-        width: chartDim["width"],
+        position: "relative",
       }}
     >
-      <Grid
-        container
-        direction="column"
-        justify="flex-start"
-        alignItems="stretch"
-      >
-        <Grid
-          item
-          style={{
-            textAlign: "right",
-            zIndex: 100,
-          }}
-        >
-          {infoText[chartName]["title"] + "    "}
-
-          <Info name={chartName} direction="s" />
-        </Grid>
-        <Grid
-          item
-          style={{
-            position: "relative",
-          }}
-        >
-          <canvas ref={ref} />
-          <div ref={tooltipRef} id="probabilityTooltip" />
-        </Grid>
-      </Grid>
-    </Paper>
+      <canvas ref={ref} />
+      <div ref={tooltipRef} id="probabilityTooltip" />
+    </Grid>
   );
 };
 
@@ -227,13 +192,11 @@ const drawBars = (canvas, bins, x, y, barScale, total, tooltip) => {
       var mouseX = d3.event.layerX || d3.event.offsetX;
       if (mouseX >= x.range()[0] && mouseX <= x.range()[1]) {
         const tickSize = (x.range()[1] - x.range()[0]) / NUM_TICKS;
-        x.ticks(NUM_TICKS).map((tick, index) => {
+        x.ticks(NUM_TICKS).forEach((tick, index) => {
           if (mouseX >= x(tick) && mouseX <= x(tick) + tickSize) {
             //show tip
             const bin = bins.filter((bin) => bin["x0"] === tick)[0];
             if (bin.length > 0) {
-              const yPos = y(bins[index].length / total);
-
               const subtypeGroups = _.groupBy(bin, "subtype");
 
               const tooltipWidth =

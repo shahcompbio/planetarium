@@ -1,0 +1,309 @@
+import React, { useState } from "react";
+import _ from "lodash";
+import * as d3 from "d3";
+import "./App.css";
+
+import ClonotypeUMAP from "./Umap";
+import SubtypeUMAP from "./subTypeUmap";
+import Heatmap from "../components/Heatmap/Heatmap";
+import ClonotypeExpansion from "./ClonotypeExpansion";
+import ProbabilityHistogram from "../components/Bar/ProbabilityHistogram";
+import DEGTable from "./DEGTable";
+
+import Layout from "../components/InfoBar/Layout";
+import infoText from "./InfoText";
+
+import { makeStyles } from "@material-ui/core/styles";
+import Popper from "@material-ui/core/Popper";
+import Typography from "@material-ui/core/Typography";
+
+import Grid from "@material-ui/core/Grid";
+
+import Button from "@material-ui/core/Button";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import CardHeader from "@material-ui/core/CardHeader";
+
+import { theme } from "../theme/theme.js";
+import { MuiThemeProvider } from "@material-ui/core/styles";
+import CssBaseline from "@material-ui/core/CssBaseline";
+
+import { CONSTANTS, CLONOTYPE_COLORS } from "./config";
+
+const NULL_SELECTED = {
+  hover: null,
+  selected: null,
+};
+
+const NDV = ({ data }) => {
+  const [selectedSubtype, setSelectedSubtype] = useState(NULL_SELECTED);
+  const [selectedClonotype, setSelectedClonotype] = useState(NULL_SELECTED);
+
+  const { metadata, probabilities, degs } = data;
+
+  const { clonotypeParam, subtypeParam, logProbParam } = CONSTANTS;
+
+  const clonotypeCounts = _.countBy(
+    metadata.filter((datum) => datum[clonotypeParam] !== "None"),
+    clonotypeParam
+  );
+
+  const topTenClonotypes = Object.keys(clonotypeCounts)
+    .sort((a, b) => clonotypeCounts[b] - clonotypeCounts[a])
+    .slice(0, 10)
+    .map((value, index) => ({
+      value,
+      label: `SEQ${index + 1} - ${value}`,
+      color: CLONOTYPE_COLORS[index],
+    }));
+
+  const filteredMetadata = metadata.filter(
+    (row) => row[clonotypeParam] !== "None"
+  );
+  const topTen = Object.entries(
+    _.countBy(filteredMetadata.map((row) => row[clonotypeParam]))
+  )
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 10);
+
+  const sampleTen = topTen.reduce((final, curr) => {
+    final[curr[0]] = curr[1];
+    return final;
+  }, {});
+
+  const sampleData = metadata.filter(
+    (row) =>
+      sampleTen.hasOwnProperty(row[clonotypeParam]) &&
+      row[clonotypeParam] !== "None"
+  );
+  const topTenNumbering = Object.keys(sampleTen).reduce((final, seq, index) => {
+    final[seq] = "SEQ" + (index + 1);
+    return final;
+  }, {});
+  const clonotypes = _.groupBy(sampleData, clonotypeParam);
+
+  const types = Object.keys(clonotypes);
+
+  const colourList = [
+    "#674172",
+    "#098dde",
+    "#fa832f",
+    "#0e5702",
+    "#c20c1e",
+    "#911eb4",
+    "#fc97bc",
+    "#469990",
+    "#b5762a",
+    "#5aebed",
+    "#8f8f3f",
+    "#ed1a1a",
+  ];
+  var colors = d3
+    .scaleOrdinal()
+    .domain([...types])
+    .range([...colourList]);
+
+  const clonotypeLabels = Object.keys(sampleTen)
+    .sort(([, a], [, b]) => b - a)
+    .map((clonotype, index) => ({
+      value: clonotype,
+      label: `SEQ${index + 1} - ${clonotype}`,
+      color: colors(clonotype),
+    }));
+
+  const subtypeTotals = _.countBy(metadata, subtypeParam);
+
+  return (
+    <MuiThemeProvider theme={theme}>
+      <CssBaseline />
+      {(selectedClonotype["selected"] || selectedSubtype["selected"]) && (
+        <Popup
+          selected={
+            selectedClonotype["selected"] || selectedSubtype["selected"]
+          }
+          setSelected={() => {
+            setSelectedClonotype(NULL_SELECTED);
+            setSelectedSubtype(NULL_SELECTED);
+          }}
+          type={selectedClonotype["selected"] ? "Clonotype" : "Subtype"}
+        />
+      )}
+      <Grid
+        container
+        direction="column"
+        justify="flex-start"
+        alignItems="flex-start"
+      >
+        <Grid
+          item
+          container
+          direction="row"
+          justify="flex-start"
+          alignItems="flex-start"
+        >
+          <ClonotypeUMAP
+            chartName={"UMAP"}
+            data={metadata}
+            clonotypeLabels={clonotypeLabels}
+            chartDim={{
+              width: 800,
+              height: 600,
+            }}
+            selectedClonotype={selectedClonotype["selected"]}
+            hoveredClonotype={selectedClonotype["hover"]}
+            setSelectedClonotype={(clonotype) => {
+              if (clonotype["selected"]) {
+                setSelectedSubtype(NULL_SELECTED);
+              }
+              setSelectedClonotype((prevState) => ({
+                ...prevState,
+                ...clonotype,
+              }));
+            }}
+          />
+          <SubtypeUMAP
+            chartName={"SUBTYPEUMAP"}
+            data={metadata}
+            selectedSubtype={selectedSubtype["selected"]}
+            hoveredSubtype={selectedSubtype["hover"]}
+            setSelectedSubtype={(subtype) => {
+              if (subtype["selected"]) {
+                setSelectedClonotype(NULL_SELECTED);
+              }
+              setSelectedSubtype((prevState) => ({
+                ...prevState,
+                ...subtype,
+              }));
+            }}
+            chartDim={{
+              width: 750,
+              height: 600,
+            }}
+          />
+        </Grid>
+        <Grid
+          item
+          container
+          direction="row"
+          justify="flex-start"
+          alignItems="flex-end"
+        >
+          <Layout
+            title={infoText["HEATMAP"]["title"]}
+            infoText={infoText["HEATMAP"]["text"]}
+          >
+            <Heatmap
+              width={750}
+              height={550}
+              data={probabilities}
+              column={clonotypeParam}
+              row={subtypeParam}
+              highlightedRow={
+                selectedSubtype["selected"] || selectedSubtype["hover"]
+              }
+              highlightedColumn={
+                selectedClonotype["selected"] || selectedClonotype["hover"]
+              }
+              columnLabels={clonotypeLabels}
+              rowTotal={subtypeTotals}
+            />
+          </Layout>
+          <ClonotypeExpansion
+            chartName={"BARPLOT"}
+            data={probabilities}
+            width={750}
+            height={455}
+            highlightedRow={
+              selectedSubtype["selected"] || selectedSubtype["hover"]
+            }
+          />
+        </Grid>
+        <Grid
+          item
+          container
+          direction="row"
+          justify="flex-start"
+          alignItems="flex-start"
+        >
+          <Layout
+            title={infoText["HISTOGRAM"]["title"]}
+            infoText={infoText["HISTOGRAM"]["text"]}
+          >
+            <ProbabilityHistogram
+              data={probabilities}
+              width={750}
+              height={500}
+              binParam={logProbParam}
+              lineParam={subtypeParam}
+              highlightBarParam={clonotypeParam}
+              highlightedBar={
+                selectedClonotype["hover"] || selectedClonotype["selected"]
+              }
+              highlightedLine={
+                selectedSubtype["hover"] || selectedSubtype["selected"]
+              }
+            />
+          </Layout>
+          <DEGTable
+            chartName={"TABLE"}
+            data={degs}
+            selectedSubtype={
+              selectedSubtype["hover"] || selectedSubtype["selected"]
+            }
+            chartDim={{
+              height: 500,
+              width: 750,
+            }}
+          />
+        </Grid>
+      </Grid>
+    </MuiThemeProvider>
+  );
+};
+const useStyles = makeStyles({
+  root: {
+    minWidth: 275,
+  },
+  header: { padding: 10, paddingBottom: 0 },
+  body: {
+    padding: 5,
+    paddingLeft: 20,
+  },
+  button: { margin: 5, float: "right" },
+  poppr: {
+    width: 150,
+    float: "right",
+    right: "100px",
+    top: "10px",
+    left: "auto",
+    margin: 10,
+  },
+});
+const Popup = ({ selected, setSelected, type }) => {
+  const classes = useStyles();
+  return (
+    <Popper
+      open={true}
+      placement={"bottom"}
+      transition
+      className={classes.popper}
+    >
+      <Card className={classes.root} variant="outlined">
+        <CardHeader className={classes.header} title={"Selected " + type} />
+        <CardContent className={classes.body}>
+          <Typography variant="body">{selected}</Typography>
+        </CardContent>
+        <Button
+          color="primary"
+          size="small"
+          variant="outlined"
+          className={classes.button}
+          onClick={setSelected}
+        >
+          Clear
+        </Button>
+      </Card>
+    </Popper>
+  );
+};
+export default NDV;

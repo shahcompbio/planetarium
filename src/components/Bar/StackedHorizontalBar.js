@@ -1,13 +1,8 @@
 import React from "react";
 import * as d3 from "d3";
 
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-
 import { useCanvas } from "../utils/useCanvas";
 import { isHighlighted } from "../utils/isHighlighted";
-import Info from "../../Info/Info.js";
-import infoText from "../../Info/InfoText.js";
 
 /*
 
@@ -26,7 +21,7 @@ const BAR_COLORS = [
   "#FDAE61",
   "#F46D43",
   "#D53E4F",
-  "#9E0142"
+  "#9E0142",
 ];
 
 const LEGEND_HEIGHT = 50;
@@ -35,7 +30,6 @@ const PROP_AXIS_FONT = "normal 10px Helvetica";
 const CAT_LABEL_SPACE = 150;
 const CAT_LABEL_FONT = "normal 12px Helvetica";
 const PADDING = 10;
-const TITLE_HEIGHT = 30;
 const LABEL_PADDING = 5;
 
 const LEGEND_SQUARE_LENGTH = 12;
@@ -43,26 +37,23 @@ const LEGEND_SQUARE_PADDING = 10;
 
 const StackedHorizontalBar = ({
   data,
-  chartDim,
+  width,
+  height,
   barLabels,
-  chartName,
-  highlightedRow
+  highlightedRow,
 }) => {
   const categoryValues = Object.keys(data).sort();
   const barValues =
     typeof barLabels[0] === "string"
       ? barLabels
-      : barLabels.map(obj => obj["value"]);
+      : barLabels.map((obj) => obj["value"]);
   const legendLabels =
     typeof barLabels[0] === "string"
-      ? barLabels.map(str => ({ value: str, label: str }))
+      ? barLabels.map((str) => ({ value: str, label: str }))
       : barLabels;
 
-  const canvasWidth = chartDim["width"] - PADDING - PADDING;
-  const canvasHeight = chartDim["height"] - PADDING - PADDING - TITLE_HEIGHT;
-
-  const chartWidth = canvasWidth - CAT_LABEL_SPACE;
-  const chartHeight = canvasHeight - LEGEND_HEIGHT - LABEL_PADDING;
+  const chartWidth = width - CAT_LABEL_SPACE;
+  const chartHeight = height - LEGEND_HEIGHT - LABEL_PADDING;
 
   const catScale = d3
     .scaleBand()
@@ -87,7 +78,7 @@ const StackedHorizontalBar = ({
     .range(BAR_COLORS.slice(0, barValues.length));
 
   const ref = useCanvas(
-    canvas => {
+    (canvas) => {
       const context = canvas.getContext("2d");
       drawBars(
         context,
@@ -110,45 +101,15 @@ const StackedHorizontalBar = ({
         highlightedRow
       );
 
-      drawLegend(context, legendLabels, colors, canvasWidth);
+      drawLegend(context, legendLabels, colors, width);
     },
 
-    canvasWidth,
-    canvasHeight,
+    width,
+    height,
     [highlightedRow]
   );
 
-  return (
-    <Paper
-      style={{
-        margin: 10,
-        padding: PADDING,
-        height: chartDim["height"],
-        width: chartDim["width"]
-      }}
-    >
-      <Grid
-        container
-        direction="column"
-        justify="flex-start"
-        alignItems="stretch"
-      >
-        <Grid
-          item
-          style={{
-            textAlign: "right"
-          }}
-        >
-          {infoText[chartName]["title"] + "    "}
-
-          <Info name={chartName} direction="s" />
-        </Grid>
-        <Grid item>
-          <canvas ref={ref} />
-        </Grid>
-      </Grid>
-    </Paper>
-  );
+  return <canvas ref={ref} />;
 };
 
 const drawBars = (
@@ -162,14 +123,14 @@ const drawBars = (
   colors,
   highlightedRow
 ) => {
-  categoryValues.forEach(cValue => {
+  categoryValues.forEach((cValue) => {
     const categoryData = data[cValue];
     const total = Object.values(categoryData).reduce((sum, x) => sum + x, 0);
 
     var currPos = barPosScale(0);
     const yPos = catScale(cValue);
 
-    barValues.forEach(bValue => {
+    barValues.forEach((bValue) => {
       if (categoryData.hasOwnProperty(bValue)) {
         context.fillStyle = colors(bValue);
         context.globalAlpha = isHighlighted(
@@ -206,7 +167,7 @@ const drawLabels = (
   context.lineWidth = 1;
   context.textBaseline = "bottom";
 
-  values.forEach(value => {
+  values.forEach((value) => {
     context.fillText(value * 100, barScale(value), yAxisPos);
   });
 
@@ -214,7 +175,7 @@ const drawLabels = (
   context.textAlign = "left";
   context.textBaseline = "middle";
 
-  categoryValues.forEach(cValue => {
+  categoryValues.forEach((cValue) => {
     context.globalAlpha = isHighlighted(highlightedRow, null, cValue, undefined)
       ? 1
       : 0.2;
