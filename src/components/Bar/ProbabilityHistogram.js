@@ -79,7 +79,6 @@ const ProbabilityHistogram = ({
   const ref = useCanvas(
     (canvas) => {
       const context = canvas.getContext("2d");
-
       drawAxisLabels(
         context,
         x,
@@ -141,6 +140,8 @@ const drawAxisLabels = (
 
   context.font = TICK_FONT;
 
+  context.textBaseline = "bottom";
+
   x.ticks(10).forEach((tick) => {
     context.fillText(tick, x(tick), y(0) + 15);
   });
@@ -158,7 +159,7 @@ const drawAxisLabels = (
     context.lineTo(x(xMax), y(tick));
     context.stroke();
   });
-
+  console.log(chartHeight + X_AXIS_HEIGHT / 2);
   context.globalAlpha = 1;
   context.font = LABEL_FONT;
   context.textAlign = "center";

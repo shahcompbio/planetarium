@@ -1,9 +1,9 @@
 import React from "react";
 
-import StackedHorizontalBar from "../components/Bar/StackedHorizontalBar";
-import Layout from "../components/InfoBar/Layout";
-import infoText from "./InfoText";
-import { CONSTANTS } from "./config";
+import StackedHorizontalBar from "../../components/Bar/StackedHorizontalBar";
+import Layout from "../../components/InfoBar/Layout";
+import infoText from "../InfoText";
+import { CONSTANTS } from "../config";
 import _ from "lodash";
 
 const ClonotypeExpansion = ({

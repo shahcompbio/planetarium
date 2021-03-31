@@ -1,19 +1,19 @@
 import React, { useState } from "react";
 import * as d3 from "d3";
 import * as d3Hexbin from "d3-hexbin";
-import infoText from "./InfoText.js";
+import infoText from "../InfoText.js";
 
-import Layout from "../components/InfoBar/Layout";
+import Layout from "../../components/InfoBar/Layout";
 
 import Grid from "@material-ui/core/Grid";
 import Slider from "@material-ui/core/Slider";
 
-import { CONSTANTS } from "./config";
+import { CONSTANTS } from "../config";
 
 import _ from "lodash";
 
-import { useCanvas } from "../components/utils/useCanvas";
-import { useD3 } from "../components/utils/useD3";
+import { useCanvas } from "../../components/utils/useCanvas";
+import { useD3 } from "../../components/utils/useD3";
 
 const PADDING = 10;
 const AXIS_SPACE = 20;

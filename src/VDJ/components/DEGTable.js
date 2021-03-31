@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from "react";
 import * as d3 from "d3";
-import { CONSTANTS } from "./config";
-import Layout from "../components/InfoBar/Layout";
-import infoText from "./InfoText.js";
+import { CONSTANTS } from "../config";
+import Layout from "../../components/InfoBar/Layout";
+import infoText from "../InfoText.js";
 
 import Button from "@material-ui/core/Button";
 import ClearIcon from "@material-ui/icons/Clear";

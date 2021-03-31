@@ -22,7 +22,9 @@ const Layout = ({ title, infoText, children }) => {
         alignItems="stretch"
       >
         <InfoBar title={title} infoText={infoText} />
-        <Grid item>{children}</Grid>
+        <Grid item style={{ padding: 0 }}>
+          {children}
+        </Grid>
       </Grid>
     </Paper>
   );

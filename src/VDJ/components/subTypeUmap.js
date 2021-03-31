@@ -2,16 +2,16 @@ import React from "react";
 import * as d3 from "d3";
 import { quantileSorted } from "d3-array";
 import _ from "lodash";
-import infoText from "./InfoText.js";
+import infoText from "../InfoText.js";
 
-import Layout from "../components/InfoBar/Layout";
+import Layout from "../../components/InfoBar/Layout";
 
 import Grid from "@material-ui/core/Grid";
 
-import { CONSTANTS } from "./config";
+import { CONSTANTS } from "../config";
 
-import { useCanvas } from "../components/utils/useCanvas";
-import { useD3 } from "../components/utils/useD3";
+import { useCanvas } from "../../components/utils/useCanvas";
+import { useD3 } from "../../components/utils/useD3";
 
 const PADDING = 10;
 
@@ -165,16 +165,21 @@ const UMAP = ({
     canvasHeight,
     [highlighted]
   );
-  const svgRef = useD3((svg) => {
-    drawLegend(
-      svg,
-      subsetValues,
-      subsetColors,
-      canvasHeight,
-      highlighted,
-      setHighlighted
-    );
-  }, []);
+  const svgRef = useD3(
+    (svg) => {
+      drawLegend(
+        svg,
+        subsetValues,
+        subsetColors,
+        canvasHeight,
+        highlighted,
+        setHighlighted
+      );
+    },
+    LEGEND_WIDTH,
+    chartHeight,
+    []
+  );
 
   return (
     <Grid container direction="row" style={{ padding: 0 }}>

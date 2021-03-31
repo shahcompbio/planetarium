@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import _ from "lodash";
-import * as d3 from "d3";
 import "./App.css";
 
-import ClonotypeUMAP from "./Umap";
-import SubtypeUMAP from "./subTypeUmap";
+import ClonotypeUMAP from "./components/Umap";
+import SubtypeUMAP from "./components/subTypeUmap";
 import Heatmap from "../components/Heatmap/Heatmap";
-import ClonotypeExpansion from "./ClonotypeExpansion";
+import ClonotypeExpansion from "./components/ClonotypeExpansion";
 import ProbabilityHistogram from "../components/Bar/ProbabilityHistogram";
-import DEGTable from "./DEGTable";
+import DEGTable from "./components/DEGTable";
 
 import Layout from "../components/InfoBar/Layout";
 import infoText from "./InfoText";
@@ -43,72 +42,19 @@ const NDV = ({ data }) => {
 
   const { clonotypeParam, subtypeParam, logProbParam } = CONSTANTS;
 
+  // Remove none
   const clonotypeCounts = _.countBy(
     metadata.filter((datum) => datum[clonotypeParam] !== "None"),
     clonotypeParam
   );
 
-  const topTenClonotypes = Object.keys(clonotypeCounts)
+  const clonotypeLabels = Object.keys(clonotypeCounts)
     .sort((a, b) => clonotypeCounts[b] - clonotypeCounts[a])
     .slice(0, 10)
     .map((value, index) => ({
       value,
       label: `SEQ${index + 1} - ${value}`,
       color: CLONOTYPE_COLORS[index],
-    }));
-
-  const filteredMetadata = metadata.filter(
-    (row) => row[clonotypeParam] !== "None"
-  );
-  const topTen = Object.entries(
-    _.countBy(filteredMetadata.map((row) => row[clonotypeParam]))
-  )
-    .sort(([, a], [, b]) => b - a)
-    .slice(0, 10);
-
-  const sampleTen = topTen.reduce((final, curr) => {
-    final[curr[0]] = curr[1];
-    return final;
-  }, {});
-
-  const sampleData = metadata.filter(
-    (row) =>
-      sampleTen.hasOwnProperty(row[clonotypeParam]) &&
-      row[clonotypeParam] !== "None"
-  );
-  const topTenNumbering = Object.keys(sampleTen).reduce((final, seq, index) => {
-    final[seq] = "SEQ" + (index + 1);
-    return final;
-  }, {});
-  const clonotypes = _.groupBy(sampleData, clonotypeParam);
-
-  const types = Object.keys(clonotypes);
-
-  const colourList = [
-    "#674172",
-    "#098dde",
-    "#fa832f",
-    "#0e5702",
-    "#c20c1e",
-    "#911eb4",
-    "#fc97bc",
-    "#469990",
-    "#b5762a",
-    "#5aebed",
-    "#8f8f3f",
-    "#ed1a1a",
-  ];
-  var colors = d3
-    .scaleOrdinal()
-    .domain([...types])
-    .range([...colourList]);
-
-  const clonotypeLabels = Object.keys(sampleTen)
-    .sort(([, a], [, b]) => b - a)
-    .map((clonotype, index) => ({
-      value: clonotype,
-      label: `SEQ${index + 1} - ${clonotype}`,
-      color: colors(clonotype),
     }));
 
   const subtypeTotals = _.countBy(metadata, subtypeParam);
