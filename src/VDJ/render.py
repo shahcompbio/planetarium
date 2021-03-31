@@ -33,7 +33,7 @@ template = Template(open(index_template,"r").read())
 
 
 html = template.render(data=data)
-output_html=os.path.join(app_dir,"NDV.html")
+output_html=os.path.join(app_dir,"VDJ.html")
 output = open(output_html,"w")
 output.write(html)
 output.close()
