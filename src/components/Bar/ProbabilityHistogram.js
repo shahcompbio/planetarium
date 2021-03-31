@@ -25,6 +25,7 @@ const TICK_FONT = "normal 10px Helvetica";
 
 const BAR_COLOR = "#6bb9f0";
 const BAR_STROKE_COLOR = "#5c97bf";
+const HIGHLIGHTED_LINE_COLOR = "#47a647";
 
 const LINE_COLOR = "steelblue";
 const format = d3.format(".3f");
@@ -90,7 +91,17 @@ const ProbabilityHistogram = ({
         xMax,
         5
       );
-      drawBars(canvas, bins, x, y, barScale, data.length, tooltipRef.current);
+      drawBars(
+        canvas,
+        bins,
+        x,
+        y,
+        barScale,
+        data.length,
+        tooltipRef.current,
+        highlightedLine,
+        lineParam
+      );
       drawHighlightedBar(
         context,
         data,
@@ -159,7 +170,7 @@ const drawAxisLabels = (
     context.lineTo(x(xMax), y(tick));
     context.stroke();
   });
-  console.log(chartHeight + X_AXIS_HEIGHT / 2);
+
   context.globalAlpha = 1;
   context.font = LABEL_FONT;
   context.textAlign = "center";
@@ -172,7 +183,17 @@ const drawAxisLabels = (
   context.restore();
 };
 
-const drawBars = (canvas, bins, x, y, barScale, total, tooltip) => {
+const drawBars = (
+  canvas,
+  bins,
+  x,
+  y,
+  barScale,
+  total,
+  tooltip,
+  highlightedLine,
+  lineParam
+) => {
   const context = canvas.getContext("2d");
 
   context.globalAlpha = 1;
@@ -187,6 +208,20 @@ const drawBars = (canvas, bins, x, y, barScale, total, tooltip) => {
     context.fillRect(xPos, yPos, width, height);
     context.strokeRect(xPos, yPos, width, height);
   });
+
+  if (highlightedLine) {
+    context.fillStyle = HIGHLIGHTED_LINE_COLOR;
+    bins.forEach((bin) => {
+      const content =
+        bin.filter((datum) => datum[lineParam] === highlightedLine).length /
+        total;
+      const xPos = x(bin["x0"]) + 1;
+      const yPos = y(content);
+      const width = x(bin["x1"]) - x(bin["x0"]) - 2;
+      const height = barScale(content);
+      context.fillRect(xPos, yPos, width, height);
+    });
+  }
 
   d3.select(canvas)
     .on("mousemove", function() {
@@ -310,15 +345,7 @@ const drawKde = (context, data, x, y, binParam, lineParam, highlightedLine) => {
     return (x) =>
       Math.abs((x /= bandwidth)) <= 1 ? (0.75 * (1 - x * x)) / bandwidth : 0;
   }
-  const densityData = highlightedLine
-    ? data.filter((datum) => datum[lineParam] === highlightedLine)
-    : data;
 
-  const density = kde(
-    epanechnikov(1),
-    x.ticks(NUM_TICKS * 2),
-    densityData.map((row) => parseFloat(row[binParam]))
-  );
   var line = d3
     .line()
     .curve(d3.curveBasis)
@@ -330,10 +357,30 @@ const drawKde = (context, data, x, y, binParam, lineParam, highlightedLine) => {
     })
     .context(context);
 
+  const allDensity = kde(
+    epanechnikov(1),
+    x.ticks(NUM_TICKS * 2),
+    data.map((row) => parseFloat(row[binParam]))
+  );
   context.beginPath();
-  line(density);
+  line(allDensity);
   context.lineWidth = 2;
   context.strokeStyle = LINE_COLOR;
   context.stroke();
+
+  if (highlightedLine) {
+    const filteredDensity = kde(
+      epanechnikov(1),
+      x.ticks(NUM_TICKS * 2),
+      data
+        .filter((datum) => datum[lineParam] === highlightedLine)
+        .map((row) => parseFloat(row[binParam]))
+    );
+    context.beginPath();
+    line(filteredDensity);
+    context.lineWidth = 2;
+    context.strokeStyle = HIGHLIGHTED_LINE_COLOR;
+    context.stroke();
+  }
 };
 export default ProbabilityHistogram;
