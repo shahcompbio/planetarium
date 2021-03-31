@@ -1,74 +1,58 @@
-# React Boilerplate
+# Planetarium
 
-This project acts a boilerplate for the React layer of visualizations.
+A collection of visual components and dashboards for the lab.
 
-[React layer](https://github.com/shahcompbio/viz-react-boilerplate)
-[GraphQL layer](https://github.com/shahcompbio/viz-graphql-boilerplate)
+Dashboards are outputted as HTML templates, where data is injected in through [Jinja](https://palletsprojects.com/p/jinja/).
 
-## Features
 
-It was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Installation
 
-It also includes:
-
-- Interaction with graphQL via [Apollo](https://www.apollographql.com/)
-- Production build in [Docker](https://www.docker.com/)
-
-## How to use
-
-To use the boilerplate:
+Install the dependencies:
 
 ```
-git clone --depth=1 https://github.com/shahcompbio/viz-react-boilerplate.git <your project name>
-rm -r <your project name>/.git
+yarn install
 ```
 
-Remember to change:
 
-- Project name in package.json
+Then you can start the app in development mode.
 
-## Available Scripts
+```
+yarn start
+```
 
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.<br>
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
 
-### `npm test`
+## Switching dashboards
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Docker build
-
-This project can be built for production and packaged with Docker. To do this:
+To switch the dashboard that will be shown on development mode / build, go to `/src/App.js` and change the import to the correct dashboard
 
 ```
-docker build . -t react-boilerplate
-docker run -d -p 80:80 --link graphql:graphql react-boilerplate
+import App from '<!! path here>'
 ```
+
+For example, for VDJ, we should change the import to the following
+
+```
+import App from './VDJ/VDJ
+```
+
+You should also ensure that you have test data where needed.
+
+
+## Building
+
+To build the app for production,
+
+```
+yarn build
+```
+
+This should output a `build` folder with the minified files. This is the HTML template and will need to be injected with data to create a standalone file.
+
+To inject data, run the appropriate python script:
+
+```
+python3 render.py <path to data file>
+```
+
