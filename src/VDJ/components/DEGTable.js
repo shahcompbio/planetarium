@@ -1,23 +1,22 @@
 import React, { useState, useMemo } from "react";
 import * as d3 from "d3";
-import { useDashboardState } from "../PlotState/dashboardState";
-import Info from "../Info/Info.js";
-import infoText from "../Info/InfoText.js";
+import { CONSTANTS } from "../config";
+import Layout from "../../components/InfoBar/Layout";
+import infoText from "../InfoText.js";
 
 import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
 import ClearIcon from "@material-ui/icons/Clear";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import * as d3Dsv from "d3-dsv";
 import DataTable from "react-data-table-component";
 const formatCols = ["adj_pval", "log_fc"];
-const formatDecimal = d3.format(",.4f");
-const Table = ({ chartName, data, chartDim, selectedSubtype }) => {
+const formatDecimal = [(num) => num.toExponential(2), d3.format(",.4f")];
+
+const DEGTable = ({ data, chartDim, selectedSubtype }) => {
   const [filterText, setFilterText] = useState("");
-  const [{ subtypeParam }] = useDashboardState();
+  const { subtypeParam } = CONSTANTS;
 
   const columns = Object.keys(data[0]);
   const dataSource = selectedSubtype
@@ -46,85 +45,61 @@ const Table = ({ chartName, data, chartDim, selectedSubtype }) => {
     );
   }, [filterText]);
   return (
-    <Paper
-      style={{
-        margin: 10,
-        height: chartDim["height"],
-        width: chartDim["width"],
-        padding: 15,
-      }}
+    <Layout
+      title={infoText["TABLE"]["title"]}
+      infoText={infoText["TABLE"]["text"]}
     >
       <Grid
-        container
-        direction="column"
-        justify="flex-start"
-        alignItems="flex-start"
+        item
         style={{
-          width: "100%",
+          overflowY: "hidden",
+          width: chartDim["width"],
+          height: chartDim["height"],
         }}
       >
-        <Grid
-          item
-          style={{
-            width: "100%",
-            textAlign: "left",
-            paddingTop: 15,
-          }}
-        >
-          {infoText[chartName]["title"] + "    "}
+        <DataTable
+          subHeader
+          fixedHeader
+          dense
+          noHeader
+          defaultSortAsc
+          overflowY
+          subHeaderComponent={subHeaderComponentMemo}
+          compact
+          columns={columns.map((col) => {
+            const formatIndex = formatCols.indexOf(col);
 
-          <Info name={chartName} direction="s" />
-        </Grid>
-        <Grid
-          item
-          style={{
-            overflowY: "hidden",
-            height: chartDim["height"] - 70,
-            width: "100%",
-          }}
-        >
-          <DataTable
-            subHeader
-            fixedHeader
-            dense
-            noHeader
-            defaultSortAsc
-            overflowY
-            subHeaderComponent={subHeaderComponentMemo}
-            compact
-            columns={columns.map((col) => {
-              return formatCols.indexOf(col) !== -1
-                ? {
-                    name: col,
-                    selector: col,
-                    sortable: true,
-                    right: true,
-                    cell: (row) => (
-                      <span>{formatDecimal(parseFloat(row[col]))}</span>
-                    ),
-                  }
-                : {
-                    name: col,
-                    selector: col,
-                    sortable: true,
-                    right: true,
-                  };
-            })}
-            data={filteredItems}
-          />
-        </Grid>
+            return formatIndex !== -1
+              ? {
+                  name: col,
+                  selector: col,
+                  sortable: true,
+                  right: true,
+                  cell: (row) => (
+                    <span>
+                      {formatDecimal[formatIndex](parseFloat(row[col]))}
+                    </span>
+                  ),
+                }
+              : {
+                  name: col,
+                  selector: col,
+                  sortable: true,
+                  right: true,
+                };
+          })}
+          data={filteredItems}
+        />
       </Grid>
-    </Paper>
+    </Layout>
   );
 };
 
 const FilterComponent = ({ filterText, onFilter, onClear, data }) => (
-  <div style={{ display: "flex" }}>
+  <div style={{ display: "flex", width: "100%" }}>
     <TextField
       color="primary"
       type="text"
-      placeholder="Gene"
-      aria-label="Gene"
       id="searchGenes"
       placeholder="Filter By Gene"
       aria-label="Search Input"
@@ -137,7 +112,10 @@ const FilterComponent = ({ filterText, onFilter, onClear, data }) => (
             color="primary"
             variant="outlined"
             onClick={onClear}
-            style={{ marginLeft: 15, marginBottom: 5 }}
+            style={{
+              marginLeft: 15,
+              marginBottom: 5,
+            }}
           >
             <ClearIcon />
           </Button>
@@ -159,10 +137,10 @@ const FilterComponent = ({ filterText, onFilter, onClear, data }) => (
         tempLink.click();
       }}
       color="secondary"
-      style={{ marginLeft: 15 }}
+      style={{ marginLeft: 15, right: 0, position: "absolute" }}
     >
       <GetAppIcon />
     </Button>
   </div>
 );
-export default Table;
+export default DEGTable;
