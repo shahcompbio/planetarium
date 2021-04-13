@@ -5,13 +5,13 @@ import _ from "lodash";
 import infoText from "../InfoText.js";
 
 import Layout from "../../components/InfoBar/Layout";
+import VerticalLegend from "../../components/Legend/VerticalLegend";
 
 import Grid from "@material-ui/core/Grid";
 
 import { CONSTANTS } from "../config";
 
 import { useCanvas } from "../../components/utils/useCanvas";
-import { useD3 } from "../../components/utils/useD3";
 
 const PADDING = 10;
 
@@ -135,6 +135,12 @@ const UMAP = ({
       COLOR_ARRAY.slice(0, Math.min(subsetValues.length, COLOR_ARRAY.length))
     );
 
+  const subsetLabels = subsetValues.map((value) => ({
+    value,
+    label: value,
+    color: subsetColors(value),
+  }));
+
   const canvasRef = useCanvas(
     (canvas) => {
       const context = canvas.getContext("2d");
@@ -165,21 +171,6 @@ const UMAP = ({
     canvasHeight,
     [highlighted]
   );
-  const svgRef = useD3(
-    (svg) => {
-      drawLegend(
-        svg,
-        subsetValues,
-        subsetColors,
-        canvasHeight,
-        highlighted,
-        setHighlighted
-      );
-    },
-    LEGEND_WIDTH,
-    chartHeight,
-    []
-  );
 
   return (
     <Grid container direction="row" style={{ padding: 0 }}>
@@ -187,7 +178,12 @@ const UMAP = ({
         <canvas ref={canvasRef} />
       </Grid>
       <Grid item>
-        <svg ref={svgRef} />
+        <VerticalLegend
+          width={LEGEND_WIDTH}
+          height={chartHeight}
+          labels={subsetLabels}
+          setHighlighted={setHighlighted}
+        />
       </Grid>
     </Grid>
   );

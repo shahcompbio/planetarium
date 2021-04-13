@@ -4,6 +4,7 @@ import * as d3Hexbin from "d3-hexbin";
 import infoText from "../InfoText.js";
 
 import Layout from "../../components/InfoBar/Layout";
+import VerticalLegend from "../../components/Legend/VerticalLegend";
 
 import Grid from "@material-ui/core/Grid";
 import Slider from "@material-ui/core/Slider";
@@ -13,7 +14,6 @@ import { CONSTANTS } from "../config";
 import _ from "lodash";
 
 import { useCanvas } from "../../components/utils/useCanvas";
-import { useD3 } from "../../components/utils/useD3";
 
 const PADDING = 10;
 const AXIS_SPACE = 20;
@@ -161,14 +161,6 @@ const UMAP = ({
     canvasHeight,
     [highlighted, radiusRatio]
   );
-  const svgRef = useD3(
-    (svg) => {
-      drawLegend(svg, subsetLabels, colorScale, setHighlighted);
-    },
-    LEGEND_WIDTH,
-    chartHeight / 2,
-    [highlighted]
-  );
 
   return (
     <Grid container direction="row" style={{ padding: 0 }}>
@@ -181,7 +173,12 @@ const UMAP = ({
         style={{ padding: 0, width: LEGEND_WIDTH }}
       >
         <Grid item>
-          <svg ref={svgRef} />
+          <VerticalLegend
+            width={LEGEND_WIDTH}
+            height={chartHeight / 2}
+            labels={subsetLabels}
+            setHighlighted={setHighlighted}
+          />
         </Grid>
         <Grid item>
           Radius Adjustment
