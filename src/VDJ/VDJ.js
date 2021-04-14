@@ -185,13 +185,13 @@ export const VDJ = ({ metadata, probabilities, degs }) => {
               data={probabilities}
               width={750}
               height={500}
-              binParam={logProbParam}
-              lineParam={subtypeParam}
-              highlightBarParam={clonotypeParam}
-              highlightedBar={
+              probParam={logProbParam}
+              subgroupParam={subtypeParam}
+              observationParam={clonotypeParam}
+              highlightedObservation={
                 selectedClonotype["hover"] || selectedClonotype["selected"]
               }
-              highlightedLine={
+              highlightedSubgroup={
                 selectedSubtype["hover"] || selectedSubtype["selected"]
               }
             />
