@@ -16,8 +16,9 @@
     "react-bootstrap": "^1.5.2",
     "react-data-table-component": "^6.11.7",
     "react-dom": "^16.8.4",
-    "react-scripts": "2.1.8",
+    "react-scripts": "4.0.3",
     "rewire": "^5.0.0",
+    "storybook": "^6.2.1",
     "styled-components": "^5.2.1",
     "table": "^6.0.7"
   },
@@ -38,13 +39,17 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "@storybook/addon-actions": "^6.1.21",
-    "@storybook/addon-essentials": "^6.1.21",
-    "@storybook/addon-links": "^6.1.21",
-    "@storybook/node-logger": "^6.1.21",
+    "@storybook/addon-actions": "^6.2.1",
+    "@storybook/addon-essentials": "^6.2.1",
+    "@storybook/addon-links": "^6.2.1",
+    "@storybook/node-logger": "^6.2.1",
     "@storybook/preset-create-react-app": "^3.1.7",
-    "@storybook/react": "^6.1.21",
+    "@storybook/react": "^6.2.1",
+    "csv-loader": "^3.0.3",
     "prettier": "^1.16.4"
   },
-  "homepage": "."
+  "homepage": ".",
+  "resolutions": {
+    "babel-loader": "8.1.0"
+  }
 }

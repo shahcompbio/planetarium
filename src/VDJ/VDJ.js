@@ -34,11 +34,17 @@ const NULL_SELECTED = {
   selected: null,
 };
 
-const NDV = ({ data }) => {
+const DataWrapper = ({ data }) => (
+  <VDJ
+    metadata={data["metadata"]}
+    probabilities={data["probabilities"]}
+    degs={data["degs"]}
+  />
+);
+
+export const VDJ = ({ metadata, probabilities, degs }) => {
   const [selectedSubtype, setSelectedSubtype] = useState(NULL_SELECTED);
   const [selectedClonotype, setSelectedClonotype] = useState(NULL_SELECTED);
-
-  const { metadata, probabilities, degs } = data;
 
   const { clonotypeParam, subtypeParam, logProbParam } = CONSTANTS;
 
@@ -252,4 +258,4 @@ const Popup = ({ selected, setSelected, type }) => {
     </Popper>
   );
 };
-export default NDV;
+export default DataWrapper;

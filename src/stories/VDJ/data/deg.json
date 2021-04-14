@@ -1,0 +1,1742 @@
+[
+    {
+      "gene": "Mt2",
+      "adj_pval": 0.0003208601837396812,
+      "log_fc": 1.8931434154510498,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Gsto1",
+      "adj_pval": 2.2758816904686664e-10,
+      "log_fc": 1.683211326599121,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Nrgn",
+      "adj_pval": 3.2758296091463665e-9,
+      "log_fc": 1.6831445693969727,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "C1qtnf6",
+      "adj_pval": 0.00022035076820789786,
+      "log_fc": 1.494181513786316,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Mt1",
+      "adj_pval": 1.9059731943469625e-9,
+      "log_fc": 1.4807511568069458,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Mcm3",
+      "adj_pval": 1.1057235002826344e-8,
+      "log_fc": 1.4534655809402466,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Tnfrsf9",
+      "adj_pval": 2.3728607530978303e-26,
+      "log_fc": 1.4492111206054688,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Tnfrsf4",
+      "adj_pval": 2.4377990636397666e-8,
+      "log_fc": 1.4157593250274658,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Adgrg1",
+      "adj_pval": 0.00003417958627598655,
+      "log_fc": 1.4137334823608398,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Mcm2",
+      "adj_pval": 0.000012174456270823258,
+      "log_fc": 1.397473692893982,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Irf8",
+      "adj_pval": 9.079951630507127e-16,
+      "log_fc": 1.3726935386657715,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Dut",
+      "adj_pval": 2.0396426358923545e-24,
+      "log_fc": 1.29984450340271,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Prelid2",
+      "adj_pval": 0.000576674720700425,
+      "log_fc": 1.2828871011734009,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Apex1",
+      "adj_pval": 0.0006204038449904037,
+      "log_fc": 1.260063886642456,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Mrps6",
+      "adj_pval": 0.00003239110304939084,
+      "log_fc": 1.2308828830718994,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Mcm5",
+      "adj_pval": 0.00004365749441083272,
+      "log_fc": 1.228671669960022,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Nop16",
+      "adj_pval": 0.00006166223526758053,
+      "log_fc": 1.2276215553283691,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Rgs16",
+      "adj_pval": 3.5610036687643776e-13,
+      "log_fc": 1.2203031778335571,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Timm8a1",
+      "adj_pval": 0.00006544674547748416,
+      "log_fc": 1.1876345872879028,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "C1qbp",
+      "adj_pval": 2.1174778864074777e-14,
+      "log_fc": 1.1845041513442993,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Srm",
+      "adj_pval": 0.00015644989841032727,
+      "log_fc": 1.1722168922424316,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Mcm6",
+      "adj_pval": 3.1044031101011336e-12,
+      "log_fc": 1.1501753330230713,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Snhg6",
+      "adj_pval": 0.0008141361679457587,
+      "log_fc": 1.1492723226547241,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Fbl",
+      "adj_pval": 1.355190380769329e-14,
+      "log_fc": 1.1449581384658813,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Ccl3",
+      "adj_pval": 7.852143802822884e-11,
+      "log_fc": 1.1405248641967773,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Tipin",
+      "adj_pval": 1.0545250224341374e-7,
+      "log_fc": 1.1402561664581299,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Lat2",
+      "adj_pval": 3.192648768142625e-7,
+      "log_fc": 1.1037561893463135,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Eef1e1",
+      "adj_pval": 0.000004070763633685186,
+      "log_fc": 1.0945409536361694,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Bnip3",
+      "adj_pval": 0.00013269454528511276,
+      "log_fc": 1.089343786239624,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Gar1",
+      "adj_pval": 0.00004875184842001428,
+      "log_fc": 1.0879294872283936,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Myc",
+      "adj_pval": 0.000041292122835999195,
+      "log_fc": 1.0859841108322144,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Ppa1",
+      "adj_pval": 9.954833438817887e-7,
+      "log_fc": 1.032356858253479,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Mrto4",
+      "adj_pval": 0.000011681297998683547,
+      "log_fc": 1.0251407623291016,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Bri3bp",
+      "adj_pval": 5.855213827049583e-7,
+      "log_fc": 1.0248212814331055,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Nop58",
+      "adj_pval": 5.532583552780975e-7,
+      "log_fc": 1.0214256048202515,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Fkbp2",
+      "adj_pval": 5.51262571784759e-9,
+      "log_fc": 1.00228750705719,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Lig1",
+      "adj_pval": 0.0003311856942701896,
+      "log_fc": 0.997696042060852,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Nsun2",
+      "adj_pval": 0.000013481164681195652,
+      "log_fc": 0.997251570224762,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Prf1",
+      "adj_pval": 3.6928649025901425e-14,
+      "log_fc": 0.9653658270835876,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Cct3",
+      "adj_pval": 7.277090817167363e-8,
+      "log_fc": 0.9392880797386169,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Nme1",
+      "adj_pval": 0.00009383606909588627,
+      "log_fc": 0.9250965118408203,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Hmbs",
+      "adj_pval": 0.00015732360132056106,
+      "log_fc": 0.9164608120918274,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Ranbp1",
+      "adj_pval": 1.8513291587296448e-9,
+      "log_fc": 0.9147152304649353,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Memo1",
+      "adj_pval": 0.0008920597168753958,
+      "log_fc": 0.910869836807251,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Fcf1",
+      "adj_pval": 0.000007164675609070665,
+      "log_fc": 0.9106380939483643,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Calr",
+      "adj_pval": 1.0411625988297208e-12,
+      "log_fc": 0.9012103080749512,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Mcm4",
+      "adj_pval": 0.00017347258366993268,
+      "log_fc": 0.900567352771759,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Cisd1",
+      "adj_pval": 1.558005555017577e-8,
+      "log_fc": 0.8992348909378052,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Ruvbl2",
+      "adj_pval": 0.0002704969398780015,
+      "log_fc": 0.899043083190918,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Bcl2a1d",
+      "adj_pval": 0.0000028017929238811636,
+      "log_fc": 0.8957613706588745,
+      "subtype": "Activated / Dysfunctional CD8"
+    },
+    {
+      "gene": "Ifit3b",
+      "adj_pval": 5.3817697378406535e-9,
+      "log_fc": 3.008049964904785,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Gzma",
+      "adj_pval": 2.6615306014550006e-37,
+      "log_fc": 2.8506321907043457,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Itgax",
+      "adj_pval": 0.000004202355215764973,
+      "log_fc": 2.8504819869995117,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "S1pr1",
+      "adj_pval": 9.844971664534502e-15,
+      "log_fc": 2.4368584156036377,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Klf3",
+      "adj_pval": 0.0000065509919428568046,
+      "log_fc": 2.281108856201172,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Slco3a1",
+      "adj_pval": 0.00012023817032950698,
+      "log_fc": 2.2319066524505615,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Slamf6",
+      "adj_pval": 6.598026617815824e-9,
+      "log_fc": 2.0988197326660156,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Ifit1",
+      "adj_pval": 1.4375127578284185e-17,
+      "log_fc": 2.0624563694000244,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Gm2682",
+      "adj_pval": 3.817060465669762e-8,
+      "log_fc": 2.0177886486053467,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Ccr2",
+      "adj_pval": 4.6465172850690554e-42,
+      "log_fc": 1.9737038612365723,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Gm26740",
+      "adj_pval": 1.230500337793301e-7,
+      "log_fc": 1.9718018770217896,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Gzmk",
+      "adj_pval": 1.1197264888037775e-75,
+      "log_fc": 1.952241063117981,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Ifit3",
+      "adj_pval": 1.9876102646721716e-22,
+      "log_fc": 1.9309583902359009,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Cxcr3",
+      "adj_pval": 8.535179344588689e-53,
+      "log_fc": 1.6587122678756714,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Ifi208",
+      "adj_pval": 1.4490525296179894e-22,
+      "log_fc": 1.6154378652572632,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Kbtbd11",
+      "adj_pval": 0.0006052928934584605,
+      "log_fc": 1.5699329376220703,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Itgb7",
+      "adj_pval": 2.501539345925818e-25,
+      "log_fc": 1.5522596836090088,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Tespa1",
+      "adj_pval": 0.0008490569671018622,
+      "log_fc": 1.4469505548477173,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Gpr183",
+      "adj_pval": 0.0000027108296328497573,
+      "log_fc": 1.4447842836380005,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Gm4070",
+      "adj_pval": 0.00045578274015806,
+      "log_fc": 1.4332407712936401,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Gramd3",
+      "adj_pval": 4.234977873420607e-25,
+      "log_fc": 1.4173998832702637,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Ifit1bl1",
+      "adj_pval": 8.518350451497259e-9,
+      "log_fc": 1.390890121459961,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Klf2",
+      "adj_pval": 1.7723557241427907e-7,
+      "log_fc": 1.3699733018875122,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Arl4c",
+      "adj_pval": 8.981407076052987e-9,
+      "log_fc": 1.334019660949707,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Daxx",
+      "adj_pval": 0.00002470903734864124,
+      "log_fc": 1.3080576658248901,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Klhl6",
+      "adj_pval": 0.000015184871336871918,
+      "log_fc": 1.2916866540908813,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Gbp2",
+      "adj_pval": 3.342686110026092e-7,
+      "log_fc": 1.2570925951004028,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Tgtp2",
+      "adj_pval": 0.000029434451223059862,
+      "log_fc": 1.2526110410690308,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Igtp",
+      "adj_pval": 1.1992138729202221e-14,
+      "log_fc": 1.2495386600494385,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Ighm",
+      "adj_pval": 0.00020353287078885978,
+      "log_fc": 1.2361090183258057,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Ifi213",
+      "adj_pval": 1.908284320805862e-16,
+      "log_fc": 1.2055540084838867,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Rtp4",
+      "adj_pval": 2.3218969553579547e-23,
+      "log_fc": 1.1796542406082153,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Ifi214",
+      "adj_pval": 1.462433146811815e-7,
+      "log_fc": 1.1554210186004639,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Emb",
+      "adj_pval": 6.321829555473659e-18,
+      "log_fc": 1.1412984132766724,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Usp18",
+      "adj_pval": 0.000003178105495570428,
+      "log_fc": 1.1304762363433838,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Zbp1",
+      "adj_pval": 1.2956224702627721e-40,
+      "log_fc": 1.1256659030914307,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Rnf213",
+      "adj_pval": 0.0009816845091695859,
+      "log_fc": 1.1234333515167236,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Dtx3l",
+      "adj_pval": 0.00001526552460001003,
+      "log_fc": 1.1016831398010254,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Gtf2i",
+      "adj_pval": 0.00000603832280191157,
+      "log_fc": 1.0850197076797485,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Isg15",
+      "adj_pval": 5.981596777416658e-13,
+      "log_fc": 1.0712268352508545,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Ddx58",
+      "adj_pval": 0.00004813516938849795,
+      "log_fc": 1.057481050491333,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Samhd1",
+      "adj_pval": 7.594385955074346e-31,
+      "log_fc": 1.0564130544662476,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Slfn1",
+      "adj_pval": 2.0322676968573262e-29,
+      "log_fc": 1.0495076179504395,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "S1pr4",
+      "adj_pval": 0.000004610775139797282,
+      "log_fc": 1.0401099920272827,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Ifi206",
+      "adj_pval": 0.00028881014908787304,
+      "log_fc": 1.0372592210769653,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Zfp36l2",
+      "adj_pval": 0.000008761046494553267,
+      "log_fc": 1.0323669910430908,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Irgm1",
+      "adj_pval": 0.0000021662878562155126,
+      "log_fc": 1.0165460109710693,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Dgka",
+      "adj_pval": 2.3391462363565426e-8,
+      "log_fc": 0.9965016841888428,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Trim30a",
+      "adj_pval": 6.860713094443367e-8,
+      "log_fc": 0.9801332950592041,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Zc3hav1",
+      "adj_pval": 5.973362311745976e-14,
+      "log_fc": 0.9431532025337219,
+      "subtype": "Activated CD8"
+    },
+    {
+      "gene": "Esco2",
+      "adj_pval": 2.7510460267806342e-52,
+      "log_fc": 7.5467848777771,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Spdl1",
+      "adj_pval": 3.5952056198311644e-19,
+      "log_fc": 7.287961959838867,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Ska1",
+      "adj_pval": 5.9848586533702486e-52,
+      "log_fc": 6.8814215660095215,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Kif2c",
+      "adj_pval": 5.8565023922313335e-24,
+      "log_fc": 6.799332141876221,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "BC030867",
+      "adj_pval": 1.4647605174269157e-14,
+      "log_fc": 6.658636569976807,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Mxd3",
+      "adj_pval": 9.004867753500938e-43,
+      "log_fc": 6.511112213134766,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Nusap1",
+      "adj_pval": 5.569136929993239e-107,
+      "log_fc": 6.48719596862793,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Ccna2",
+      "adj_pval": 1.996571612365405e-127,
+      "log_fc": 6.414826393127441,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Ska3",
+      "adj_pval": 3.458282186224366e-22,
+      "log_fc": 6.403940200805664,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Hmmr",
+      "adj_pval": 1.810000724301909e-61,
+      "log_fc": 6.362525463104248,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Pbk",
+      "adj_pval": 4.667863763496538e-41,
+      "log_fc": 6.332392692565918,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Cdk1",
+      "adj_pval": 3.4440692628951826e-122,
+      "log_fc": 6.255912780761719,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Nuf2",
+      "adj_pval": 1.6524840044781775e-35,
+      "log_fc": 6.248124122619629,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Fam83d",
+      "adj_pval": 3.5181563520011756e-9,
+      "log_fc": 6.242166519165039,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Birc5",
+      "adj_pval": 6.478415322066527e-138,
+      "log_fc": 6.03798770904541,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Cep55",
+      "adj_pval": 7.187190530782329e-48,
+      "log_fc": 6.028866767883301,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Fbxo5",
+      "adj_pval": 1.4592828378632062e-94,
+      "log_fc": 5.95066499710083,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Brca1",
+      "adj_pval": 7.412159136914437e-9,
+      "log_fc": 5.894361972808838,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Kif20a",
+      "adj_pval": 9.679883924677261e-46,
+      "log_fc": 5.876318454742432,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Shcbp1",
+      "adj_pval": 3.4304137052214075e-47,
+      "log_fc": 5.873201847076416,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Sgo1",
+      "adj_pval": 2.1823656840879113e-22,
+      "log_fc": 5.870987892150879,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Rad51ap1",
+      "adj_pval": 1.244829094707386e-37,
+      "log_fc": 5.844951152801514,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Spc25",
+      "adj_pval": 2.9044206867120034e-55,
+      "log_fc": 5.844213485717773,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Hist1h2af",
+      "adj_pval": 0.000001053970445948763,
+      "log_fc": 5.80794620513916,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Plk1",
+      "adj_pval": 3.3228523796197523e-68,
+      "log_fc": 5.787051677703857,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Hist1h2ap",
+      "adj_pval": 2.9211145402579925e-88,
+      "log_fc": 5.769742012023926,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Oip5",
+      "adj_pval": 2.456677107459643e-11,
+      "log_fc": 5.691420078277588,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Pimreg",
+      "adj_pval": 7.388418720195515e-39,
+      "log_fc": 5.602787494659424,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Bub1",
+      "adj_pval": 4.116269974160004e-25,
+      "log_fc": 5.590734958648682,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Ckap2",
+      "adj_pval": 4.070348371284527e-31,
+      "log_fc": 5.586606502532959,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Cdc20",
+      "adj_pval": 6.101211544820956e-65,
+      "log_fc": 5.578291416168213,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Spc24",
+      "adj_pval": 4.547428524517617e-133,
+      "log_fc": 5.571856498718262,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Lrr1",
+      "adj_pval": 2.2611134937421046e-9,
+      "log_fc": 5.559186935424805,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Pclaf",
+      "adj_pval": 3.8496272309300653e-162,
+      "log_fc": 5.546725273132324,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Kifc1",
+      "adj_pval": 6.63907511649397e-42,
+      "log_fc": 5.517988204956055,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Kif18b",
+      "adj_pval": 0.00013036651072037764,
+      "log_fc": 5.51224946975708,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Bub1b",
+      "adj_pval": 1.2207710452893094e-39,
+      "log_fc": 5.50555944442749,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Rrm2",
+      "adj_pval": 1.1335744564094837e-121,
+      "log_fc": 5.500739574432373,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Cdkn3",
+      "adj_pval": 7.255092440107735e-59,
+      "log_fc": 5.462174892425537,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Cdca5",
+      "adj_pval": 1.6945007762108421e-59,
+      "log_fc": 5.4317307472229,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Ccnf",
+      "adj_pval": 6.29096885127128e-30,
+      "log_fc": 5.3649210929870605,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Ckap2l",
+      "adj_pval": 7.609456854461185e-59,
+      "log_fc": 5.358851432800293,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Cdc25c",
+      "adj_pval": 2.3855521698180447e-13,
+      "log_fc": 5.301129341125488,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Ttk",
+      "adj_pval": 1.0288012715113895e-12,
+      "log_fc": 5.293176651000977,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Sgo2a",
+      "adj_pval": 4.814638685077486e-36,
+      "log_fc": 5.282739162445068,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Troap",
+      "adj_pval": 4.3779289874340706e-11,
+      "log_fc": 5.282258033752441,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Poc1a",
+      "adj_pval": 4.818675421800412e-41,
+      "log_fc": 5.275041580200195,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Cenph",
+      "adj_pval": 1.8116891304717086e-18,
+      "log_fc": 5.26596736907959,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Cenpf",
+      "adj_pval": 4.4670425696403613e-76,
+      "log_fc": 5.25570821762085,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Kif14",
+      "adj_pval": 6.858914535688348e-9,
+      "log_fc": 5.2486796379089355,
+      "subtype": "Cycling CD8"
+    },
+    {
+      "gene": "Adgrg1",
+      "adj_pval": 0.0009188101082546116,
+      "log_fc": 1.8341726064682007,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Csf1",
+      "adj_pval": 3.0106330759479147e-22,
+      "log_fc": 1.7952739000320435,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Trbv1",
+      "adj_pval": 0.0008312379156851501,
+      "log_fc": 1.7470721006393433,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Gm17745",
+      "adj_pval": 2.1501861933471635e-8,
+      "log_fc": 1.572601318359375,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Napsa",
+      "adj_pval": 1.935284571764858e-8,
+      "log_fc": 1.4551358222961426,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Pvrig",
+      "adj_pval": 0.000634062496163436,
+      "log_fc": 1.4177037477493286,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Fut7",
+      "adj_pval": 0.00004426788128937928,
+      "log_fc": 1.2977772951126099,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Lag3",
+      "adj_pval": 2.8034103544121587e-98,
+      "log_fc": 1.2795733213424683,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Rgs16",
+      "adj_pval": 5.550138019944812e-29,
+      "log_fc": 1.2612876892089844,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Tox",
+      "adj_pval": 2.1309164184952555e-37,
+      "log_fc": 1.2612398862838745,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Lat2",
+      "adj_pval": 4.063298096771477e-10,
+      "log_fc": 1.2494207620620728,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Nrn1",
+      "adj_pval": 0.0002539670221553041,
+      "log_fc": 1.2089722156524658,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Klre1",
+      "adj_pval": 1.4103075262024518e-31,
+      "log_fc": 1.1919535398483276,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Serpinb6a",
+      "adj_pval": 6.104075697242016e-27,
+      "log_fc": 1.179001808166504,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "AA467197",
+      "adj_pval": 3.525489409288503e-25,
+      "log_fc": 1.1769065856933594,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Sdcbp2",
+      "adj_pval": 3.4711657066153933e-16,
+      "log_fc": 1.1495335102081299,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Ccl3",
+      "adj_pval": 6.078919314007256e-39,
+      "log_fc": 1.1427799463272095,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Litaf",
+      "adj_pval": 1.5638446342344008e-61,
+      "log_fc": 1.138435959815979,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Rbpj",
+      "adj_pval": 1.4076234501543916e-12,
+      "log_fc": 1.1320769786834717,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Ifitm3",
+      "adj_pval": 6.638869895216647e-11,
+      "log_fc": 1.1132417917251587,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Chst12",
+      "adj_pval": 1.014262939658024e-18,
+      "log_fc": 1.1110248565673828,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Ccl4",
+      "adj_pval": 2.648859999641596e-49,
+      "log_fc": 1.0845330953598022,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Adam8",
+      "adj_pval": 8.183375027628325e-17,
+      "log_fc": 1.0799020528793335,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Rgs2",
+      "adj_pval": 0.000009814364223804304,
+      "log_fc": 1.0379976034164429,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Oxsr1",
+      "adj_pval": 2.324127592227394e-7,
+      "log_fc": 0.9976003766059875,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Nfil3",
+      "adj_pval": 0.0001163318098984038,
+      "log_fc": 0.9955755472183228,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Plscr1",
+      "adj_pval": 4.2577130344897544e-10,
+      "log_fc": 0.989194929599762,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Pdcd1",
+      "adj_pval": 3.4462054268050882e-59,
+      "log_fc": 0.9532248973846436,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Nrp1",
+      "adj_pval": 3.212653407702909e-7,
+      "log_fc": 0.9302413463592529,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Mdfic",
+      "adj_pval": 0.000006229382467362529,
+      "log_fc": 0.9252486824989319,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Dapk2",
+      "adj_pval": 0.0006570781799542028,
+      "log_fc": 0.9115361571311951,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Havcr2",
+      "adj_pval": 1.632349068070161e-16,
+      "log_fc": 0.9112628698348999,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Entpd1",
+      "adj_pval": 3.547111908217526e-12,
+      "log_fc": 0.9070635437965393,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Klrd1",
+      "adj_pval": 6.521014568512007e-71,
+      "log_fc": 0.9064879417419434,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Lxn",
+      "adj_pval": 0.00014578874397912757,
+      "log_fc": 0.8911681175231934,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Samsn1",
+      "adj_pval": 6.347224006322351e-14,
+      "log_fc": 0.8780671954154968,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Capg",
+      "adj_pval": 7.11226176633106e-24,
+      "log_fc": 0.8724047541618347,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Gem",
+      "adj_pval": 4.261201890453108e-16,
+      "log_fc": 0.8694570660591125,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Rhoc",
+      "adj_pval": 0.0009915170147863257,
+      "log_fc": 0.8639510869979858,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Rgs10",
+      "adj_pval": 0.0007659618615281703,
+      "log_fc": 0.8534644246101379,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Prf1",
+      "adj_pval": 5.759991640942867e-42,
+      "log_fc": 0.850222110748291,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Tmem163",
+      "adj_pval": 5.411408263047685e-7,
+      "log_fc": 0.8440758585929871,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Cd86",
+      "adj_pval": 0.000004699448659586821,
+      "log_fc": 0.8424243330955505,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Nr4a2",
+      "adj_pval": 2.2652713230824532e-12,
+      "log_fc": 0.8387758731842041,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Ccrl2",
+      "adj_pval": 0.0009932270185228945,
+      "log_fc": 0.8042851686477661,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Tigit",
+      "adj_pval": 4.0176883946129513e-44,
+      "log_fc": 0.7888668775558472,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Nmb",
+      "adj_pval": 0.0004336479668329871,
+      "log_fc": 0.7880598902702332,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Ubash3b",
+      "adj_pval": 6.485485595421329e-7,
+      "log_fc": 0.7748780846595764,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Plek",
+      "adj_pval": 8.885477526464659e-14,
+      "log_fc": 0.7624317407608032,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Ifng",
+      "adj_pval": 2.0135922205538613e-15,
+      "log_fc": 0.7601226568222046,
+      "subtype": "Dysfunctional CD8"
+    },
+    {
+      "gene": "Xcl1",
+      "adj_pval": 0.0004563006634897041,
+      "log_fc": 3.676361322402954,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Srm",
+      "adj_pval": 0.00016985179122728372,
+      "log_fc": 3.064310073852539,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Apex1",
+      "adj_pval": 0.0006363549284806798,
+      "log_fc": 2.7912392616271973,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Nop16",
+      "adj_pval": 0.0001139218127693562,
+      "log_fc": 2.7262842655181885,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Ppan",
+      "adj_pval": 0.0004410910896600711,
+      "log_fc": 2.5342421531677246,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Timm8a1",
+      "adj_pval": 0.00003693417563589319,
+      "log_fc": 2.3113601207733154,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Hmgn1",
+      "adj_pval": 7.435950186795145e-7,
+      "log_fc": 2.2882022857666016,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Eef1e1",
+      "adj_pval": 0.00020449719999027056,
+      "log_fc": 2.2591288089752197,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Mrto4",
+      "adj_pval": 0.00013777232327279098,
+      "log_fc": 2.1798923015594482,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Ddx21",
+      "adj_pval": 0.000052012611593920496,
+      "log_fc": 2.1603832244873047,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Atic",
+      "adj_pval": 0.0008111834945733988,
+      "log_fc": 2.1084816455841064,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Pdlim1",
+      "adj_pval": 0.00031288498998242154,
+      "log_fc": 2.015352725982666,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Fbl",
+      "adj_pval": 0.0000028664352155814103,
+      "log_fc": 1.8742953538894653,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Nop58",
+      "adj_pval": 0.00046114157396212054,
+      "log_fc": 1.7673351764678955,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "C1qbp",
+      "adj_pval": 0.000022439742109007712,
+      "log_fc": 1.6606239080429077,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Nop10",
+      "adj_pval": 5.251508491415156e-10,
+      "log_fc": 1.623579502105713,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Rexo2",
+      "adj_pval": 0.00011793924436102139,
+      "log_fc": 1.60651433467865,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Lsm7",
+      "adj_pval": 0.00009685912327664157,
+      "log_fc": 1.59647536277771,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Nhp2",
+      "adj_pval": 0.00007815221641550626,
+      "log_fc": 1.5096627473831177,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Fkbp4",
+      "adj_pval": 0.00016985179122728372,
+      "log_fc": 1.47642183303833,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Pa2g4",
+      "adj_pval": 0.000009560598618800085,
+      "log_fc": 1.402567744255066,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Npm3",
+      "adj_pval": 0.0000035567508007137966,
+      "log_fc": 1.3275701999664307,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Set",
+      "adj_pval": 0.0000036800634438476273,
+      "log_fc": 1.2896064519882202,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Gpx1",
+      "adj_pval": 0.00002106873966595391,
+      "log_fc": 1.141340732574463,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Eif5a",
+      "adj_pval": 5.251508491415156e-10,
+      "log_fc": 1.0909428596496582,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Snu13",
+      "adj_pval": 0.0004370519005416531,
+      "log_fc": 1.083463191986084,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Cct5",
+      "adj_pval": 0.0005002752756414943,
+      "log_fc": 1.0009312629699707,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Hspe1",
+      "adj_pval": 0.00001178929000648004,
+      "log_fc": 0.9288532733917236,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Atp5g1",
+      "adj_pval": 0.0005226179968055003,
+      "log_fc": 0.9112177491188049,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Eif4a1",
+      "adj_pval": 0.0003891863321378855,
+      "log_fc": 0.865565836429596,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Npm1",
+      "adj_pval": 5.731674477358516e-9,
+      "log_fc": 0.8073078989982605,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "mt-Nd2",
+      "adj_pval": 0.00007191695783213662,
+      "log_fc": 0.7985638380050659,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Rpl31",
+      "adj_pval": 0.00003261597121859832,
+      "log_fc": 0.6820794939994812,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Cnbp",
+      "adj_pval": 0.00014319124956868397,
+      "log_fc": 0.6654443740844727,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Rpl12",
+      "adj_pval": 9.006977866699696e-9,
+      "log_fc": 0.6478013396263123,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Rps25",
+      "adj_pval": 0.00018764167099113193,
+      "log_fc": 0.6204848289489746,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Rps28",
+      "adj_pval": 5.251508491415156e-10,
+      "log_fc": 0.6123722791671753,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Rpl36a",
+      "adj_pval": 0.000008598529413918813,
+      "log_fc": 0.5425580143928528,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Rps29",
+      "adj_pval": 2.7788385301248327e-8,
+      "log_fc": 0.519273042678833,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Hsp90ab1",
+      "adj_pval": 0.000009325854035690173,
+      "log_fc": 0.5043836236000061,
+      "subtype": "Memory CD8"
+    },
+    {
+      "gene": "Klra1",
+      "adj_pval": 0.0000020571365973448363,
+      "log_fc": 7.537560939788818,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Klra7",
+      "adj_pval": 1.2729776581988182e-8,
+      "log_fc": 6.611636161804199,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Klrb1c",
+      "adj_pval": 2.9126968904350268e-12,
+      "log_fc": 5.888909339904785,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Sell",
+      "adj_pval": 8.49604876170674e-26,
+      "log_fc": 5.054862022399902,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Tyrobp",
+      "adj_pval": 0.000624022321402274,
+      "log_fc": 4.324105739593506,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Nsg2",
+      "adj_pval": 0.00019381932531230804,
+      "log_fc": 4.119101047515869,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Tcf7",
+      "adj_pval": 3.179703824367276e-20,
+      "log_fc": 3.5761499404907227,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Ikzf2",
+      "adj_pval": 2.8829914739913887e-9,
+      "log_fc": 3.223391056060791,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Fcer1g",
+      "adj_pval": 3.553589459407132e-14,
+      "log_fc": 3.1568500995635986,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Klhdc2",
+      "adj_pval": 0.000002957369862903711,
+      "log_fc": 2.616698980331421,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Xcl1",
+      "adj_pval": 0.000011148973309936081,
+      "log_fc": 2.5914995670318604,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Thada",
+      "adj_pval": 0.0008184528467056259,
+      "log_fc": 2.455331802368164,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Klf2",
+      "adj_pval": 1.8438326622741382e-15,
+      "log_fc": 2.3598501682281494,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Klf3",
+      "adj_pval": 0.00032177741510563604,
+      "log_fc": 2.318826198577881,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Il7r",
+      "adj_pval": 1.081262250617574e-18,
+      "log_fc": 2.2978973388671875,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Cd7",
+      "adj_pval": 5.569987479317212e-24,
+      "log_fc": 2.296644926071167,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Lef1",
+      "adj_pval": 1.163414427482027e-8,
+      "log_fc": 2.26216983795166,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Bcl2",
+      "adj_pval": 2.67236032093069e-17,
+      "log_fc": 2.233577013015747,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Ighm",
+      "adj_pval": 4.017667430942094e-8,
+      "log_fc": 2.1765201091766357,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Txk",
+      "adj_pval": 2.358404110124844e-8,
+      "log_fc": 2.1405248641967773,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Ssh2",
+      "adj_pval": 0.00015243020390352775,
+      "log_fc": 2.1343960762023926,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Pim2",
+      "adj_pval": 7.981139345066656e-7,
+      "log_fc": 1.9089239835739136,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Satb1",
+      "adj_pval": 0.0000050723681379172705,
+      "log_fc": 1.8687738180160522,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Emb",
+      "adj_pval": 2.3412088889258687e-19,
+      "log_fc": 1.7107774019241333,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Foxp1",
+      "adj_pval": 8.042772135667939e-7,
+      "log_fc": 1.70023512840271,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Fos",
+      "adj_pval": 1.2761175377821124e-15,
+      "log_fc": 1.6220390796661377,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Tsc22d3",
+      "adj_pval": 4.516935307465817e-7,
+      "log_fc": 1.4390835762023926,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Evl",
+      "adj_pval": 1.1052279882162436e-9,
+      "log_fc": 1.403826117515564,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Vps37b",
+      "adj_pval": 0.00021129608989074142,
+      "log_fc": 1.2672576904296875,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Zfp36",
+      "adj_pval": 5.450383866345636e-7,
+      "log_fc": 1.169684648513794,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Cd69",
+      "adj_pval": 0.000020665832532746294,
+      "log_fc": 1.1300352811813354,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Rapgef6",
+      "adj_pval": 0.0002789959674595083,
+      "log_fc": 1.0292576551437378,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Fam189b",
+      "adj_pval": 0.0004956471762614641,
+      "log_fc": 0.9854007959365845,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Ier2",
+      "adj_pval": 0.0000562968468363109,
+      "log_fc": 0.8428531289100647,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "mt-Nd2",
+      "adj_pval": 8.689720274530953e-13,
+      "log_fc": 0.798755943775177,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Btg1",
+      "adj_pval": 1.776886978362102e-12,
+      "log_fc": 0.7566059231758118,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "mt-Nd5",
+      "adj_pval": 3.6728785176717395e-8,
+      "log_fc": 0.7560859322547913,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Gimap6",
+      "adj_pval": 4.720624616626159e-13,
+      "log_fc": 0.7499006986618042,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Peli1",
+      "adj_pval": 0.0009743048672416474,
+      "log_fc": 0.7480884790420532,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Junb",
+      "adj_pval": 1.8968207843874282e-9,
+      "log_fc": 0.7340642809867859,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Rpl36a",
+      "adj_pval": 4.452606766192334e-31,
+      "log_fc": 0.7332400679588318,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Nop10",
+      "adj_pval": 0.00011663095926691087,
+      "log_fc": 0.732716977596283,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Jak1",
+      "adj_pval": 0.00009622846944266683,
+      "log_fc": 0.6847246289253235,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Gpx1",
+      "adj_pval": 0.0005563321991408601,
+      "log_fc": 0.6801459193229675,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Gimap3",
+      "adj_pval": 6.192785550048772e-10,
+      "log_fc": 0.6608948707580566,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Arhgap45",
+      "adj_pval": 7.42399346662795e-8,
+      "log_fc": 0.6537932753562927,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Limd2",
+      "adj_pval": 3.164872571242576e-13,
+      "log_fc": 0.6471478939056396,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Rpl12",
+      "adj_pval": 2.279397836401114e-22,
+      "log_fc": 0.622912585735321,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Rps27",
+      "adj_pval": 1.233271232458171e-34,
+      "log_fc": 0.6187155842781067,
+      "subtype": "Naive CD8"
+    },
+    {
+      "gene": "Gimap5",
+      "adj_pval": 0.0003096647070416685,
+      "log_fc": 0.618249773979187,
+      "subtype": "Naive CD8"
+    }
+  ]
