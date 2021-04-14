@@ -11,6 +11,7 @@ export const useD3 = (renderChartFn, width, height, dependencies) => {
     svg.selectAll("*").remove();
     renderChartFn(svg);
     return () => {};
-  }, dependencies);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [width, height, ...dependencies]);
   return ref;
 };

@@ -44,8 +44,6 @@ const COLOR_ARRAY = [
 const NULL_POINT_COLOR = "#e8e8e8";
 const POINT_RADIUS = 2;
 const PERCENTILE_RANGE = [0.25, 0.75];
-const LEGEND_SQUARE_LENGTH = 10;
-const LEGEND_SQUARE_SPACING = 8;
 
 const DataWrapper = ({
   chartName,
@@ -356,61 +354,6 @@ const getBoxBounds = (data, xParam, yParam) => {
   const yMax = Math.max(...yValues);
 
   return { xMin, xMax, yMin, yMax };
-};
-
-const drawLegend = (
-  svg,
-  subsetValues,
-  colors,
-  chartHeight,
-  highlighted,
-  setHighlighted
-) => {
-  const mouseEvents = (element) =>
-    element
-      .on("mouseenter", function(d) {
-        d3.event.stopPropagation();
-        setHighlighted("mouseenter", d);
-      })
-      .on("mousedown", function(d, i) {
-        d3.event.stopPropagation();
-        setHighlighted("mousedown", d);
-      })
-      .on("mouseout", function(d, i) {
-        d3.event.stopPropagation();
-        setHighlighted("mouseout", d);
-      });
-
-  svg.attr("width", LEGEND_WIDTH).attr("height", chartHeight);
-
-  const subsets = svg
-    .selectAll("g")
-    .data(subsetValues)
-    .enter()
-    .append("g")
-    .attr("cursor", "pointer")
-    .call(mouseEvents);
-
-  subsets
-    .append("rect")
-    .attr("width", LEGEND_SQUARE_LENGTH)
-    .attr("height", LEGEND_SQUARE_LENGTH)
-    .attr("x", 5)
-    .attr("y", (d, i) => i * (LEGEND_SQUARE_LENGTH + LEGEND_SQUARE_SPACING) + 5)
-    .attr("fill", (d) => colors(d));
-
-  subsets
-    .append("text")
-    .attr("alignment-baseline", "hanging")
-    .attr("dominant-baseline", "hanging")
-    .attr("text-align", "left")
-    .attr("font", "Helvetica")
-    .attr("font-weight", "500")
-    .attr("font-size", "12px")
-    .attr("fill", "#000000")
-    .attr("x", LEGEND_SQUARE_LENGTH + 10)
-    .attr("y", (d, i) => i * (LEGEND_SQUARE_LENGTH + LEGEND_SQUARE_SPACING) + 5)
-    .text((d) => d);
 };
 
 const isHighlighted = (datumValue, highlighted) =>

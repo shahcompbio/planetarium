@@ -14,13 +14,14 @@ export const useCanvas = (renderCanvas, width, height, dependencies) => {
     canvas.height = height * scale;
 
     context.scale(scale, scale);
-  }, []);
+  }, [width, height]);
 
   useEffect(() => {
     const canvas = ref.current;
     const context = canvas.getContext("2d");
     context.clearRect(0, 0, canvas.width, canvas.height);
     renderCanvas(canvas);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, dependencies);
 
   return ref;
