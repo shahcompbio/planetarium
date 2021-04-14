@@ -14,3 +14,6 @@ export const isHighlighted = (
     return true;
   }
 };
+
+export const isValueHighlighted = (value, highlighted) =>
+  highlighted === null || value === highlighted;

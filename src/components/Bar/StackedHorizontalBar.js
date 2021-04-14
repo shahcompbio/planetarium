@@ -2,7 +2,7 @@ import React from "react";
 import * as d3 from "d3";
 
 import { useCanvas } from "../utils/useCanvas";
-import { isHighlighted } from "../utils/isHighlighted";
+import { isValueHighlighted } from "../utils/isHighlighted";
 
 /*
 
@@ -133,12 +133,7 @@ const drawBars = (
     barValues.forEach((bValue) => {
       if (categoryData.hasOwnProperty(bValue)) {
         context.fillStyle = colors(bValue);
-        context.globalAlpha = isHighlighted(
-          highlightedRow,
-          null,
-          cValue,
-          undefined
-        )
+        context.globalAlpha = isValueHighlighted(cValue, highlightedRow)
           ? 1
           : 0.2;
         const barSize = barSizeScale(categoryData[bValue] / total);
@@ -176,9 +171,7 @@ const drawLabels = (
   context.textBaseline = "middle";
 
   categoryValues.forEach((cValue) => {
-    context.globalAlpha = isHighlighted(highlightedRow, null, cValue, undefined)
-      ? 1
-      : 0.2;
+    context.globalAlpha = isValueHighlighted(cValue, highlightedRow) ? 1 : 0.2;
     context.fillText(
       cValue,
       xAxisPos,
@@ -191,7 +184,7 @@ const drawLegend = (context, barValues, colors, canvasWidth) => {
   context.textAlign = "center";
   context.textBaseline = "top";
   context.font = PROP_AXIS_FONT;
-
+  context.globalAlpha = 1;
   const START_X = canvasWidth - 30;
   const START_Y = 20;
 

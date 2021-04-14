@@ -13,6 +13,8 @@ import { CONSTANTS } from "../config";
 
 import { useCanvas } from "../../components/utils/useCanvas";
 
+import { isValueHighlighted as isHighlighted } from "../../components/utils/isHighlighted";
+
 const PADDING = 10;
 
 const LEGEND_WIDTH = 180;
@@ -355,8 +357,5 @@ const getBoxBounds = (data, xParam, yParam) => {
 
   return { xMin, xMax, yMin, yMax };
 };
-
-const isHighlighted = (datumValue, highlighted) =>
-  highlighted === null || datumValue === highlighted;
 
 export default DataWrapper;

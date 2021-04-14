@@ -15,6 +15,8 @@ import _ from "lodash";
 
 import { useCanvas } from "../../components/utils/useCanvas";
 
+import { isValueHighlighted as isHighlighted } from "../../components/utils/isHighlighted";
+
 const PADDING = 10;
 const AXIS_SPACE = 20;
 const LEGEND_WIDTH = 220;
@@ -438,8 +440,5 @@ const drawLineGraph = (
     context.stroke();
   }
 };
-
-const isHighlighted = (datumValue, highlighted) =>
-  highlighted === null || datumValue === highlighted;
 
 export default DataWrapper;
