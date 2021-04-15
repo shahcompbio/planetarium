@@ -6,13 +6,7 @@ import { useD3 } from "../utils/useD3";
 const LEGEND_SQUARE_LENGTH = 10;
 const LEGEND_SQUARE_SPACING = 8;
 
-const VerticalLegend = ({
-  width,
-  height,
-  labels,
-  highlighted,
-  setHighlighted,
-}) => {
+const VerticalLegend = ({ width, height, labels, setHighlighted }) => {
   const mouseEvents = (element) =>
     element
       .on("mouseenter", function(d) {
