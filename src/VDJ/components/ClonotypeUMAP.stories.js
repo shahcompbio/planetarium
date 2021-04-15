@@ -1,9 +1,9 @@
 import React from "react";
 import _ from "lodash";
 
-import ClonotypeUMAP from "../../VDJ/components/Umap";
+import ClonotypeUMAP from "./Umap";
 
-import metadata from "./data/metadata.json";
+import metadata from "../data/metadata.json";
 
 const CLONOTYPE_COLORS = [
   "#674172",

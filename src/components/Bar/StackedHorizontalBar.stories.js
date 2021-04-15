@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
 
-import Bar from "../../components/Bar/StackedHorizontalBar";
+import Bar from "./StackedHorizontalBar";
 
 const Template = (args) => <Bar {...args} />;
 

@@ -1,9 +1,9 @@
 import React from "react";
 import _ from "lodash";
 
-import SubtypeUMAP from "../../VDJ/components/subTypeUmap";
+import SubtypeUMAP from "./subTypeUmap";
 
-import metadata from "./data/metadata.json";
+import metadata from "../data/metadata.json";
 
 const Template = (args) => (
   <SubtypeUMAP

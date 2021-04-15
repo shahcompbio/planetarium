@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
 
-import Histogram from "../../components/Bar/ProbabilityHistogram";
+import Histogram from "./ProbabilityHistogram";
 
 const Template = (args) => <Histogram {...args} />;
 

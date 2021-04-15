@@ -1,6 +1,6 @@
 import React from "react";
 
-import { VDJ as VDJApp } from "../../VDJ/VDJ";
+import { VDJ as VDJApp } from "./VDJ";
 
 import probabilities from "./data/probabilities.json";
 import metadata from "./data/metadata.json";

@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
 
-import Legend from "../../components/Legend/VerticalLegend";
+import Legend from "./VerticalLegend";
 
 const COLORS = [
   "#674172",
@@ -34,4 +34,5 @@ Vertical.args = {
     label: `Label ${value}`,
     color: COLORS[value],
   })),
+  setHighlighted: () => {},
 };

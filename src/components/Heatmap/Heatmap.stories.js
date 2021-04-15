@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
 
-import Heatmap from "../../components/Heatmap/Heatmap";
+import Heatmap from "./Heatmap";
 
 const Template = (args) => <Heatmap {...args} />;
 
