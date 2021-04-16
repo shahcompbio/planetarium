@@ -1,58 +1,30 @@
-# Planetarium
+# planetarium
 
-A collection of visual components and dashboards for the lab.
+> Shah Lab Data Viz
 
-Dashboards are outputted as HTML templates, where data is injected in through [Jinja](https://palletsprojects.com/p/jinja/).
+[![NPM](https://img.shields.io/npm/v/planetarium.svg)](https://www.npmjs.com/package/planetarium) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
+## Install
 
-## Installation
-
-Install the dependencies:
-
-```
-yarn install
+```bash
+npm install --save planetarium
 ```
 
+## Usage
 
-Then you can start the app in development mode.
+```jsx
+import React, { Component } from 'react'
 
-```
-yarn start
-```
+import MyComponent from 'planetarium'
+import 'planetarium/dist/index.css'
 
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-
-## Switching dashboards
-
-To switch the dashboard that will be shown on development mode / build, go to `/src/App.js` and change the import to the correct dashboard
-
-```
-import App from '<!! path here>'
+class Example extends Component {
+  render() {
+    return <MyComponent />
+  }
+}
 ```
 
-For example, for VDJ, we should change the import to the following
+## License
 
-```
-import App from './VDJ/VDJ
-```
-
-You should also ensure that you have test data where needed.
-
-
-## Building
-
-To build the app for production,
-
-```
-yarn build
-```
-
-This should output a `build` folder with the minified files. This is the HTML template and will need to be injected with data to create a standalone file.
-
-To inject data, run the appropriate python script:
-
-```
-python3 render.py <path to data file>
-```
-
+MIT © [](https://github.com/)
