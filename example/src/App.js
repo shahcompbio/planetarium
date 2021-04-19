@@ -1,7 +1,6 @@
 import React from 'react'
 
-import { GenomeProfile } from 'planetarium'
-import 'planetarium/dist/index.css'
+import { GenomeProfile } from 'shahlab-planetarium'
 
 const genomeProfileData = require("./genomeProfileData.json")
 const gpbpTotal = genomeProfileData.bptotal
