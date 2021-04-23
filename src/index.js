@@ -9,6 +9,10 @@ export {default as ProbabilityHistogram } from "./components/Bar/ProbabilityHist
 export {default as StackedHorizontalBar } from "./components/Bar/StackedHorizontalBar";
 //genomeProfile
 export {default as GenomeProfile } from "./components/GenomeProfile/GenomeProfile";
+//copynumberheatmap
+
+export {default as  CopyNumberHeatmap} from "./components/CopyNumberHeatmap/CopyNumberHeatmap";
+export {default as CopyNumberHeatmapGenomeProfile} from "./components/CopyNumberHeatmapGenomeProfile/CopyNumberHeatmapGenomeProfile";
 //heatmap
 export {default as Heatmap } from "./components/Heatmap/Heatmap";
 //infoBar
