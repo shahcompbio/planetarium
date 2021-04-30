@@ -4,6 +4,7 @@ import * as d3Hexbin from "d3-hexbin";
 import infoText from "../InfoText.js";
 
 import Layout from "../../components/InfoBar/Layout";
+import VerticalLegend from "../../components/Legend/VerticalLegend";
 
 import Grid from "@material-ui/core/Grid";
 import Slider from "@material-ui/core/Slider";
@@ -13,7 +14,8 @@ import { CONSTANTS } from "../config";
 import _ from "lodash";
 
 import { useCanvas } from "../../components/utils/useCanvas";
-import { useD3 } from "../../components/utils/useD3";
+
+import { isValueHighlighted as isHighlighted } from "../../components/utils/isHighlighted";
 
 const PADDING = 10;
 const AXIS_SPACE = 20;
@@ -27,9 +29,6 @@ const POINT_RADIUS = 2;
 
 const AXIS_FONT = "normal 10px Helvetica";
 const AXIS_COLOR = "#000000";
-
-const LEGEND_SQUARE_LENGTH = 10;
-const LEGEND_SQUARE_SPACING = 8;
 
 const DataWrapper = ({
   chartName,
@@ -161,14 +160,6 @@ const UMAP = ({
     canvasHeight,
     [highlighted, radiusRatio]
   );
-  const svgRef = useD3(
-    (svg) => {
-      drawLegend(svg, subsetLabels, colorScale, setHighlighted);
-    },
-    LEGEND_WIDTH,
-    chartHeight / 2,
-    [highlighted]
-  );
 
   return (
     <Grid container direction="row" style={{ padding: 0 }}>
@@ -181,7 +172,12 @@ const UMAP = ({
         style={{ padding: 0, width: LEGEND_WIDTH }}
       >
         <Grid item>
-          <svg ref={svgRef} />
+          <VerticalLegend
+            width={LEGEND_WIDTH}
+            height={chartHeight / 2}
+            labels={subsetLabels}
+            setHighlighted={setHighlighted}
+          />
         </Grid>
         <Grid item>
           Radius Adjustment
@@ -444,54 +440,5 @@ const drawLineGraph = (
     context.stroke();
   }
 };
-
-const drawLegend = (svg, subsetValues, colors, setHighlighted) => {
-  const mouseEvents = (element) =>
-    element
-      .on("mouseenter", function(d) {
-        d3.event.stopPropagation();
-        setHighlighted("mouseenter", d["value"]);
-      })
-      .on("mousedown", function(d, i) {
-        d3.event.stopPropagation();
-        setHighlighted("mousedown", d["value"]);
-      })
-      .on("mouseout", function(d, i) {
-        d3.event.stopPropagation();
-        setHighlighted("mouseout", d["value"]);
-      });
-
-  const subsets = svg
-    .selectAll("g")
-    .data(subsetValues)
-    .enter()
-    .append("g")
-    .attr("cursor", "pointer")
-    .call(mouseEvents);
-
-  subsets
-    .append("rect")
-    .attr("width", LEGEND_SQUARE_LENGTH)
-    .attr("height", LEGEND_SQUARE_LENGTH)
-    .attr("x", 5)
-    .attr("y", (d, i) => i * (LEGEND_SQUARE_LENGTH + LEGEND_SQUARE_SPACING) + 5)
-    .attr("fill", (d) => colors(d["value"]));
-
-  subsets
-    .append("text")
-    .attr("alignment-baseline", "hanging")
-    .attr("dominant-baseline", "hanging")
-    .attr("text-align", "left")
-    .attr("font", "Helvetica")
-    .attr("font-weight", "500")
-    .attr("font-size", "12px")
-    .attr("fill", (d) => colors(d["value"]))
-    .attr("x", LEGEND_SQUARE_LENGTH + 10)
-    .attr("y", (d, i) => i * (LEGEND_SQUARE_LENGTH + LEGEND_SQUARE_SPACING) + 5)
-    .text((d) => d["label"]);
-};
-
-const isHighlighted = (datumValue, highlighted) =>
-  highlighted === null || datumValue === highlighted;
 
 export default DataWrapper;

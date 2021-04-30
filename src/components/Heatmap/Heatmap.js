@@ -33,9 +33,9 @@ const Heatmap = ({
   rowLabels,
   rowTotal,
 }) => {
-  const columnValues =
-    columnLabels.map((col) => col["value"]) ||
-    _.uniq(data.map((record) => record[column])).sort();
+  const columnValues = columnLabels
+    ? columnLabels.map((col) => col["value"]) || columnLabels
+    : _.uniq(data.map((record) => record[column])).sort();
   const rowValues =
     rowLabels || _.uniq(data.map((record) => record[row])).sort();
 

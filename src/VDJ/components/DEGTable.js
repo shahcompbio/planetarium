@@ -43,7 +43,7 @@ const DEGTable = ({ data, chartDim, selectedSubtype }) => {
         data={data}
       />
     );
-  }, [filterText]);
+  }, [filterText, data]);
   return (
     <Layout
       title={infoText["TABLE"]["title"]}

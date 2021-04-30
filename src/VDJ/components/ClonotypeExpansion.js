@@ -6,13 +6,7 @@ import infoText from "../InfoText";
 import { CONSTANTS } from "../config";
 import _ from "lodash";
 
-const ClonotypeExpansion = ({
-  data,
-  width,
-  height,
-  chartName,
-  highlightedRow,
-}) => {
+const ClonotypeExpansion = ({ data, width, height, highlightedRow }) => {
   const { clonotypeParam, subtypeParam } = CONSTANTS;
 
   const groupedSubtype = _.groupBy(data, subtypeParam);
@@ -42,7 +36,6 @@ const ClonotypeExpansion = ({
           value: value + 1,
           label: value === 9 ? "≥10" : value + 1,
         }))}
-        chartName={chartName}
       />
     </Layout>
   );

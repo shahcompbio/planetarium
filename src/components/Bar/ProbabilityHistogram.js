@@ -2,6 +2,15 @@
 
 Probability distribution with kde curves
 
+Data is an array of objects.
+
+x-axis is the probability variable, and can be associated with an observation variable
+y-axis is the density
+
+The histogram bars can show the makeup of
+The bars can be hovered and shown the breakdown of the density plot based off the subgroup variable name
+
+
 */
 
 import React, { useRef } from "react";
@@ -34,18 +43,18 @@ const ProbabilityHistogram = ({
   data,
   width,
   height,
-  binParam,
-  lineParam,
-  highlightBarParam,
-  highlightedBar,
-  highlightedLine,
+  probParam,
+  subgroupParam,
+  observationParam,
+  highlightedObservation,
+  highlightedSubgroup,
 }) => {
   const tooltipRef = useRef();
 
   const chartWidth = width - Y_AXIS_WIDTH;
   const chartHeight = height - X_AXIS_HEIGHT;
 
-  const allX = data.map((row) => parseFloat(row[binParam]));
+  const allX = data.map((row) => parseFloat(row[probParam]));
   const xMax = Math.max(...allX);
   const xMin = Math.min(...allX);
 
@@ -57,12 +66,12 @@ const ProbabilityHistogram = ({
 
   const bins = d3Array
     .bin()
-    .value((d) => d[binParam])
+    .value((d) => d[probParam])
     .domain(x.domain())
     .thresholds(x.ticks(NUM_TICKS))(data);
 
   const maxYData = Math.max(...bins.map((row) => row.length / data.length));
-  const density = getDensity(data, x, binParam, 1000);
+  const density = getDensity(data, x, probParam, 1000);
   const maxYDensity = Math.max(...density.map((datum) => datum[1]));
 
   const maxY = Math.max(maxYData, maxYDensity) * 1.1;
@@ -84,7 +93,7 @@ const ProbabilityHistogram = ({
         context,
         x,
         y,
-        binParam,
+        probParam,
         chartWidth,
         chartHeight,
         xMin,
@@ -99,25 +108,33 @@ const ProbabilityHistogram = ({
         barScale,
         data.length,
         tooltipRef.current,
-        highlightedLine,
-        lineParam
+        highlightedSubgroup,
+        subgroupParam
       );
       drawHighlightedBar(
         context,
         data,
-        highlightedBar,
-        highlightBarParam,
-        binParam,
+        highlightedObservation,
+        observationParam,
+        probParam,
         maxY,
         x,
         y,
         barScale
       );
-      drawKde(context, data, x, y, binParam, lineParam, highlightedLine);
+      drawKde(
+        context,
+        data,
+        x,
+        y,
+        probParam,
+        subgroupParam,
+        highlightedSubgroup
+      );
     },
     width,
     height,
-    [highlightedBar, highlightedLine]
+    [highlightedObservation, highlightedSubgroup]
   );
 
   return (
@@ -137,7 +154,7 @@ const drawAxisLabels = (
   context,
   x,
   y,
-  binParam,
+  probParam,
   chartWidth,
   chartHeight,
   xMin,
@@ -175,7 +192,7 @@ const drawAxisLabels = (
   context.font = LABEL_FONT;
   context.textAlign = "center";
   context.textBaseline = "hanging";
-  context.fillText(binParam, chartWidth / 2, chartHeight + X_AXIS_HEIGHT / 2);
+  context.fillText(probParam, chartWidth / 2, chartHeight + X_AXIS_HEIGHT / 2);
 
   context.save();
   context.rotate((270 * Math.PI) / 180);
@@ -191,8 +208,8 @@ const drawBars = (
   barScale,
   total,
   tooltip,
-  highlightedLine,
-  lineParam
+  highlightedSubgroup,
+  subgroupParam
 ) => {
   const context = canvas.getContext("2d");
 
@@ -209,12 +226,12 @@ const drawBars = (
     context.strokeRect(xPos, yPos, width, height);
   });
 
-  if (highlightedLine) {
+  if (highlightedSubgroup) {
     context.fillStyle = HIGHLIGHTED_LINE_COLOR;
     bins.forEach((bin) => {
       const content =
-        bin.filter((datum) => datum[lineParam] === highlightedLine).length /
-        total;
+        bin.filter((datum) => datum[subgroupParam] === highlightedSubgroup)
+          .length / total;
       const xPos = x(bin["x0"]) + 1;
       const yPos = y(content);
       const width = x(bin["x1"]) - x(bin["x0"]) - 2;
@@ -233,7 +250,7 @@ const drawBars = (
             //show tip
             const bin = bins.filter((bin) => bin["x0"] === tick)[0];
             if (bin.length > 0) {
-              const subtypeGroups = _.groupBy(bin, "subtype");
+              const subtypeGroups = _.groupBy(bin, subgroupParam);
 
               const tooltipWidth =
                 Math.max(
@@ -293,21 +310,21 @@ const hideTooltip = (tooltip) => d3.select(tooltip).style("opacity", 0);
 const drawHighlightedBar = (
   context,
   data,
-  highlightedBar,
+  highlightedObservation,
   barParam,
-  binParam,
+  probParam,
   maxY,
   x,
   y,
   barScale
 ) => {
-  if (highlightedBar) {
+  if (highlightedObservation) {
     const highlightedData = data.filter(
-      (datum) => datum[barParam] === highlightedBar
+      (datum) => datum[barParam] === highlightedObservation
     );
 
     if (highlightedData.length > 0) {
-      const highlightedX = highlightedData[0][binParam];
+      const highlightedX = highlightedData[0][probParam];
 
       context.fillStyle = HIGHLIGHTED_BAR_COLOR;
       context.fillRect(
@@ -320,7 +337,7 @@ const drawHighlightedBar = (
   }
 };
 
-const getDensity = (data, x, binParam, ticks) => {
+const getDensity = (data, x, probParam, ticks) => {
   const kde = (kernel, thresholds, data) =>
     thresholds.map((t) => [t, d3.mean(data, (d) => kernel(t - d))]);
 
@@ -331,13 +348,21 @@ const getDensity = (data, x, binParam, ticks) => {
   const density = kde(
     epanechnikov(1),
     x.ticks(ticks),
-    data.map((row) => parseFloat(row[binParam]))
+    data.map((row) => parseFloat(row[probParam]))
   );
 
   return density;
 };
 
-const drawKde = (context, data, x, y, binParam, lineParam, highlightedLine) => {
+const drawKde = (
+  context,
+  data,
+  x,
+  y,
+  probParam,
+  subgroupParam,
+  highlightedSubgroup
+) => {
   const kde = (kernel, thresholds, data) =>
     thresholds.map((t) => [t, d3.mean(data, (d) => kernel(t - d))]);
 
@@ -360,7 +385,7 @@ const drawKde = (context, data, x, y, binParam, lineParam, highlightedLine) => {
   const allDensity = kde(
     epanechnikov(1),
     x.ticks(NUM_TICKS * 2),
-    data.map((row) => parseFloat(row[binParam]))
+    data.map((row) => parseFloat(row[probParam]))
   );
   context.beginPath();
   line(allDensity);
@@ -368,13 +393,13 @@ const drawKde = (context, data, x, y, binParam, lineParam, highlightedLine) => {
   context.strokeStyle = LINE_COLOR;
   context.stroke();
 
-  if (highlightedLine) {
+  if (highlightedSubgroup) {
     const filteredDensity = kde(
       epanechnikov(1),
       x.ticks(NUM_TICKS * 2),
       data
-        .filter((datum) => datum[lineParam] === highlightedLine)
-        .map((row) => parseFloat(row[binParam]))
+        .filter((datum) => datum[subgroupParam] === highlightedSubgroup)
+        .map((row) => parseFloat(row[probParam]))
     );
     context.beginPath();
     line(filteredDensity);
