@@ -1,8 +1,13 @@
 
 # See https://help.github.com/ignore-files/ for more about ignoring files.
 
+*.tsv
+*.zip
+
 # dependencies
 node_modules
+/.pnp
+.pnp.js
 
 # builds
 build
