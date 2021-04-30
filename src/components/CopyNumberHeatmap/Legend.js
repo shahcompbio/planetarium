@@ -14,7 +14,7 @@ const Legend = ({ heatmapConfig, maxState }) => {
           .append("text")
           .attr("class", "legend title")
           .attr("x", 0)
-          .attr("y", heatmapConfig.legend.titleHeight + 10)
+          .attr("y", heatmapConfig.legend.titleHeight)
           .attr("text-anchor", "start")
           .attr("font-size","x-small")
           .text("Copy Number");
@@ -31,7 +31,7 @@ const Legend = ({ heatmapConfig, maxState }) => {
             .append("rect")
             .attr("class", "legend")
             .attr("x", xCord+ 15)
-            .attr("y", 15)
+            .attr("y", 6)
             .attr("width", heatmapConfig.legend.squareSize)
             .attr("height", heatmapConfig.legend.squareSize)
             .attr("fill", color);
@@ -41,16 +41,16 @@ const Legend = ({ heatmapConfig, maxState }) => {
             .attr("class", "legend")
             .attr("x", function() {
               if (i === 10) {
-                return xCord - 4 + 14;
+                return xCord - 4 + 15;
               } else if (i === 11) {
-                return xCord - 1 + 14;
+                return xCord - 1 + 15;
               } else {
-                return xCord + 1 + 14;
+                return xCord + 1 + 15;
               }
             })
             .attr(
               "y",
-              heatmapConfig.legend.textOffset + heatmapConfig.legend.squareSize + 12
+              heatmapConfig.legend.textOffset + heatmapConfig.legend.squareSize + 4
             )
             .attr("font-size","xx-small")
             .attr("text-anchor", "start")
