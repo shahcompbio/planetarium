@@ -5,22 +5,23 @@ export const ExampleComponent = ({ text }) => {
   return <div className={styles.test}>Example Component: {text}</div>
 }
 //bar
-export {default as ProbabilityHistogram } from "./components/Bar/ProbabilityHistogram";
-export {default as StackedHorizontalBar } from "./components/Bar/StackedHorizontalBar";
+export { default as ProbabilityHistogram } from './Bar/ProbabilityHistogram'
+export { default as StackedHorizontalBar } from './Bar/StackedHorizontalBar'
 //genomeProfile
-export {default as GenomeProfile } from "./components/GenomeProfile/GenomeProfile";
+export { default as GenomeProfile } from './GenomeProfile/GenomeProfile'
 //copynumberheatmap
 
-export {default as  CopyNumberHeatmap} from "./components/CopyNumberHeatmap/CopyNumberHeatmap";
-export {default as CopyNumberHeatmapGenomeProfile} from "./components/CopyNumberHeatmapGenomeProfile/CopyNumberHeatmapGenomeProfile";
+export { default as CopyNumberHeatmap } from './CopyNumberHeatmap/CopyNumberHeatmap'
+export { default as CopyNumberHeatmapGenomeProfile } from './CopyNumberHeatmapGenomeProfile/CopyNumberHeatmapGenomeProfile'
 //heatmap
-export {default as Heatmap } from "./components/Heatmap/Heatmap";
+export { default as Heatmap } from './Heatmap/Heatmap'
 //infoBar
-export {default as InfoBar } from "./components/InfoBar/InfoBar";
-export {default as Layout } from "./components/InfoBar/Layout";
-//VDJ
-export {default as ClonotypeExpansion } from "./VDJ/components/ClonotypeExpansion";
-export {default as DEGTable } from "./VDJ/components/DEGTable";
-export {default as subTypeUmap } from "./VDJ/components/subTypeUmap";
-export {default as Umap } from "./VDJ/components/Umap";
+export { default as InfoBar } from './InfoBar/InfoBar'
+export { default as Layout } from './InfoBar/Layout'
 
+export { default as VerticalLegend } from './Legend/VerticalLegend'
+
+export { useCanvas } from './utils/useCanvas'
+export { useD3 } from './utils/useD3'
+
+export { isValueHighlighted, isHighlighted } from './utils/isHighlighted'
