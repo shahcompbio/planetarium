@@ -5,11 +5,13 @@
   "dependencies": {
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
+    "@material-ui/lab": "^4.0.0-alpha.58",
     "bootstrap": "^4.6.0",
     "d3": "^5.16.0",
     "d3-array": "^2.11.0",
     "d3-collection": "^1.0.7",
     "d3-tip": "^0.9.1",
+    "gradient-path": "^2.1.0",
     "lodash": "^4.17.21",
     "react": "^17.0.1",
     "react-bootstrap": "^1.5.2",

@@ -1,7 +1,7 @@
 import React from "react";
 
-import App from "./NDV/NDV";
-import fetchFileData from "./NDV/data/api";
+import App from "./Network/Network";
+import fetchFileData from "./Network/data/api";
 
 const DevApp = () => {
   const data = fetchFileData();
