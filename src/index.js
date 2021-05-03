@@ -1,9 +1,3 @@
-import React from 'react'
-import styles from './styles.module.css'
-
-export const ExampleComponent = ({ text }) => {
-  return <div className={styles.test}>Example Component: {text}</div>
-}
 //bar
 export { default as ProbabilityHistogram } from './Bar/ProbabilityHistogram'
 export { default as StackedHorizontalBar } from './Bar/StackedHorizontalBar'

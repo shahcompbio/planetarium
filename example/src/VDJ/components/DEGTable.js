@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react'
 import * as d3 from 'd3'
 import { CONSTANTS } from '../config'
-import { Layout } from 'shahlab-planetarium'
+import { Layout } from '@shahlab/planetarium'
 import infoText from '../InfoText.js'
 
 import Button from '@material-ui/core/Button'

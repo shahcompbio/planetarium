@@ -7,7 +7,7 @@ import SubtypeUMAP from './components/subTypeUmap'
 import ClonotypeExpansion from './components/ClonotypeExpansion'
 import DEGTable from './components/DEGTable'
 
-import { Heatmap, ProbabilityHistogram, Layout } from 'shahlab-planetarium'
+import { Heatmap, ProbabilityHistogram, Layout } from '@shahlab/planetarium'
 
 import infoText from './InfoText'
 

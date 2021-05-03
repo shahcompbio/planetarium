@@ -9,7 +9,7 @@ import {
   VerticalLegend,
   useCanvas,
   isValueHighlighted as isHighlighted
-} from 'shahlab-planetarium'
+} from '@shahlab/planetarium'
 
 import Grid from '@material-ui/core/Grid'
 

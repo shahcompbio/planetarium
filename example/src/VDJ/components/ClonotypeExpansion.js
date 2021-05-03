@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { StackedHorizontalBar, Layout } from 'shahlab-planetarium'
+import { StackedHorizontalBar, Layout } from '@shahlab/planetarium'
 import infoText from '../InfoText'
 import { CONSTANTS } from '../config'
 import _ from 'lodash'

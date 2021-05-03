@@ -1,32 +1,14 @@
 import React from 'react'
 
-import { GenomeProfile,CopyNumberHeatmap,CopyNumberHeatmapGenomeProfile } from 'shahlab-planetarium'
+import App from './VDJ/VDJ'
+import fetchFileData from './VDJ/data/api'
 
-const genomeProfileData = require("./testData/genomeProfileData.json");
-const gpbpTotal = genomeProfileData.bptotal;
-const gpchromosomes = genomeProfileData.chromosomes;
-const gpmaxState = genomeProfileData.maxState;
-const gpbins = genomeProfileData.bins;
-const gpsegs = genomeProfileData.segs;
+const DevApp = () => {
+  const data = fetchFileData()
 
-const copyNumberHeatmapData = require("./testData/11655_test_data.json");
-
-
-const analysis =  copyNumberHeatmapData.analysis;
-const allHeatmapOrder = copyNumberHeatmapData.heatmapOrder;
-const categoryStats= copyNumberHeatmapData.categoriesStats;
-const chromosomes = copyNumberHeatmapData.chromosomes;
-const segs = copyNumberHeatmapData.segs;
-const analysisStats = copyNumberHeatmapData.analysisStats;
-
-const App = () => {
-  return   <div>
-    <CopyNumberHeatmap width ={750} height = {539} analysis = {analysis} allHeatmapOrder = {allHeatmapOrder} chromosomes = {chromosomes} categoryStats = {categoryStats} segs = {segs} analysisStats ={analysisStats} />
-    <GenomeProfile width = {450} height= {350} bins = {gpbins} segs = {gpsegs} bpTotal = {gpbpTotal} chromosomes = {gpchromosomes} maxState = {gpmaxState}/>
-
-  </div>
-
-
+  return Object.keys(data).length === 0 ? null : <App data={data} />
 }
 
-export default App
+const ProdApp = () => <App data={window.isablData} />
+
+export default process.env.NODE_ENV === 'development' ? DevApp : ProdApp
