@@ -24,14 +24,18 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>planetarium</title>
+    <title>Planetarium</title>
   </head>
 
   <body>
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>
-
+    <script>
+      if ("%NODE_ENV%" === "production") {
+        window.isablData = {{data}};
+      }
+    </script>
     <div id="root"></div>
 
     <!--
