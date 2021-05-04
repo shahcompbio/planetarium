@@ -4,21 +4,24 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ../node_modules/react-scripts/bin/react-scripts.js start",
-    "build": "node ../node_modules/react-scripts/bin/react-scripts.js build",
-    "test": "node ../node_modules/react-scripts/bin/react-scripts.js test",
-    "eject": "node ../node_modules/react-scripts/bin/react-scripts.js eject"
+    "start": "react-scripts start",
+    "build": "node build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "dependencies": {
+    "@material-ui/core": "^4.11.4",
+    "@material-ui/icons": "^4.11.2",
     "@shahlab/planetarium": "link:..",
+    "d3": "^6.7.0",
     "d3-array": "^2.12.1",
-    "eslint": "^7.11.0",
+    "d3-dsv": "^2.0.0",
+    "d3-hexbin": "^0.2.2",
+    "lodash": "^4.17.21",
     "react": "link:../node_modules/react",
+    "react-data-table-component": "^6.11.7",
     "react-dom": "link:../node_modules/react-dom",
-    "react-scripts": "link:../node_modules/react-scripts"
-  },
-  "devDependencies": {
-    "@babel/plugin-syntax-object-rest-spread": "^7.8.3"
+    "react-scripts": "4.0.3"
   },
   "eslintConfig": {
     "extends": "react-app"
