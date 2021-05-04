@@ -20,6 +20,7 @@ import * as _ from "lodash";
 import Grid from "@material-ui/core/Grid";
 
 import { useCanvas } from "../utils/useCanvas";
+// import "./ProbabilityHistogram.css";
 
 const HIGHLIGHTED_BAR_COLOR = "#eb5067";
 const HIGHLIGHTED_BAR_WIDTH = 2;
@@ -38,6 +39,30 @@ const HIGHLIGHTED_LINE_COLOR = "#47a647";
 
 const LINE_COLOR = "steelblue";
 const format = d3.format(".3f");
+
+const TOOLTIP_STYLE = {
+  position: "absolute",
+  display: "block",
+  padding: "5px",
+  opacity: 0.5,
+  color: "#ffffff",
+  backgroundColor: "#000000",
+  border: "1px solid #999",
+  borderRadius: "5px",
+  pointerEvents: "none",
+  opacity: 0,
+  zIndex: 1,
+};
+
+const TOOLTIP_BOTTOM = {
+  position: "absolute",
+  top: "100%",
+  left: "50%",
+  marginLeft: "-10px",
+  borderWidth: "10px",
+  borderStyle: "solid",
+  borderColor: "black transparent transparent transparent",
+};
 
 const ProbabilityHistogram = ({
   data,
@@ -76,15 +101,9 @@ const ProbabilityHistogram = ({
 
   const maxY = Math.max(maxYData, maxYDensity) * 1.1;
 
-  const y = d3
-    .scaleLinear()
-    .domain([0, maxY])
-    .range([chartHeight, 0]);
+  const y = d3.scaleLinear().domain([0, maxY]).range([chartHeight, 0]);
 
-  const barScale = d3
-    .scaleLinear()
-    .domain([0, maxY])
-    .range([0, chartHeight]);
+  const barScale = d3.scaleLinear().domain([0, maxY]).range([0, chartHeight]);
 
   const ref = useCanvas(
     (canvas) => {
@@ -145,7 +164,9 @@ const ProbabilityHistogram = ({
       }}
     >
       <canvas ref={ref} />
-      <div ref={tooltipRef} id="probabilityTooltip" />
+      <div ref={tooltipRef} id="probabilityTooltip" style={TOOLTIP_STYLE}>
+        <div style={TOOLTIP_BOTTOM} />
+      </div>
     </Grid>
   );
 };
@@ -241,7 +262,7 @@ const drawBars = (
   }
 
   d3.select(canvas)
-    .on("mousemove", function() {
+    .on("mousemove", function () {
       var mouseX = d3.event.layerX || d3.event.offsetX;
       if (mouseX >= x.range()[0] && mouseX <= x.range()[1]) {
         const tickSize = (x.range()[1] - x.range()[0]) / NUM_TICKS;
@@ -278,16 +299,16 @@ const drawBars = (
                     55 +
                     "px"
                 )
-                .html(function(d) {
+                .html(function (d) {
                   return (
                     "<p><ul style='width:" +
                     tooltipWidth +
-                    "px'>" +
+                    "px; margin-block-end: 0; padding-inline-start: 10px; display: inline-block; list-style-type: none'>" +
                     Object.keys(subtypeGroups)
                       .sort((a, b) => a.length - b.length)
                       .map(
                         (group) =>
-                          "<li>" +
+                          "<li style='text-align: left'>" +
                           group +
                           " : " +
                           format(subtypeGroups[group].length / bin.length) +
@@ -374,10 +395,10 @@ const drawKde = (
   var line = d3
     .line()
     .curve(d3.curveBasis)
-    .x(function(d) {
+    .x(function (d) {
       return x(d[0]);
     })
-    .y(function(d) {
+    .y(function (d) {
       return y(d[1]);
     })
     .context(context);
