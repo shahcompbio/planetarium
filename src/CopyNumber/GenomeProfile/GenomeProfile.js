@@ -3,13 +3,12 @@ import Grid from "@material-ui/core/Grid";
 import Profile from "./Profile";
 import ProfileBackground from "./ProfileBackground";
 import GenomeYAxis from "./GenomeYAxis";
-import ChromosomeAxis from "./ChromsomeAxis";
-import { Y_AXIS_WIDTH, X_AXIS_HEIGHT, TOP_PADDING } from "./utils";
+import ChromosomeAxis from "../ChromosomeAxis";
+import { Y_AXIS_WIDTH, X_AXIS_HEIGHT, TOP_PADDING } from "../utils";
 
 const GenomeProfile = ({
   bins,
   segs,
-  bpTotal,
   chromosomes,
   width,
   height,
@@ -17,7 +16,7 @@ const GenomeProfile = ({
 }) => {
   const profileWidth = width - Y_AXIS_WIDTH;
   const profileHeight = height - X_AXIS_HEIGHT - TOP_PADDING;
-
+  const bpTotal = chromosomes.reduce((currSum, chr) => currSum + chr.length, 0);
   return (
     <Grid container direction="column">
       <Grid
@@ -54,7 +53,7 @@ const GenomeProfile = ({
           />
         </Grid>
       </Grid>
-      <Grid item style = {{marginTop:-22}}>
+      <Grid item style={{ marginTop: -22 }}>
         <ChromosomeAxis
           chromosomes={chromosomes}
           bpTotal={bpTotal}

@@ -20,6 +20,8 @@ const COPY_NUMBER_COLOURS = [
   "#D4B9DA",
 ];
 
+export const BACKGROUND_COLORS = ["#fefefe", "#eee"];
+
 export const getCopyNumberArray = (maxState) =>
   Array.from(Array(maxState + 1).keys());
 
