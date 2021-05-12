@@ -1,9 +1,6 @@
 import * as d3 from "d3";
 
-const MAX_STATE = 11;
-export const Y_AXIS_WIDTH = 25;
 export const X_AXIS_HEIGHT = 12;
-export const TOP_PADDING = 5;
 
 const COPY_NUMBER_COLOURS = [
   "#2e7aab",
@@ -22,15 +19,7 @@ const COPY_NUMBER_COLOURS = [
 
 export const BACKGROUND_COLORS = ["#fefefe", "#eee"];
 
-export const getCopyNumberArray = (maxState) =>
-  Array.from(Array(maxState + 1).keys());
-
-export const getGenomeYScale = (maxState, height) =>
-  d3.scaleLinear().domain([-0.5, maxState]).range([height, 0]);
-
-const COPY_NUMBER_ARRAY = getCopyNumberArray(MAX_STATE);
-
 export const colorScale = d3
   .scaleLinear()
-  .domain(COPY_NUMBER_ARRAY)
+  .domain(Array.from(Array(COPY_NUMBER_COLOURS.length + 1).keys()))
   .range(COPY_NUMBER_COLOURS);

@@ -2,9 +2,17 @@ import React from "react";
 
 import ProfileComponent from "./Profile";
 
-import { bins, segs, bptotal, maxState } from "../data/cell_1.json";
+import { bins, segs, bptotal, maxState, chromosomes } from "./data/cell_1.json";
 
 const Template = (args) => <ProfileComponent {...args} />;
+
+const CHROMOSOMES = [
+  { genomeStart: 1, length: 500, chr: "01" },
+  { genomeStart: 501, length: 600, chr: "02" },
+  { genomeStart: 1101, length: 300, chr: "03" },
+  { genomeStart: 1401, length: 500, chr: "04" },
+  { genomeStart: 1901, length: 900, chr: "X" },
+];
 
 const BINS = [
   {
@@ -120,6 +128,7 @@ Profile.args = {
   bpTotal: 1001,
   bins: BINS,
   segs: SEGS,
+  chromosomes: CHROMOSOMES,
 };
 
 export const Human = Template.bind({});
@@ -130,4 +139,5 @@ Human.args = {
   bpTotal: bptotal,
   bins: bins,
   segs: segs,
+  chromosomes,
 };
