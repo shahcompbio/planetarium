@@ -14,6 +14,7 @@
     "d3-tip": "^0.9.1",
     "gradient-path": "^2.1.0",
     "lodash": "^4.17.21",
+    "match-sorter": "^6.3.0",
     "react": "^17.0.1",
     "react-bootstrap": "^1.5.2",
     "react-data-table-component": "^6.11.7",
