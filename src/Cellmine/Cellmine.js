@@ -1,7 +1,5 @@
-import React, { useState, useRef } from "react";
-import Layout from "../Layout/Layout";
-import _ from "lodash";
-import * as d3 from "d3";
+import React, { useState } from "react";
+
 import "./index.css";
 import dashboardReducer, { initialState } from "../PlotState/dashboardReducer";
 import { DashboardProvider } from "../PlotState/dashboardState";
@@ -14,13 +12,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 
-import Slider from "@material-ui/core/Slider";
-
-import Network from "../components/Network/Network";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
 import { makeStyles } from "@material-ui/core/styles";
-import Popper from "@material-ui/core/Popper";
 import Typography from "@material-ui/core/Typography";
 
 import Grid from "@material-ui/core/Grid";
@@ -39,9 +31,7 @@ const getDataByKey = (data, key) => [
 const Cellmine = ({ data }) => {
   const [selected, setSelected] = useState({});
   const [modifiedData, setModifiedData] = useState([...data]);
-  const [sliderValue, setSliderValue] = useState(
-    d3.extent(data, d => d.num_sublibraries)
-  );
+
   const handleFilterChange = (data, value, type) => {
     setSelected({ ...selected, [type]: value });
   };
@@ -240,7 +230,6 @@ const Search = ({
   filterOptions
 }) => {
   const classes = useStyles();
-  const [value, setValue] = useState("");
 
   return (
     <Autocomplete

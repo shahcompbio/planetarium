@@ -5,13 +5,7 @@ import * as d3 from "d3";
 import d3Tip from "d3-tip";
 import { useSvg } from "../utils/useSvg";
 
-const LEGEND_HEIGHT = 50;
-const radius = 12;
-const CAT_LABEL_FONT = "normal 12px Helvetica";
 const PADDING = 10;
-const LEGEND_SQUARE_LENGTH = 12;
-const LEGEND_SQUARE_PADDING = 10;
-const scale = d3.scaleOrdinal(d3.schemeCategory10);
 
 const PackingCircles = ({ modifiedData, chartDim }) => {
   const [originalDataLength] = useState(modifiedData.length);
@@ -23,8 +17,6 @@ const PackingCircles = ({ modifiedData, chartDim }) => {
   const chartWidth = canvasWidth - PADDING - PADDING;
   const chartHeight = canvasHeight - PADDING - PADDING;
 
-  const [xOffSet, setXOffset] = useState(chartWidth / 2);
-  const [yOffSet, setYOffset] = useState(chartHeight / 2);
   var tooltip = d3Tip()
     .attr("class", "d3-tip n")
     .attr("id", "circleTip")
