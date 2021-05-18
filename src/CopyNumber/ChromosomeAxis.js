@@ -2,7 +2,9 @@ import React from "react";
 import { useD3 } from "../utils/useD3";
 import { BACKGROUND_COLORS } from "./utils";
 
-const ChromosomeAxis = ({ chromosomes, width, height }) => {
+export const HEIGHT = 14;
+
+const ChromosomeAxis = ({ chromosomes, width }) => {
   const bpTotal = chromosomes.reduce((currSum, chr) => currSum + chr.length, 0);
   const ref = useD3(
     (svg) => {
@@ -19,7 +21,7 @@ const ChromosomeAxis = ({ chromosomes, width, height }) => {
         .attr("x", (d) => d.genomeStart * bpRatio)
         .attr("y", 0)
         .attr("width", (d) => d.length * bpRatio)
-        .attr("height", height)
+        .attr("height", HEIGHT)
         .attr(
           "fill",
           (d, i) => BACKGROUND_COLORS[i % BACKGROUND_COLORS.length]
@@ -35,17 +37,17 @@ const ChromosomeAxis = ({ chromosomes, width, height }) => {
         .attr("class", (d) => "chromosome-axis-text chrom-" + d.chr)
         .style("fill", "black")
         .attr("x", (d) => (d.genomeStart + d.length / 2) * bpRatio)
-        .attr("y", height / 2)
+        .attr("y", HEIGHT / 2)
         .attr("alignment-baseline", "middle")
         .attr("text-anchor", "middle")
         .attr("font-size", "10px")
         .text((d) => d.chr);
     },
     width,
-    height,
+    HEIGHT,
     []
   );
-  return <svg id="chromosome-axis" ref={ref} width={width} height={height} />;
+  return <svg ref={ref} width={width} height={HEIGHT} />;
 };
 
 export default ChromosomeAxis;

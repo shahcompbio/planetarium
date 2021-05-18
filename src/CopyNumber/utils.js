@@ -20,6 +20,6 @@ const COPY_NUMBER_COLOURS = [
 export const BACKGROUND_COLORS = ["#fefefe", "#eee"];
 
 export const colorScale = d3
-  .scaleLinear()
-  .domain(Array.from(Array(COPY_NUMBER_COLOURS.length + 1).keys()))
+  .scaleOrdinal()
+  .domain(Array.from(Array(COPY_NUMBER_COLOURS.length).keys()))
   .range(COPY_NUMBER_COLOURS);

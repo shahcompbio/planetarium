@@ -5,7 +5,7 @@ import * as d3 from "d3";
 import Grid from "@material-ui/core/Grid";
 import { colorScale, BACKGROUND_COLORS } from "./utils";
 
-const Y_AXIS_WIDTH = 25;
+export const Y_AXIS_WIDTH = 25;
 const TOP_PADDING = 5;
 
 const GenomeProfile = ({
