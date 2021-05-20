@@ -7,16 +7,25 @@ import { useD3 } from "../utils/useD3";
 import { colorScale } from "./utils";
 import Legend from "../Legend/HorizontalLegend";
 
+const Y_AXIS_WIDTH = 25;
+const CAT_SQUARE_SIZE = 6;
+const SQUARE_SPACING = 2;
 const MINIMAP_WIDTH = 150;
 const PADDING = 10;
 
 export const HEATMAP_SPACING = MINIMAP_WIDTH + PADDING;
 
 const MIN_HEATMAP_ROW_SIZE = 7;
-
 const MIN_MINIMAP_ROW_SIZE = 2;
 
-const CopyNumberHeatmap = ({ data, width, height, chromosomes, onChange }) => {
+const CopyNumberHeatmap = ({
+  data,
+  width,
+  height,
+  categories,
+  chromosomes,
+  onChange,
+}) => {
   const [start, setStart] = useState(0);
   const [hoveredRow, setHoveredRow] = useState(null);
   const bpTotal = chromosomes.reduce((currSum, chr) => chr.length + currSum, 0);
@@ -83,8 +92,8 @@ const CopyNumberHeatmap = ({ data, width, height, chromosomes, onChange }) => {
   );
 
   return (
-    <Grid container direction="column">
-      <Grid item>
+    <Grid container direction="column" style={{ width }}>
+      <Grid item style={{ textAlign: "right" }}>
         <Legend title={"Copy Number"} labels={legendLabels} />
       </Grid>
       <Grid item container direction="row">
@@ -113,6 +122,8 @@ const CopyNumberHeatmap = ({ data, width, height, chromosomes, onChange }) => {
     </Grid>
   );
 };
+
+const Labels = ({ data, labels, width, height }) => {};
 
 const Minimap = ({
   data,
