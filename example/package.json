@@ -38,6 +38,6 @@
     "rewire": "^5.0.0"
   },
   "resolutions": {
-    "babel-eslint": "9.0.0"
+    "babel-loader": "8.1.0"
   }
 }
