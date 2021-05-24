@@ -1,13 +1,17 @@
-# planetarium
+# Planetarium
 
-> Shah Lab Data Viz
+React components for visualization
 
-[![NPM](https://img.shields.io/npm/v/planetarium.svg)](https://www.npmjs.com/package/planetarium) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+[![NPM](https://img.shields.io/npm/v/@shahlab/planetarium.svg)](https://www.npmjs.com/package/@shahlab/planetarium) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 ## Install
 
 ```bash
-npm install --save planetarium
+npm install --save @shahlab/planetarium
+```
+
+```bash
+yarn add @shahlab/planetarium
 ```
 
 ## Usage
