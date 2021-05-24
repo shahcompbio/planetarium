@@ -6,7 +6,7 @@ import "./App.css";
 import dashboardReducer, { initialState } from "../PlotState/dashboardReducer";
 import { DashboardProvider } from "../PlotState/dashboardState";
 
-import Network from "../components/Chord/Chord";
+import Network from "./Chord.js";
 
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -23,7 +23,7 @@ const Circos = ({ data }) => {
       <CssBaseline />
       <DashboardProvider
         initialState={{
-          ...initialState
+          ...initialState,
         }}
         reducer={dashboardReducer}
       >
@@ -38,8 +38,8 @@ const Circos = ({ data }) => {
               chartName={"CIRCOS"}
               data={data}
               chartDim={{
-                height: 300,
-                width: 350
+                height: 800,
+                width: 950,
               }}
             />
           </Grid>

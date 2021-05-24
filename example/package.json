@@ -36,5 +36,8 @@
   ],
   "devDependencies": {
     "rewire": "^5.0.0"
+  },
+  "resolutions": {
+    "babel-eslint": "9.0.0"
   }
 }
