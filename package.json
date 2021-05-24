@@ -30,6 +30,18 @@
     "react-scripts": "4.0.3",
     "storybook": "^6.2.1"
   },
+<<<<<<< Updated upstream
+=======
+  "resolutions": {
+    "babel-eslint": "9.0.0"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+>>>>>>> Stashed changes
   "devDependencies": {
     "@babel/core": "^7.14.0",
     "@storybook/addon-actions": "^6.2.9",
