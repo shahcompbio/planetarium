@@ -16,6 +16,8 @@
 /env
 /tutorial-env
 /viz
+/example
+/dist
 # misc
 .DS_Store
 .env.local

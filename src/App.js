@@ -1,7 +1,7 @@
 import React from "react";
 
-import App from "./Cellmine/Cellmine";
-import fetchFileData from "./Cellmine/data/api";
+import App from "./Lasso/Lasso";
+import fetchFileData from "./NDV/data/api";
 
 const DevApp = () => {
   const data = fetchFileData();
