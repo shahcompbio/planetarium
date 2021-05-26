@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 
 import "./index.css";
-import dashboardReducer, { initialState } from "../PlotState/dashboardReducer";
-import { DashboardProvider } from "../PlotState/dashboardState";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
@@ -16,7 +14,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 
 import Grid from "@material-ui/core/Grid";
-import PackingCircles from "./PackingCircles";
+
+import { PackingCircles } from "@shahlab/planetarium";
 
 import { theme } from "../theme/theme.js";
 import { MuiThemeProvider } from "@material-ui/core/styles";
@@ -74,104 +73,97 @@ const App = ({ data }) => {
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
-      <DashboardProvider
-        initialState={{
-          ...initialState
-        }}
-        reducer={dashboardReducer}
+      <Grid
+        container
+        direction="column"
+        justify="flex-start"
+        alignItems="flex-start"
       >
         <Grid
+          item
           container
-          direction="column"
+          direction="row"
           justify="flex-start"
           alignItems="flex-start"
         >
-          <Grid
-            item
-            container
-            direction="row"
-            justify="flex-start"
-            alignItems="flex-start"
-          >
-            <Grid style={{ margin: 15 }}>
-              <Typography variant="h5" component="h2">
-                Filter:
-              </Typography>
+          <Grid style={{ margin: 15 }}>
+            <Typography variant="h5" component="h2">
+              Filter:
+            </Typography>
 
-              <Search
-                data={[...getDataByKey(modifiedData, "jira_ticket")]}
-                selectedOption={selected["jira_ticket"] || null}
-                filterOptions={filterOptions}
-                type="jira_ticket"
-                title="Analysis Ticket"
-                selectOption={option =>
-                  handleFilterChange(modifiedData, option, "jira_ticket")
-                }
-              />
-              <Search
-                data={[...getDataByKey(modifiedData, "pathology_disease_name")]}
-                filterOptions={filterOptions}
-                type="pathology_disease_name"
-                title="Tumour Type"
-                selectedOption={selected["pathology_disease_name"] || null}
-                selectOption={option =>
-                  handleFilterChange(
-                    modifiedData,
-                    option,
-                    "pathology_disease_name"
-                  )
-                }
-              />
-              <Search
-                data={[...getDataByKey(modifiedData, "pool_id")]}
-                filterOptions={filterOptions}
-                type="pool_id"
-                title="Library"
-                selectedOption={selected["pool_id"] || null}
-                selectOption={option =>
-                  handleFilterChange(modifiedData, option, "pool_id")
-                }
-              />
-              <Search
-                data={[
-                  ...getDataByKey(modifiedData, "additional_pathology_info")
-                ]}
-                filterOptions={filterOptions}
-                type="additional_pathology_info"
-                title="Subtype"
-                selectedOption={selected["additional_pathology_info"] || null}
-                selectOption={option =>
-                  handleFilterChange(
-                    modifiedData,
-                    option,
-                    "additional_pathology_info"
-                  )
-                }
-              />
-              <RadioOptions
-                options={[...getDataByKey(data, "taxonomy_id")]}
-                filterOptions={filterOptions}
-                type="taxonomy_id"
-                title="Taxonomy"
-                selectOption={option => {
-                  return filterOptions(
-                    modifiedData,
-                    { inputValue: option },
-                    "taxonomy_id"
-                  );
-                }}
-              />
-            </Grid>
-            <PackingCircles
-              modifiedData={modifiedData}
-              chartDim={{
-                height: 800,
-                width: 950
+            <Search
+              data={[...getDataByKey(modifiedData, "jira_ticket")]}
+              selectedOption={selected["jira_ticket"] || null}
+              filterOptions={filterOptions}
+              type="jira_ticket"
+              title="Analysis Ticket"
+              selectOption={option =>
+                handleFilterChange(modifiedData, option, "jira_ticket")
+              }
+            />
+            <Search
+              data={[...getDataByKey(modifiedData, "pathology_disease_name")]}
+              filterOptions={filterOptions}
+              type="pathology_disease_name"
+              title="Tumour Type"
+              selectedOption={selected["pathology_disease_name"] || null}
+              selectOption={option =>
+                handleFilterChange(
+                  modifiedData,
+                  option,
+                  "pathology_disease_name"
+                )
+              }
+            />
+            <Search
+              data={[...getDataByKey(modifiedData, "pool_id")]}
+              filterOptions={filterOptions}
+              type="pool_id"
+              title="Library"
+              selectedOption={selected["pool_id"] || null}
+              selectOption={option =>
+                handleFilterChange(modifiedData, option, "pool_id")
+              }
+            />
+            <Search
+              data={[
+                ...getDataByKey(modifiedData, "additional_pathology_info")
+              ]}
+              filterOptions={filterOptions}
+              type="additional_pathology_info"
+              title="Subtype"
+              selectedOption={selected["additional_pathology_info"] || null}
+              selectOption={option =>
+                handleFilterChange(
+                  modifiedData,
+                  option,
+                  "additional_pathology_info"
+                )
+              }
+            />
+            <RadioOptions
+              options={[...getDataByKey(data, "taxonomy_id")]}
+              filterOptions={filterOptions}
+              type="taxonomy_id"
+              title="Taxonomy"
+              selectOption={option => {
+                return filterOptions(
+                  modifiedData,
+                  { inputValue: option },
+                  "taxonomy_id"
+                );
               }}
             />
           </Grid>
+          <PackingCircles
+            modifiedData={modifiedData}
+            chartDim={{
+              height: 800,
+              width: 950
+            }}
+          />
         </Grid>
-      </DashboardProvider>
+      </Grid>
     </MuiThemeProvider>
   );
 };

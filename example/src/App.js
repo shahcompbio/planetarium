@@ -1,14 +1,13 @@
-import React from 'react'
-
-import App from './VDJ/VDJ'
-import fetchFileData from './VDJ/data/api'
+import React from "react";
+import App from "./Cellmine/Cellmine";
+import fetchFileData from "./Cellmine/data/api";
 
 const DevApp = () => {
-  const data = fetchFileData()
+  const data = fetchFileData();
 
-  return Object.keys(data).length === 0 ? null : <App data={data} />
-}
+  return Object.keys(data).length === 0 ? null : <App data={data} />;
+};
 
-const ProdApp = () => <App data={window.isablData} />
+const ProdApp = () => <App data={window.isablData} />;
 
-export default process.env.NODE_ENV === 'development' ? DevApp : ProdApp
+export default (process.env.NODE_ENV === "development" ? DevApp : ProdApp);

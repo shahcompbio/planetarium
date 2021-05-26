@@ -219,7 +219,7 @@ const PackingCircles = ({ modifiedData, chartDim }) => {
         id="canvasSelection"
         ref={ref}
         style={{
-          background: "rgb(190 214 214)",
+          background: "#586773",
           width: chartWidth,
           height: chartHeight,
           position: "relative"
