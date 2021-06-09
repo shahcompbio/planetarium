@@ -25,10 +25,21 @@ export default {
   component: Legend,
 };
 
-export const Vertical = Template.bind({});
-Vertical.args = {
+export const Default = Template.bind({});
+Default.args = {
   width: 150,
-  height: 400,
+  title: "Test",
+  labels: [1, 2, 3, 4].map((value) => ({
+    value,
+    label: `Label ${value}`,
+    color: COLORS[value],
+  })),
+  setHighlighted: () => {},
+};
+
+export const Titleless = Template.bind({});
+Titleless.args = {
+  width: 150,
   labels: [1, 2, 3, 4].map((value) => ({
     value,
     label: `Label ${value}`,
