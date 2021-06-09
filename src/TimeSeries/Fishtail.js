@@ -5,6 +5,7 @@ import * as d3 from "d3";
 import { useD3 } from "../utils/useD3";
 import { Grid } from "@material-ui/core";
 import { isValueHighlighted as isHighlighted } from "../utils/isHighlighted";
+import sortAlphanumeric from "../utils/sortAlphanumeric";
 import VerticalLegend from "../Legend/VerticalLegend";
 
 const AXIS_HEIGHT = 20;
@@ -43,10 +44,12 @@ const Fishtail = ({ data, subsetParam, width, height }) => {
   const chartHeight = height - AXIS_HEIGHT;
 
   const timeValues = _.uniq(data.map((datum) => datum["timepoint"])).sort(
-    (a, b) => a.substring(1) - b.substring(1)
+    sortAlphanumeric
   );
 
-  const subsetValues = _.uniq(data.map((datum) => datum[subsetParam])).sort();
+  const subsetValues = _.uniq(data.map((datum) => datum[subsetParam])).sort(
+    sortAlphanumeric
+  );
 
   const counts = timeValues.map((timepoint) => {
     const timeData = data.filter((datum) => datum["timepoint"] === timepoint);
