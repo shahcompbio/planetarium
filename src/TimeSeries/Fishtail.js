@@ -3,15 +3,18 @@ import _ from "lodash";
 
 import * as d3 from "d3";
 import { useD3 } from "../utils/useD3";
+import { Grid } from "@material-ui/core";
 import { isValueHighlighted as isHighlighted } from "../utils/isHighlighted";
+import VerticalLegend from "../Legend/VerticalLegend";
 
 const AXIS_HEIGHT = 20;
 const PADDING = 10;
 
+const NULL_AREA_COLOR = "#d2d7d3";
+
 const SLIDER_BAR_WIDTH = 6;
 const SLIDER_BAR_COLOR = "#ebebeb";
 const HIGHLIGHTED_BAR_COLOR = "#5e5e5e";
-const SLIDE_BAR_STROKE_COLOR = "#ffcb3d";
 
 const COLOR_ARRAY = [
   "#5E4FA2",
@@ -35,6 +38,7 @@ const COLOR_ARRAY = [
 const Fishtail = ({ data, subsetParam, width, height }) => {
   const [highlightedTimepoint, setHighlightedTimepoint] = useState(null);
   const [selectedTimepoint, setSelectedTimepoint] = useState(null);
+  const [highlightedSubset, setHighlightedSubset] = useState(null);
   const chartWidth = width - 2 * PADDING;
   const chartHeight = height - AXIS_HEIGHT;
 
@@ -103,8 +107,13 @@ const Fishtail = ({ data, subsetParam, width, height }) => {
       .selectAll("path")
       .data(series)
       .join("path")
-      .attr("fill", ({ key }) => color(key))
+      .attr("fill", ({ key }) =>
+        isHighlighted(key, highlightedSubset) ? color(key) : NULL_AREA_COLOR
+      )
       .attr("d", area)
+      .attr("stroke", "#FFFFFF")
+      .attr("stroke-width", 1)
+      .attr("stroke-opacity", 0.2)
       .append("title")
       .text(({ key }) => key);
   };
@@ -154,7 +163,10 @@ const Fishtail = ({ data, subsetParam, width, height }) => {
 
       setSelectedTimepoint(timeValues[timepointIndex]);
     };
-    svg.on("mousemove", mousemove).on("click", mousedown);
+    svg
+      .on("mousemove", mousemove)
+      .on("click", mousedown)
+      .on("mouseout", () => setHighlightedTimepoint(null));
   };
 
   const ref = useD3(
@@ -165,10 +177,38 @@ const Fishtail = ({ data, subsetParam, width, height }) => {
     },
     width,
     height,
-    [highlightedTimepoint, selectedTimepoint]
+    [highlightedTimepoint, selectedTimepoint, highlightedSubset]
   );
 
-  return <svg ref={ref} />;
+  const setHighlighted = (event, value) => {
+    if (event === "mouseenter") {
+      setHighlightedSubset(value);
+    } else if (event === "mousedown") {
+      // setHighlightedSubset(value);
+    } else if (event === "mouseout") {
+      setHighlightedSubset(null);
+    }
+  };
+
+  return (
+    <Grid container direction="row" style={{ padding: 0 }}>
+      <Grid item>
+        <svg ref={ref} />
+      </Grid>
+      <Grid item>
+        <VerticalLegend
+          width={100}
+          title={subsetParam}
+          labels={subsetValues.map((value) => ({
+            value,
+            label: value,
+            color: color(value),
+          }))}
+          setHighlighted={setHighlighted}
+        />
+      </Grid>
+    </Grid>
+  );
 };
 
 export default Fishtail;
