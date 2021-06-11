@@ -33,35 +33,51 @@ const useStyles = makeStyles({
     margin: "10px 10px 0px 10px",
     padding: "0px 0px",
     float: "right",
+    textAlign: "center",
   },
+  title: { marginBottom: 0 },
   button: { float: "right" },
 });
 
-const Summary = ({ data, chartDim }) => {
+const Summary = ({ metadata, data, chartDim, colors }) => {
   const [context, saveContext] = useState();
   const canvasWidth = chartDim["width"] - PADDING - PADDING;
   const canvasHeight = chartDim["height"] - TITLE_HEIGHT;
-  console.log(data);
+  const [topNum, setTopNum] = useState(10);
+
+  console.log(metadata);
   const sumData = Object.keys(data).reduce((final, cellId) => {
     const genesPerCell = Object.keys(data[cellId]);
     genesPerCell.map((gene) => {
-      final[gene] = final[gene]
-        ? final[gene] + data[cellId][gene]
-        : data[cellId][gene];
+      if (!final.hasOwnProperty(gene)) {
+        final[gene] = { value: 0, count: 0 };
+      }
+      final[gene]["value"] = final[gene]["value"] + data[cellId][gene];
+      final[gene]["count"] = final[gene]["count"] + 1;
     });
     return final;
   }, {});
-  console.log(sumData);
+  const average = Object.keys(sumData).reduce((final, gene) => {
+    const avg = sumData[gene]["value"] / sumData[gene]["count"];
+    final[gene] = avg;
+    return final;
+  }, {});
+  const topTenAverge = Object.keys(average)
+    .sort((a, b) => average[b] - average[a])
+    .slice(0, topNum);
+  const cloneBreakdown = _.groupBy(metadata, (d) => d["clone"]);
+  const cellCount = metadata.length;
+  console.log(topTenAverge);
   const chartWidth = canvasWidth - AXIS_SPACE;
   const chartHeight = canvasHeight - AXIS_SPACE - PADDING - PADDING;
-  const average = 12;
+
   const classes = useStyles();
   return (
     <Paper
       style={{
-        margin: "2px 10px 10px 10px",
+        margin: "5px 10px 10px 10px",
         padding: "10px 0px",
-        height: chartDim["height"],
+
         width: chartDim["width"],
       }}
     >
@@ -71,30 +87,78 @@ const Summary = ({ data, chartDim }) => {
         justify="flex-start"
         alignItems="stretch"
       >
-        <Grid container direction="row" style={{ padding: 0 }}>
-          <Card className={classes.root} variant="outlined">
-            <CardContent>
+        <Card className={classes.root} variant="outlined">
+          <CardContent>
+            <div>
               <Typography
-                className={classes.title}
                 color="textSecondary"
+                className={classes.title}
+                variant="h5"
                 gutterBottom
               >
-                Mean:
+                Selection Summary
               </Typography>
-            </CardContent>
-          </Card>
-          <Card className={classes.root} variant="outlined">
-            <CardContent>
+            </div>
+          </CardContent>
+        </Card>{" "}
+        <Card className={classes.root} variant="outlined">
+          <CardContent>
+            <div>
               <Typography
+                display="inline"
                 className={classes.title}
-                color="textSecondary"
+                variant="h6"
                 gutterBottom
               >
-                Average:
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
+                Cell Count: {cellCount}
+              </Typography>{" "}
+            </div>
+          </CardContent>
+        </Card>
+        <Card className={classes.root} variant="outlined">
+          <CardContent>
+            <Typography
+              className={classes.title}
+              color="textSecondary"
+              gutterBottom
+            >
+              Top {topNum} expressed genes:{" "}
+            </Typography>
+            {topTenAverge.map((gene) => (
+              <div>
+                {gene} - {average[gene]}
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+        <Card className={classes.root} variant="outlined">
+          <CardContent>
+            <Typography
+              className={classes.title}
+              color="textSecondary"
+              gutterBottom
+            >
+              Clone Breakdown:
+            </Typography>
+            {Object.keys(cloneBreakdown)
+              .sort(function (a, b) {
+                return cloneBreakdown[b].length - cloneBreakdown[a].length;
+              })
+              .map((clone) => (
+                <div>
+                  <svg width="10px" height="10px">
+                    <rect
+                      width="10px"
+                      height="10px"
+                      style={{ fill: colors(clone) }}
+                    />
+                  </svg>{" "}
+                  {clone} :{" "}
+                  {d3.format(".0%")(cloneBreakdown[clone].length / cellCount)}
+                </div>
+              ))}
+          </CardContent>
+        </Card>
       </Grid>
     </Paper>
   );
