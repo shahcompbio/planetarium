@@ -11,6 +11,7 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
+import Doughnut from "./Doughnut.js";
 
 import { makeStyles } from "@material-ui/core/styles";
 import { CONSTANTS } from "../config";
@@ -33,6 +34,12 @@ const useStyles = makeStyles({
     margin: "10px 10px 0px 10px",
     padding: "0px 0px",
     float: "right",
+    textAlign: "center",
+  },
+  cellCountContent: {
+    margin: "0px",
+    padding: "0px 0px",
+    paddingBottom: "0px !important",
     textAlign: "center",
   },
   title: { marginBottom: 0 },
@@ -62,12 +69,14 @@ const Summary = ({ metadata, data, chartDim, colors }) => {
     final[gene] = avg;
     return final;
   }, {});
+
   const topTenAverge = Object.keys(average)
     .sort((a, b) => average[b] - average[a])
     .slice(0, topNum);
+
   const cloneBreakdown = _.groupBy(metadata, (d) => d["clone"]);
   const cellCount = metadata.length;
-  console.log(topTenAverge);
+
   const chartWidth = canvasWidth - AXIS_SPACE;
   const chartHeight = canvasHeight - AXIS_SPACE - PADDING - PADDING;
 
@@ -76,9 +85,8 @@ const Summary = ({ metadata, data, chartDim, colors }) => {
     <Paper
       style={{
         margin: "5px 10px 10px 10px",
-        padding: "10px 0px",
-
-        width: chartDim["width"],
+        padding: "10px 10px",
+        //width: chartDim["width"],
       }}
     >
       <Grid
@@ -88,31 +96,15 @@ const Summary = ({ metadata, data, chartDim, colors }) => {
         alignItems="stretch"
       >
         <Card className={classes.root} variant="outlined">
-          <CardContent>
-            <div>
-              <Typography
-                color="textSecondary"
-                className={classes.title}
-                variant="h5"
-                gutterBottom
-              >
-                Selection Summary
-              </Typography>
-            </div>
-          </CardContent>
-        </Card>{" "}
-        <Card className={classes.root} variant="outlined">
-          <CardContent>
-            <div>
-              <Typography
-                display="inline"
-                className={classes.title}
-                variant="h6"
-                gutterBottom
-              >
-                Cell Count: {cellCount}
-              </Typography>{" "}
-            </div>
+          <CardContent className={classes.cellCountContent}>
+            <Typography
+              display="inline"
+              className={classes.title}
+              variant="h6"
+              gutterBottom
+            >
+              Cell Count: {cellCount}
+            </Typography>{" "}
           </CardContent>
         </Card>
         <Card className={classes.root} variant="outlined">
@@ -140,23 +132,23 @@ const Summary = ({ metadata, data, chartDim, colors }) => {
             >
               Clone Breakdown:
             </Typography>
-            {Object.keys(cloneBreakdown)
-              .sort(function (a, b) {
-                return cloneBreakdown[b].length - cloneBreakdown[a].length;
-              })
-              .map((clone) => (
-                <div>
-                  <svg width="10px" height="10px">
-                    <rect
-                      width="10px"
-                      height="10px"
-                      style={{ fill: colors(clone) }}
-                    />
-                  </svg>{" "}
-                  {clone} :{" "}
-                  {d3.format(".0%")(cloneBreakdown[clone].length / cellCount)}
-                </div>
-              ))}
+            <Doughnut
+              data={Object.keys(cloneBreakdown)
+                .sort(function (a, b) {
+                  return cloneBreakdown[b].length - cloneBreakdown[a].length;
+                })
+                .reduce((final, clone) => {
+                  final = [
+                    { key: clone, value: cloneBreakdown[clone] },
+                    ...final,
+                  ];
+                  return final;
+                }, [])}
+              colors={colors}
+              height={300}
+              width={chartDim["width"]}
+              totalCount={cellCount}
+            />
           </CardContent>
         </Card>
       </Grid>
