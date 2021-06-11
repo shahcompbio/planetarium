@@ -338,17 +338,19 @@ const UMAP = ({
 
   const classes = useStyles();
   return (
-    <Grid container direction="row" justify="flex-start" alignItems="stretch">
-      <Grid
-        container
-        direction="column"
-        justify="flex-start"
-        alignItems="stretch"
-      >
+    <Grid
+      container
+      direction="row"
+      justify="flex-start"
+      alignItems="stretch"
+      style={{ marginTop: 15 }}
+    >
+      <Grid direction="column" justify="flex-start" alignItems="stretch">
         <Card
           className={classes.root}
           style={{
             width: chartDim["width"],
+            marginBottom: "20px",
           }}
         >
           <CardActions disableSpacing>
@@ -428,9 +430,10 @@ const UMAP = ({
             }
             return final;
           }, [])}
+          colors={subsetColors}
+          metadata={data.filter((cell) => highlighted[cell["cell_id"]])}
           chartDim={{
             width: chartDim["width"] / 2,
-            height: chartDim["height"],
           }}
         />
       )}
