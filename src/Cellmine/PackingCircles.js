@@ -3,13 +3,7 @@ import * as d3 from "d3";
 import _ from "lodash";
 
 import { Tooltip } from "@material-ui/core";
-
-import d3Tip from "d3-tip";
-import { useSvg } from "../utils/useSvg";
 import { useD3 } from "../utils/useD3";
-import { isValueHighlighted as isHighlighted } from "../utils/isHighlighted";
-
-const PADDING = 10;
 
 const PackingCircles = ({
   data,
@@ -18,13 +12,12 @@ const PackingCircles = ({
   radiusParam,
   idParam,
   highlightedIDs = [],
-  selectAnalysis,
+  onClick,
   tooltipFields,
 }) => {
   const [nodes, setNodes] = useState(null);
   const [highlightedNode, setHighlightedNode] = useState(null);
 
-  console.log(highlightedNode);
   const radius = d3
     .scaleLinear()
     .range([10, width * 0.15])
@@ -60,11 +53,14 @@ const PackingCircles = ({
       .on("mouseleave", (data) => {
         drawHighlightedCircles(nodes);
         setHighlightedNode(null);
+      })
+      .on("mousedown", (data) => {
+        onClick(data);
       });
   };
 
   const removeMouse = (nodes) => {
-    nodes.on("mouseover", null).on("mouseleave", null);
+    nodes.on("mouseover", null).on("mouseleave", null).on("mousedown", null);
   };
 
   useEffect(() => {
