@@ -13,19 +13,18 @@ The bars can be hovered and shown the breakdown of the density plot based off th
 
 */
 
-import React, { useRef } from "react";
+import React, { useState } from "react";
 import * as d3 from "d3";
 import * as d3Array from "d3-array";
 import * as _ from "lodash";
 import Grid from "@material-ui/core/Grid";
 
+import { Tooltip } from "@material-ui/core";
 import { useCanvas } from "../utils/useCanvas";
-// import "./ProbabilityHistogram.css";
 
 const HIGHLIGHTED_BAR_COLOR = "#eb5067";
 const HIGHLIGHTED_BAR_WIDTH = 2;
 
-const PADDING = 10;
 const X_AXIS_HEIGHT = 40;
 const Y_AXIS_WIDTH = 50;
 
@@ -39,137 +38,6 @@ const HIGHLIGHTED_LINE_COLOR = "#47a647";
 
 const LINE_COLOR = "steelblue";
 const format = d3.format(".3f");
-
-const TOOLTIP_STYLE = {
-  position: "absolute",
-  display: "block",
-  padding: "5px",
-  opacity: 0.5,
-  color: "#ffffff",
-  backgroundColor: "#000000",
-  border: "1px solid #999",
-  borderRadius: "5px",
-  pointerEvents: "none",
-  opacity: 0,
-  zIndex: 1,
-};
-
-const TOOLTIP_BOTTOM = {
-  position: "absolute",
-  top: "100%",
-  left: "50%",
-  marginLeft: "-10px",
-  borderWidth: "10px",
-  borderStyle: "solid",
-  borderColor: "black transparent transparent transparent",
-};
-
-const ProbabilityHistogram = ({
-  data,
-  width,
-  height,
-  probParam,
-  subgroupParam,
-  observationParam,
-  highlightedObservation,
-  highlightedSubgroup,
-}) => {
-  const tooltipRef = useRef();
-
-  const chartWidth = width - Y_AXIS_WIDTH;
-  const chartHeight = height - X_AXIS_HEIGHT;
-
-  const allX = data.map((row) => parseFloat(row[probParam]));
-  const xMax = Math.max(...allX);
-  const xMin = Math.min(...allX);
-
-  const startX = Y_AXIS_WIDTH;
-  const x = d3
-    .scaleLinear()
-    .domain([xMin, xMax])
-    .range([startX, startX + chartWidth]);
-
-  const bins = d3Array
-    .bin()
-    .value((d) => d[probParam])
-    .domain(x.domain())
-    .thresholds(x.ticks(NUM_TICKS))(data);
-
-  const maxYData = Math.max(...bins.map((row) => row.length / data.length));
-  const density = getDensity(data, x, probParam, 1000);
-  const maxYDensity = Math.max(...density.map((datum) => datum[1]));
-
-  const maxY = Math.max(maxYData, maxYDensity) * 1.1;
-
-  const y = d3.scaleLinear().domain([0, maxY]).range([chartHeight, 0]);
-
-  const barScale = d3.scaleLinear().domain([0, maxY]).range([0, chartHeight]);
-
-  const ref = useCanvas(
-    (canvas) => {
-      const context = canvas.getContext("2d");
-      drawAxisLabels(
-        context,
-        x,
-        y,
-        probParam,
-        chartWidth,
-        chartHeight,
-        xMin,
-        xMax,
-        5
-      );
-      drawBars(
-        canvas,
-        bins,
-        x,
-        y,
-        barScale,
-        data.length,
-        tooltipRef.current,
-        highlightedSubgroup,
-        subgroupParam
-      );
-      drawHighlightedBar(
-        context,
-        data,
-        highlightedObservation,
-        observationParam,
-        probParam,
-        maxY,
-        x,
-        y,
-        barScale
-      );
-      drawKde(
-        context,
-        data,
-        x,
-        y,
-        probParam,
-        subgroupParam,
-        highlightedSubgroup
-      );
-    },
-    width,
-    height,
-    [highlightedObservation, highlightedSubgroup]
-  );
-
-  return (
-    <Grid
-      item
-      style={{
-        position: "relative",
-      }}
-    >
-      <canvas ref={ref} />
-      <div ref={tooltipRef} id="probabilityTooltip" style={TOOLTIP_STYLE}>
-        <div style={TOOLTIP_BOTTOM} />
-      </div>
-    </Grid>
-  );
-};
 
 const drawAxisLabels = (
   context,
@@ -228,7 +96,7 @@ const drawBars = (
   y,
   barScale,
   total,
-  tooltip,
+  setHighlightedBin,
   highlightedSubgroup,
   subgroupParam
 ) => {
@@ -263,70 +131,20 @@ const drawBars = (
 
   d3.select(canvas)
     .on("mousemove", function () {
-      var mouseX = d3.event.layerX || d3.event.offsetX;
-      if (mouseX >= x.range()[0] && mouseX <= x.range()[1]) {
-        const tickSize = (x.range()[1] - x.range()[0]) / NUM_TICKS;
-        x.ticks(NUM_TICKS).forEach((tick, index) => {
-          if (mouseX >= x(tick) && mouseX <= x(tick) + tickSize) {
-            //show tip
-            const bin = bins.filter((bin) => bin["x0"] === tick)[0];
-            if (bin.length > 0) {
-              const subtypeGroups = _.groupBy(bin, subgroupParam);
+      const mouseX = d3.event.layerX || d3.event.offsetX;
+      const [minX, maxX] = x.range();
 
-              const tooltipWidth =
-                Math.max(
-                  ...Object.keys(subtypeGroups).map((group) => group.length)
-                ) > 15
-                  ? 250
-                  : 150;
-
-              d3.select(tooltip)
-                .attr("width", tooltipWidth + "px")
-                .style("opacity", 0.8)
-                .style(
-                  "left",
-                  x(tick) -
-                    tooltipWidth / 2 +
-                    tickSize / 2 +
-                    PADDING / 2 -
-                    (tooltipWidth === 250 ? 14 : 0) +
-                    "px"
-                )
-                .style(
-                  "top",
-                  y(bin.length / total) -
-                    Object.keys(subtypeGroups).length * 20 -
-                    55 +
-                    "px"
-                )
-                .html(function (d) {
-                  return (
-                    "<p><ul style='width:" +
-                    tooltipWidth +
-                    "px; margin-block-end: 0; padding-inline-start: 10px; display: inline-block; list-style-type: none'>" +
-                    Object.keys(subtypeGroups)
-                      .sort((a, b) => a.length - b.length)
-                      .map(
-                        (group) =>
-                          "<li style='text-align: left'>" +
-                          group +
-                          " : " +
-                          format(subtypeGroups[group].length / bin.length) +
-                          "</li>"
-                      )
-                      .join("") +
-                    "</ul></p>"
-                  );
-                });
-            }
-          }
-        });
+      if (mouseX >= minX && mouseX <= maxX) {
+        const bin = bins.filter(
+          (bin) => x(bin["x0"]) <= mouseX && mouseX <= x(bin["x1"])
+        )[0];
+        if (bin.length > 0) {
+          setHighlightedBin(bin);
+        }
       }
     })
-    .on("mouseout", () => hideTooltip(tooltip));
+    .on("mouseout", () => setHighlightedBin(null));
 };
-
-const hideTooltip = (tooltip) => d3.select(tooltip).style("opacity", 0);
 
 const drawHighlightedBar = (
   context,
@@ -429,4 +247,147 @@ const drawKde = (
     context.stroke();
   }
 };
+
+const getTooltipText = (bin, subgroupParam) => {
+  const subtypeGroups = _.groupBy(bin, subgroupParam);
+
+  return (
+    <div>
+      {Object.keys(subtypeGroups)
+        .sort((a, b) => a.length - b.length)
+        .map((group) => (
+          <p>
+            {group}: {format(subtypeGroups[group].length / bin.length)}
+          </p>
+        ))}
+    </div>
+  );
+};
+
+const ProbabilityHistogram = ({
+  data,
+  width,
+  height,
+  probParam,
+  subgroupParam,
+  observationParam,
+  highlightedObservation,
+  highlightedSubgroup,
+}) => {
+  const [highlightedBin, setHighlightedBin] = useState(null);
+
+  const chartWidth = width - Y_AXIS_WIDTH;
+  const chartHeight = height - X_AXIS_HEIGHT;
+
+  const allX = data.map((row) => parseFloat(row[probParam]));
+  const xMax = Math.max(...allX);
+  const xMin = Math.min(...allX);
+
+  const startX = Y_AXIS_WIDTH;
+  const x = d3
+    .scaleLinear()
+    .domain([xMin, xMax])
+    .range([startX, startX + chartWidth]);
+
+  const bins = d3Array
+    .bin()
+    .value((d) => d[probParam])
+    .domain(x.domain())
+    .thresholds(x.ticks(NUM_TICKS))(data);
+
+  const maxYData = Math.max(...bins.map((row) => row.length / data.length));
+  const density = getDensity(data, x, probParam, 1000);
+  const maxYDensity = Math.max(...density.map((datum) => datum[1]));
+
+  const maxY = Math.max(maxYData, maxYDensity) * 1.1;
+
+  const y = d3.scaleLinear().domain([0, maxY]).range([chartHeight, 0]);
+
+  const barScale = d3.scaleLinear().domain([0, maxY]).range([0, chartHeight]);
+
+  const ref = useCanvas(
+    (canvas) => {
+      const context = canvas.getContext("2d");
+      drawAxisLabels(
+        context,
+        x,
+        y,
+        probParam,
+        chartWidth,
+        chartHeight,
+        xMin,
+        xMax,
+        5
+      );
+      drawBars(
+        canvas,
+        bins,
+        x,
+        y,
+        barScale,
+        data.length,
+        setHighlightedBin,
+        highlightedSubgroup,
+        subgroupParam
+      );
+      drawHighlightedBar(
+        context,
+        data,
+        highlightedObservation,
+        observationParam,
+        probParam,
+        maxY,
+        x,
+        y,
+        barScale
+      );
+      drawKde(
+        context,
+        data,
+        x,
+        y,
+        probParam,
+        subgroupParam,
+        highlightedSubgroup
+      );
+    },
+    width,
+    height,
+    [highlightedObservation, highlightedSubgroup]
+  );
+
+  return (
+    <Grid
+      item
+      style={{
+        position: "relative",
+      }}
+    >
+      <canvas ref={ref} />
+      <Tooltip
+        title={
+          highlightedBin ? getTooltipText(highlightedBin, subgroupParam) : ""
+        }
+        open={highlightedBin !== null}
+        arrow
+        placement="top"
+      >
+        <div
+          style={{
+            position: "absolute",
+            pointerEvents: "none",
+            left: highlightedBin
+              ? x(highlightedBin["x0"]) +
+                (x(highlightedBin["x1"]) - x(highlightedBin["x0"])) / 2
+              : null,
+            top: highlightedBin
+              ? chartHeight - barScale(highlightedBin.length / data.length)
+              : null,
+          }}
+        />
+      </Tooltip>
+    </Grid>
+  );
+};
+
 export default ProbabilityHistogram;
