@@ -166,7 +166,6 @@ const PackingCircles = ({
           style={{
             position: "absolute",
             pointerEvents: "none",
-            backgroundColor: "#000000",
             left: highlightedNode ? highlightedNode["x"] : null,
             top: highlightedNode
               ? highlightedNode["y"] - radius(highlightedNode[radiusParam]) + 5
