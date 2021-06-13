@@ -4,7 +4,7 @@ import data from "./data/cellmine.json";
 const Template = (args) => <PackingCirclesComponent {...args} />;
 
 export default {
-  title: "Components/PackingCircles",
+  title: "Components/PackingCircles/PackingCircles",
   component: PackingCirclesComponent,
 };
 
