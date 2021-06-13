@@ -19,7 +19,8 @@ import * as d3Array from "d3-array";
 import * as _ from "lodash";
 import Grid from "@material-ui/core/Grid";
 
-import { Tooltip } from "@material-ui/core";
+// import { Tooltip } from "@material-ui/core";
+import Tooltip from "../Tooltip/Tooltip";
 import { useCanvas } from "../utils/useCanvas";
 
 const HIGHLIGHTED_BAR_COLOR = "#eb5067";
@@ -363,29 +364,13 @@ const ProbabilityHistogram = ({
         position: "relative",
       }}
     >
-      <canvas ref={ref} />
       <Tooltip
-        title={
-          highlightedBin ? getTooltipText(highlightedBin, subgroupParam) : ""
-        }
-        open={highlightedBin !== null}
-        arrow
-        placement="top"
-      >
-        <div
-          style={{
-            position: "absolute",
-            pointerEvents: "none",
-            left: highlightedBin
-              ? x(highlightedBin["x0"]) +
-                (x(highlightedBin["x1"]) - x(highlightedBin["x0"])) / 2
-              : null,
-            top: highlightedBin
-              ? chartHeight - barScale(highlightedBin.length / data.length)
-              : null,
-          }}
-        />
-      </Tooltip>
+        getText={(bin) => getTooltipText(bin, subgroupParam)}
+        getX={(bin) => x(bin["x0"]) + (x(bin["x1"]) - x(bin["x0"])) / 2}
+        getY={(bin) => chartHeight - barScale(bin.length / data.length)}
+        data={highlightedBin}
+      />
+      <canvas ref={ref} />
     </Grid>
   );
 };

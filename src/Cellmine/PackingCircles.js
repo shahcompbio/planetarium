@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import * as d3 from "d3";
 import _ from "lodash";
 
-import { Tooltip } from "@material-ui/core";
+import Tooltip from "../Tooltip/Tooltip";
 import { useD3 } from "../utils/useD3";
 
 const PackingCircles = ({
@@ -155,24 +155,11 @@ const PackingCircles = ({
     <div style={{ position: "relative" }}>
       <svg ref={ref} />
       <Tooltip
-        title={
-          highlightedNode ? getTooltipText(highlightedNode, tooltipFields) : ""
-        }
-        open={highlightedNode !== null}
-        arrow
-        placement="top"
-      >
-        <div
-          style={{
-            position: "absolute",
-            pointerEvents: "none",
-            left: highlightedNode ? highlightedNode["x"] : null,
-            top: highlightedNode
-              ? highlightedNode["y"] - radius(highlightedNode[radiusParam]) + 5
-              : null,
-          }}
-        />
-      </Tooltip>
+        getText={(node) => getTooltipText(node, tooltipFields)}
+        getX={(node) => node["x"]}
+        getY={(node) => node["y"] - radius(node[radiusParam]) + 5}
+        data={highlightedNode}
+      />
     </div>
   );
 };
