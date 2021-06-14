@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import * as d3 from "d3";
 import { quantileSorted } from "d3-array";
 import _ from "lodash";
-import infoText from "../InfoText.js";
-import { InfoBar, useCanvas, useD3 } from "@shahlab/planetarium";
+import { useCanvas, useD3 } from "@shahlab/planetarium";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Typography from "@material-ui/core/Typography";
@@ -260,8 +258,6 @@ const UMAP = ({
   }
 
   const appendEventListenersToCanvas = (context, data, setSelected) => {
-    const scatterSelection = d3.select("#umapSelection");
-
     d3.select("#umapCanvas")
       .on("mousemove", function mousemove(e) {
         drawLasso(
@@ -431,9 +427,10 @@ const UMAP = ({
             return final;
           }, [])}
           colors={subsetColors}
+          totalCellCount={data.length}
           metadata={data.filter((cell) => highlighted[cell["cell_id"]])}
           chartDim={{
-            width: chartDim["width"] / 2,
+            width: chartDim["width"] / 3,
           }}
         />
       )}
