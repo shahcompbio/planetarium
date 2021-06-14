@@ -38,6 +38,7 @@ const VerticalLegend = ({ width, labels, title, setHighlighted }) => {
 
       const subsets = svg
         .selectAll("g")
+        .attr("pointer-events", "none")
         .data(labels)
         .enter()
         .append("g")
@@ -65,7 +66,7 @@ const VerticalLegend = ({ width, labels, title, setHighlighted }) => {
         .text((d) => d["label"]);
 
       const findLabelValue = (mouseY) => {
-        const index = Math.round((mouseY - offset) / STEP) - 1;
+        const index = Math.round((mouseY - offset) / STEP);
 
         if (0 <= index && index < labels.length) {
           return labels[index]["value"];
@@ -74,8 +75,8 @@ const VerticalLegend = ({ width, labels, title, setHighlighted }) => {
         return null;
       };
 
-      const mousemove = () => {
-        const mouseY = d3.event.clientY;
+      const mousemove = (d, i, e) => {
+        const mouseY = d3.mouse(e[0])[1];
 
         const label = findLabelValue(mouseY);
 
@@ -86,8 +87,8 @@ const VerticalLegend = ({ width, labels, title, setHighlighted }) => {
         setHighlighted("mouseout", null);
       };
 
-      const click = () => {
-        const mouseY = d3.event.clientY;
+      const click = (d, i, e) => {
+        const mouseY = d3.mouse(e[0])[1];
 
         const label = findLabelValue(mouseY);
 
