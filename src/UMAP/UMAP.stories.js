@@ -19,6 +19,7 @@ Subtype.args = {
   xParam: "UMAP_1",
   yParam: "UMAP_2",
   subsetParam: "subtype",
+  idParam: "cell_id",
 };
 
 export const SelectedSubtype = Template.bind({});
@@ -28,6 +29,7 @@ SelectedSubtype.args = {
   data: metadata,
   xParam: "UMAP_1",
   yParam: "UMAP_2",
+  idParam: "cell_id",
   subsetParam: "subtype",
   highlighted: "Activated CD8",
 };

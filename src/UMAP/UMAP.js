@@ -42,6 +42,8 @@ const POINT_RADIUS = 2;
 
 const PERCENTILE_RANGE = [0.25, 0.75];
 
+const LASSO_COLOR = "#c0392b";
+
 const drawPoints = (
   context,
   data,
@@ -50,15 +52,16 @@ const drawPoints = (
   xParam,
   yParam,
   subsetParam,
+  idParam,
   highlighted,
   colorScale
 ) => {
   context.beginPath();
   context.lineWidth = 1;
   context.globalAlpha = 1;
-
+  console.log(highlighted);
   data.forEach((point) => {
-    context.fillStyle = isHighlighted(point[subsetParam], highlighted)
+    context.fillStyle = highlighted.includes(point[idParam])
       ? colorScale(point[subsetParam])
       : NULL_POINT_COLOR;
 
@@ -102,6 +105,8 @@ const drawUMAPAxis = (context, chartHeight, xParam, yParam) => {
 
   context.fillStyle = AXIS_COLOR;
   context.strokeStyle = AXIS_COLOR;
+  context.lineWidth = 1;
+  context.lineCap = "butt";
   context.moveTo(START_X, START_Y);
   context.lineTo(START_X, START_Y - 50);
   context.stroke();
@@ -118,6 +123,32 @@ const drawUMAPAxis = (context, chartHeight, xParam, yParam) => {
   context.rotate((270 * Math.PI) / 180);
   context.fillText(yParam, -(START_Y - 52), START_X);
   context.restore();
+};
+
+const drawLasso = (context, polys) => {
+  context.strokeWidth = 1;
+  context.globalAlpha = 0.2;
+  context.strokeStyle = "purple";
+  context.fillStyle = "black";
+  context.fill();
+
+  const lassoPath = polys
+    .map((poly, idx) => `${idx === 0 ? "M" : " L"} ${poly[0]} ${poly[1]}`)
+    .reduce((str, poly) => str + poly, "");
+
+  const lassoSvgPath = new Path2D(lassoPath);
+  lassoSvgPath.closePath();
+
+  context.fill(lassoSvgPath, "evenodd");
+  context.closePath();
+
+  context.lineCap = "round";
+  context.beginPath();
+  context.lineWidth = 3;
+  polys.forEach((poly) => {
+    context.lineTo(poly[0], poly[1]);
+    context.stroke();
+  });
 };
 
 const drawSubsetLabels = (
@@ -211,6 +242,18 @@ const getBoxBounds = (data, xParam, yParam) => {
   return { xMin, xMax, yMin, yMax };
 };
 
+function isPointInPoly(poly, x, y) {
+  for (var c = false, i = -1, l = poly.length, j = l - 1; ++i < l; j = i)
+    ((poly[i][1] <= y && y < poly[j][1]) ||
+      (poly[j][1] <= y && y < poly[i][1])) &&
+      x <
+        ((poly[j][0] - poly[i][0]) * (y - poly[i][1])) /
+          (poly[j][1] - poly[i][1]) +
+          poly[i][0] &&
+      (c = !c);
+  return c;
+}
+
 const UMAP = ({
   width,
   height,
@@ -219,11 +262,14 @@ const UMAP = ({
   xParam,
   yParam,
   subsetParam,
-  onHover,
-  onClick,
-  setHighlighted,
+  idParam = "id",
+  onLasso = (data) => {},
+  onLegendHover = (value) => {},
+  onLegendClick = (value) => {},
 }) => {
   const [highlightedSubset, setHighlightedSubset] = useState(null);
+
+  const [lassoPolys, setLassoPolys] = useState([]);
 
   const highlightedOverall = highlightedSubset || highlighted;
 
@@ -267,22 +313,73 @@ const UMAP = ({
     color: subsetColors(value),
   }));
 
+  const getHighlighted = (data, polys, subsetValue) => {
+    const subsetFiltered = data.filter((datum) =>
+      isHighlighted(datum[subsetParam], subsetValue)
+    );
+
+    const polyFiltered =
+      polys.length > 0
+        ? subsetFiltered.filter((datum) =>
+            isPointInPoly(polys, xScale(datum[xParam]), yScale(datum[yParam]))
+          )
+        : subsetFiltered;
+
+    return polyFiltered;
+  };
+
   const setLegendMouse = (event, value) => {
     if (event === "mouseenter") {
       setHighlightedSubset(value);
-      setHighlighted(event, value);
+      onLegendHover(value);
     } else if (event === "mousedown") {
-      // setHighlightedSubset(value);
+      onLegendClick(value);
     } else if (event === "mouseout") {
       setHighlightedSubset(null);
-      setHighlighted(event, value);
+      onLegendHover(value);
     }
+  };
+
+  const addLassoHandler = (canvas, setLassoPolys, data, highlightedOverall) => {
+    const context = canvas.getContext("2d");
+
+    let polys = [];
+    d3.select(canvas)
+      .on("mousemove", (d, i, e) => {
+        if (d3.event.buttons === 1) {
+          const poly = d3.mouse(e[0]);
+          polys.push(poly);
+          context.lineTo(poly[0], poly[1]);
+          context.stroke();
+        }
+      })
+      .on("mousedown", function mousedown() {
+        polys = [];
+        context.lineCap = "round";
+        context.strokeStyle = LASSO_COLOR;
+        context.lineWidth = 3;
+
+        context.restore();
+        context.beginPath();
+      })
+      .on("mouseup", () => {
+        setLassoPolys(polys);
+        const lassoedData = getHighlighted(data, polys, highlightedOverall);
+        onLasso(lassoedData);
+      });
   };
 
   const canvasRef = useCanvas(
     (canvas) => {
       const context = canvas.getContext("2d");
       drawUMAPAxis(context, canvasHeight - AXIS_SPACE, xParam, yParam);
+
+      const highlightedIDs = getHighlighted(
+        data,
+        lassoPolys,
+        highlightedOverall
+      ).map((datum) => datum[idParam]);
+
       drawPoints(
         context,
         data,
@@ -291,7 +388,8 @@ const UMAP = ({
         xParam,
         yParam,
         subsetParam,
-        highlightedOverall,
+        idParam,
+        highlightedIDs,
         subsetColors
       );
 
@@ -304,10 +402,13 @@ const UMAP = ({
         yParam,
         highlightedOverall
       );
+
+      drawLasso(context, lassoPolys);
+      addLassoHandler(canvas, setLassoPolys, data, highlightedOverall);
     },
     canvasWidth,
     canvasHeight,
-    [highlightedOverall]
+    [highlightedOverall, lassoPolys]
   );
 
   return (
