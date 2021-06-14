@@ -107,6 +107,7 @@ const Fishtail = ({ data, subsetParam, width, height }) => {
 
     svg
       .append("g")
+      .attr("pointer-events", "none")
       .selectAll("path")
       .data(series)
       .join("path")
@@ -133,6 +134,7 @@ const Fishtail = ({ data, subsetParam, width, height }) => {
   const drawSlider = (svg, highlighted, selected) => {
     svg
       .append("g")
+      .attr("pointer-events", "none")
       .selectAll("rect")
       .data(timeValues)
       .enter()
@@ -151,16 +153,16 @@ const Fishtail = ({ data, subsetParam, width, height }) => {
         selected !== null && selected === d ? HIGHLIGHTED_BAR_COLOR : null
       );
 
-    const mousemove = () => {
-      const mouseX = d3.event.clientX;
+    const mousemove = (d, i, e) => {
+      const mouseX = d3.mouse(e[0])[0];
 
       const timepointIndex = Math.round(mouseX / timeScale.step());
 
       setHighlightedTimepoint(timeValues[timepointIndex]);
     };
 
-    const mousedown = () => {
-      const mouseX = d3.event.clientX;
+    const mousedown = (d, i, e) => {
+      const mouseX = d3.mouse(e[0])[0];
 
       const timepointIndex = Math.round(mouseX / timeScale.step());
 
@@ -169,7 +171,9 @@ const Fishtail = ({ data, subsetParam, width, height }) => {
     svg
       .on("mousemove", mousemove)
       .on("click", mousedown)
-      .on("mouseout", () => setHighlightedTimepoint(null));
+      .on("mouseout", () => {
+        setHighlightedTimepoint(null);
+      });
   };
 
   const ref = useD3(
