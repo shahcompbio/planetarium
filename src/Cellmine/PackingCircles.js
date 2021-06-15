@@ -21,7 +21,7 @@ const PackingCircles = ({ modifiedData, chartDim }) => {
     .attr("class", "d3-tip n")
     .attr("id", "circleTip")
     .html(
-      data =>
+      (data) =>
         "Analysis Ticket: " +
         data.jira_ticket +
         "<br/>Cell Count: " +
@@ -31,7 +31,7 @@ const PackingCircles = ({ modifiedData, chartDim }) => {
     )
     .offset([-10, 0]);
   const ref = useSvg(
-    svgRef => {
+    (svgRef) => {
       const svg = d3
         .select("#canvasSelection")
         .attr("viewBox", [0, 0, chartWidth, chartHeight]);
@@ -44,8 +44,8 @@ const PackingCircles = ({ modifiedData, chartDim }) => {
     canvasHeight,
     [modifiedData]
   );
-  const getSelection = modifiedData =>
-    modifiedData.map(node => "#" + node["jira_ticket"]).join(",");
+  const getSelection = (modifiedData) =>
+    modifiedData.map((node) => "#" + node["jira_ticket"]).join(",");
 
   useEffect(() => {
     if (modifiedData) {
@@ -55,7 +55,7 @@ const PackingCircles = ({ modifiedData, chartDim }) => {
           .on("mouseover", (data, index, element) => {
             tooltip.show(data, element[index]).attr("opacity", 0.2);
 
-            const selection = d3.selectAll(".node").filter(function(node) {
+            const selection = d3.selectAll(".node").filter(function (node) {
               return data.jira_ticket !== node.jira_ticket;
             });
             selection
@@ -63,7 +63,7 @@ const PackingCircles = ({ modifiedData, chartDim }) => {
               .style("fill", "#aecece")
               .attr("stroke-width", 1);
           })
-          .on("mouseleave", function(d) {
+          .on("mouseleave", function (d) {
             tooltip.hide(d, this);
             d3.selectAll(getSelection(modifiedData))
               .transition()
@@ -73,19 +73,19 @@ const PackingCircles = ({ modifiedData, chartDim }) => {
           .style("fill", "#307ca0");
       } else {
         const ticketText = modifiedData
-          .map(node => node["jira_ticket"])
+          .map((node) => node["jira_ticket"])
           .join(" ");
 
         d3.selectAll(".node")
           .on("mouseover", (data, index, element) => {
             tooltip.show(data, element[index]).attr("opacity", 0.2);
 
-            const selection = d3.selectAll(".node").filter(function(node) {
+            const selection = d3.selectAll(".node").filter(function (node) {
               return data.jira_ticket !== node.jira_ticket;
             });
             selection.transition().style("fill", "#aecece");
           })
-          .on("mouseleave", function(d) {
+          .on("mouseleave", function (d) {
             tooltip.hide(d, this);
             d3.selectAll(getSelection(modifiedData))
               .transition()
@@ -93,7 +93,7 @@ const PackingCircles = ({ modifiedData, chartDim }) => {
           });
 
         d3.selectAll(".node")
-          .filter(node => ticketText.indexOf(node["jira_ticket"]) === -1)
+          .filter((node) => ticketText.indexOf(node["jira_ticket"]) === -1)
           .on("mouseover", null)
           .on("mouseout", null)
           .transition()
@@ -109,7 +109,7 @@ const PackingCircles = ({ modifiedData, chartDim }) => {
     const radius = d3
       .scaleLinear()
       .range([12, 200])
-      .domain(d3.extent(data, d => d.num_sublibraries));
+      .domain(d3.extent(data, (d) => d.num_sublibraries));
 
     var node = svg
       .append("g")
@@ -118,14 +118,14 @@ const PackingCircles = ({ modifiedData, chartDim }) => {
       .enter()
       .append("circle")
       .attr("class", "circles")
-      .attr("id", d => d.jira_ticket)
+      .attr("id", (d) => d.jira_ticket)
       .attr("class", "node")
-      .attr("r", function(d) {
+      .attr("r", function (d) {
         return radius(d.num_sublibraries);
       })
-      .attr("cx", d => d.x)
-      .attr("cy", d => d.y)
-      .style("fill", function(d) {
+      .attr("cx", (d) => d.x)
+      .attr("cy", (d) => d.y)
+      .style("fill", function (d) {
         return "#307ca0";
       })
       .style("fill-opacity", 0.8)
@@ -134,12 +134,12 @@ const PackingCircles = ({ modifiedData, chartDim }) => {
       .on("mouseover", (data, index, element) => {
         tooltip.show(data, element[index]).attr("opacity", 0.2);
 
-        const selection = d3.selectAll(".node").filter(function(node) {
+        const selection = d3.selectAll(".node").filter(function (node) {
           return data.jira_ticket !== node.jira_ticket;
         });
         selection.transition().style("fill", "#aecece");
       })
-      .on("mouseleave", function(d) {
+      .on("mouseleave", function (d) {
         tooltip.hide(d, this);
         d3.selectAll(getSelection(modifiedData))
           .transition()
@@ -163,39 +163,39 @@ const PackingCircles = ({ modifiedData, chartDim }) => {
         d3
           .forceCollide()
           .strength(0.2)
-          .radius(function(d) {
+          .radius(function (d) {
             return radius(d.num_sublibraries) + 3;
           })
           .iterations(1)
       );
 
-    simulation.nodes(data).on("tick", function(d) {
+    simulation.nodes(data).on("tick", function (d) {
       node
-        .attr("cx", function(d) {
+        .attr("cx", function (d) {
           return d.x;
         })
-        .attr("cy", function(d) {
+        .attr("cy", function (d) {
           return d.y;
         });
     });
     saveSimulation(simulation);
   };
 
-  const drag = simulation => {
-    function dragstarted(d) {
-      if (!d3.event.active) simulation.alphaTarget(0.2).restart();
+  const drag = (simulation) => {
+    function dragstarted(event, d) {
+      if (!event.active) simulation.alphaTarget(0.2).restart();
       d.fx = d.x;
       d.fy = d.y;
     }
 
     function dragged(d) {
-      d.fx = d3.event.x;
-      d.fy = d3.event.y;
+      d.fx = event.x;
+      d.fy = event.y;
     }
 
     function dragended(d) {
-      d3.event.sourceEvent.stopPropagation();
-      if (!d3.event.active) simulation.alphaTarget(0);
+      event.sourceEvent.stopPropagation();
+      if (!event.active) simulation.alphaTarget(0);
       d.fx = null;
       d.fy = null;
     }
@@ -211,7 +211,7 @@ const PackingCircles = ({ modifiedData, chartDim }) => {
       style={{
         width: chartWidth,
         height: chartHeight,
-        position: "relative"
+        position: "relative",
       }}
       item
     >
@@ -222,7 +222,7 @@ const PackingCircles = ({ modifiedData, chartDim }) => {
           background: "rgb(190 214 214)",
           width: chartWidth,
           height: chartHeight,
-          position: "relative"
+          position: "relative",
         }}
       />
     </div>

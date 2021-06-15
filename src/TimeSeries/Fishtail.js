@@ -151,16 +151,16 @@ const Fishtail = ({ data, subsetParam, width, height }) => {
         selected !== null && selected === d ? HIGHLIGHTED_BAR_COLOR : null
       );
 
-    const mousemove = () => {
-      const mouseX = d3.event.clientX;
+    const mousemove = (event, d) => {
+      const mouseX = event.clientX;
 
       const timepointIndex = Math.round(mouseX / timeScale.step());
 
       setHighlightedTimepoint(timeValues[timepointIndex]);
     };
 
-    const mousedown = () => {
-      const mouseX = d3.event.clientX;
+    const mousedown = (event, d) => {
+      const mouseX = event.clientX;
 
       const timepointIndex = Math.round(mouseX / timeScale.step());
 

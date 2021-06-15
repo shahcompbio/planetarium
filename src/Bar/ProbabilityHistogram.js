@@ -262,8 +262,8 @@ const drawBars = (
   }
 
   d3.select(canvas)
-    .on("mousemove", function () {
-      var mouseX = d3.event.layerX || d3.event.offsetX;
+    .on("mousemove", function (event, d) {
+      var mouseX = event.layerX || event.offsetX;
       if (mouseX >= x.range()[0] && mouseX <= x.range()[1]) {
         const tickSize = (x.range()[1] - x.range()[0]) / NUM_TICKS;
         x.ticks(NUM_TICKS).forEach((tick, index) => {

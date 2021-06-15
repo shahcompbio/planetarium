@@ -72,8 +72,8 @@ const CopyNumberHeatmap = ({
   const indicatorRef = useD3(
     (svg) => {
       svg
-        .on("mousemove", function () {
-          const coordinates = d3.mouse(this);
+        .on("mousemove", (event) => {
+          const coordinates = d3.pointer(event);
 
           const rowIndex = Math.max(0, Math.floor(coordinates[1] / rowHeight));
           if (hoveredRow !== rowIndex) {
@@ -158,10 +158,10 @@ const Minimap = ({
       const boxSize = rowsHighlighted * ratio;
       const startingPoint = Math.floor(ratio * start);
 
-      function brushed() {
-        const selection = d3.event.selection;
+      function brushed(event, d) {
+        const selection = event.selection;
         const newStart = Math.floor(selection[0] / ratio);
-        if (d3.event.sourceEvent) {
+        if (event.sourceEvent) {
           onChange(Math.max(0, newStart));
         }
       }

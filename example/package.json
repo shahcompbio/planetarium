@@ -14,7 +14,7 @@
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
     "@shahlab/planetarium": "link:..",
-    "d3": "^6.7.0",
+    "d3": "^7.0.0",
     "d3-array": "^2.12.1",
     "d3-dsv": "^2.0.0",
     "d3-hexbin": "^0.2.2",

@@ -387,8 +387,8 @@ const Plot = ({
 
   //chromosomes, chromMap, categoryWidth
   const drawHeatmap = (segs, chromosomes, context) => {
-    d3.select("#heatSelection").on("mousemove", function () {
-      var coordinates = d3.mouse(this);
+    d3.select("#heatSelection").on("mousemove", (event) => {
+      var coordinates = d3.pointer(event);
       var alreadySelected = d3.select(this).attr("class");
       if (
         alreadySelected === null ||

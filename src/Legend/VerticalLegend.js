@@ -74,8 +74,8 @@ const VerticalLegend = ({ width, labels, title, setHighlighted }) => {
         return null;
       };
 
-      const mousemove = () => {
-        const mouseY = d3.event.clientY;
+      const mousemove = (event, d) => {
+        const mouseY = event.clientY;
 
         const label = findLabelValue(mouseY);
 
@@ -86,8 +86,8 @@ const VerticalLegend = ({ width, labels, title, setHighlighted }) => {
         setHighlighted("mouseout", null);
       };
 
-      const click = () => {
-        const mouseY = d3.event.clientY;
+      const click = (event, d) => {
+        const mouseY = event.clientY;
 
         const label = findLabelValue(mouseY);
 
