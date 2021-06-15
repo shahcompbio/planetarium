@@ -430,6 +430,7 @@ const UMAP = ({
             }
             return final;
           }, [])}
+          totalCellCount={data.length}
           colors={subsetColors}
           metadata={data.filter((cell) => highlighted[cell["cell_id"]])}
           chartDim={{

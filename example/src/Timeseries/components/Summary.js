@@ -1,58 +1,63 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import * as d3 from "d3";
-import { quantileSorted } from "d3-array";
 import _ from "lodash";
-import infoText from "../InfoText.js";
-import { InfoBar, useCanvas, useD3 } from "@shahlab/planetarium";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Doughnut from "./Doughnut.js";
 
 import { makeStyles } from "@material-ui/core/styles";
-import { CONSTANTS } from "../config";
 
 const PADDING = 10;
 const TITLE_HEIGHT = 30;
 
-const AXIS_SPACE = 20;
-
-const AXIS_COLOR = "#000000";
-
-const NULL_POINT_COLOR = "#e8e8e8";
-const POINT_RADIUS = 2;
-const PERCENTILE_RANGE = [0.25, 0.75];
-const LEGEND_SQUARE_LENGTH = 10;
-const LEGEND_SQUARE_SPACING = 8;
 const useStyles = makeStyles({
   root: {
     minWidth: 275,
     margin: "10px 10px 0px 10px",
-    padding: "0px 0px",
+    padding: "0px 0px 10px 0px",
     float: "right",
-    textAlign: "center",
+    textAlign: "left",
   },
+  doughnutCard: {
+    margin: "10px 10px 0px 10px",
+    float: "right",
+    textAlign: "left",
+  },
+  doughnutContent: {
+    paddingBottom: "0 !important",
+  },
+  geneCard: {
+    minWidth: 275,
+    margin: "10px 10px 0px 10px",
+    padding: "0px 0px 0px 0px",
+    float: "right",
+    textAlign: "left",
+  },
+  cellCountTitle: {
+    fontWeight: "bold",
+    margin: 0,
+  },
+  cellCountTotalTitle: {
+    color: "grey",
+  },
+  cellCountText: { margin: 0 },
   cellCountContent: {
     margin: "0px",
-    padding: "0px 0px",
+    padding: "10px 10px",
     paddingBottom: "0px !important",
-    textAlign: "center",
+    textAlign: "left",
   },
+  geneTitle: {},
   title: { marginBottom: 0 },
   button: { float: "right" },
 });
 
-const Summary = ({ metadata, data, chartDim, colors }) => {
-  const [context, saveContext] = useState();
-  const canvasWidth = chartDim["width"] - PADDING - PADDING;
-  const canvasHeight = chartDim["height"] - TITLE_HEIGHT;
+const Summary = ({ metadata, data, chartDim, colors, totalCellCount }) => {
   const [topNum, setTopNum] = useState(10);
-
-  console.log(metadata);
+  console.log(data);
   const sumData = Object.keys(data).reduce((final, cellId) => {
     const genesPerCell = Object.keys(data[cellId]);
     genesPerCell.map((gene) => {
@@ -77,9 +82,6 @@ const Summary = ({ metadata, data, chartDim, colors }) => {
   const cloneBreakdown = _.groupBy(metadata, (d) => d["clone"]);
   const cellCount = metadata.length;
 
-  const chartWidth = canvasWidth - AXIS_SPACE;
-  const chartHeight = canvasHeight - AXIS_SPACE - PADDING - PADDING;
-
   const classes = useStyles();
   return (
     <Paper
@@ -97,20 +99,40 @@ const Summary = ({ metadata, data, chartDim, colors }) => {
       >
         <Card className={classes.root} variant="outlined">
           <CardContent className={classes.cellCountContent}>
-            <Typography
-              display="inline"
-              className={classes.title}
-              variant="h6"
-              gutterBottom
-            >
-              Cell Count: {cellCount}
-            </Typography>{" "}
+            <div>
+              <Typography
+                display="inline"
+                className={classes.cellCountTitle}
+                variant="h3"
+                gutterBottom
+              >
+                {cellCount}
+              </Typography>
+              <Typography
+                display="inline"
+                className={classes.cellCountTotalTitle}
+                variant="h4"
+                gutterBottom
+              >
+                /{totalCellCount}
+              </Typography>
+            </div>
+            <div>
+              <Typography
+                display="inline"
+                className={classes.cellCountText}
+                variant="h6"
+                gutterBottom
+              >
+                Cell Count
+              </Typography>
+            </div>
           </CardContent>
         </Card>
-        <Card className={classes.root} variant="outlined">
+        <Card className={classes.geneCard} variant="outlined">
           <CardContent>
             <Typography
-              className={classes.title}
+              className={classes.geneTitle}
               color="textSecondary"
               gutterBottom
             >
@@ -118,13 +140,15 @@ const Summary = ({ metadata, data, chartDim, colors }) => {
             </Typography>
             {topTenAverge.map((gene) => (
               <div>
-                {gene} - {average[gene]}
+                <span>{d3.format("2s")(average[gene])}</span>
+                <span style={{ width: 40, display: "inline-block" }} />
+                <span style={{ fontWeight: "bold" }}>{gene}</span>
               </div>
             ))}
           </CardContent>
         </Card>
-        <Card className={classes.root} variant="outlined">
-          <CardContent>
+        <Card className={classes.doughnutCard} variant="outlined">
+          <CardContent className={classes.doughnutContent}>
             <Typography
               className={classes.title}
               color="textSecondary"
@@ -145,7 +169,7 @@ const Summary = ({ metadata, data, chartDim, colors }) => {
                   return final;
                 }, [])}
               colors={colors}
-              height={300}
+              height={180}
               width={chartDim["width"]}
               totalCount={cellCount}
             />

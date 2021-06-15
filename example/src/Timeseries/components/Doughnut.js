@@ -1,42 +1,17 @@
-import React, { useState } from "react";
-import _ from "lodash";
+import React from "react";
 
 import * as d3 from "d3";
 import { useD3 } from "@shahlab/planetarium";
 import { Grid } from "@material-ui/core";
 
-const COLOR_ARRAY = [
-  "#5E4FA2",
-  "#3288BD",
-  "#66C2A5",
-  "#FEE08B",
-  "#FDAE61",
-  "#F46D43",
-  "#D53E4F",
-  "#c9cc76",
-  "#9E0142",
-  "#C6AEFF",
-  "#BDD8FF",
-  "#BDFFB2",
-  "#FFC8AE",
-  "#FF9FBB",
-  "#b2dbd6",
-  "#ffd470",
-];
-
 const Doughnut = ({ data, colors, totalCount, width, height }) => {
-  const chartWidth = width;
-  const chartHeight = height;
   const radius = Math.min(width, height) / 2;
   const arc = d3
     .arc()
-    .innerRadius(radius * 0.4)
+    .innerRadius(radius * 0.3)
     .outerRadius(radius * 0.65);
 
-  const arcLabel = d3
-    .arc()
-    .innerRadius(radius)
-    .outerRadius(radius * 0.8);
+  const arcLabel = d3.arc().innerRadius(radius).outerRadius(radius);
 
   const drawArea = (svg) => {
     const pie = d3
@@ -70,8 +45,8 @@ const Doughnut = ({ data, colors, totalCount, width, height }) => {
               d.data._expanded = true;
               var a =
                 d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
-              x = Math.cos(a) * 15;
-              y = Math.sin(a) * 15;
+              x = Math.cos(a) * 10;
+              y = Math.sin(a) * 10;
               d.data._translate = { x: x, y: y };
             }
 
@@ -82,13 +57,10 @@ const Doughnut = ({ data, colors, totalCount, width, height }) => {
       .on("mouseout", function (d) {
         d3.select(this)
           .transition()
+          .delay(200)
           .duration(500)
           .attr("transform", function (d) {
             d.data._expanded = false;
-
-            return (
-              "translate(-" + d.data._translate + ",-" + d.data._translate + ")"
-            );
           });
         d3.select("#label-" + d.data.key).style("font-weight", "normal");
       });
@@ -117,8 +89,7 @@ const Doughnut = ({ data, colors, totalCount, width, height }) => {
         text
           .filter((d) => d.endAngle - d.startAngle > 0.25)
           .append("tspan")
-          //  .attr("x", 0)
-          //  .attr("y", "-0.7em")
+
           .attr("fill-opacity", 0.7)
           .text(
             (d) =>
@@ -138,16 +109,6 @@ const Doughnut = ({ data, colors, totalCount, width, height }) => {
     height,
     [data]
   );
-
-  /*const setHighlighted = (event, value) => {
-    if (event === "mouseenter") {
-      setHighlightedSubset(value);
-    } else if (event === "mousedown") {
-      // setHighlightedSubset(value);
-    } else if (event === "mouseout") {
-      setHighlightedSubset(null);
-    }
-  };*/
 
   return (
     <Grid container direction="row" style={{ padding: 0 }}>
