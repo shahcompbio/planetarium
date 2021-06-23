@@ -59,7 +59,6 @@ const drawPoints = (
   context.beginPath();
   context.lineWidth = 1;
   context.globalAlpha = 1;
-  console.log(highlighted);
   data.forEach((point) => {
     context.fillStyle = highlighted.includes(point[idParam])
       ? colorScale(point[subsetParam])
@@ -126,9 +125,7 @@ const drawUMAPAxis = (context, chartHeight, xParam, yParam) => {
 };
 
 const drawLasso = (context, polys) => {
-  context.strokeWidth = 1;
   context.globalAlpha = 0.2;
-  context.strokeStyle = "purple";
   context.fillStyle = "black";
   context.fill();
 
@@ -141,14 +138,6 @@ const drawLasso = (context, polys) => {
 
   context.fill(lassoSvgPath, "evenodd");
   context.closePath();
-
-  context.lineCap = "round";
-  context.beginPath();
-  context.lineWidth = 3;
-  polys.forEach((poly) => {
-    context.lineTo(poly[0], poly[1]);
-    context.stroke();
-  });
 };
 
 const drawSubsetLabels = (
@@ -258,20 +247,22 @@ const UMAP = ({
   width,
   height,
   data,
-  highlighted = null,
+  subset = null,
   xParam,
   yParam,
   subsetParam,
   idParam = "id",
+  disable = false,
   onLasso = (data) => {},
   onLegendHover = (value) => {},
   onLegendClick = (value) => {},
 }) => {
   const [highlightedSubset, setHighlightedSubset] = useState(null);
+  const [selectedSubset, setSelectedSubset] = useState(null);
 
   const [lassoPolys, setLassoPolys] = useState([]);
 
-  const highlightedOverall = highlightedSubset || highlighted;
+  const highlightedOverall = highlightedSubset || subset || selectedSubset;
 
   const canvasWidth = width - LEGEND_WIDTH;
   const canvasHeight = height;
@@ -328,24 +319,22 @@ const UMAP = ({
     return polyFiltered;
   };
 
-  const setLegendMouse = (event, value) => {
-    if (event === "mouseenter") {
-      setHighlightedSubset(value);
-      onLegendHover(value);
-    } else if (event === "mousedown") {
-      onLegendClick(value);
-    } else if (event === "mouseout") {
-      setHighlightedSubset(null);
-      onLegendHover(value);
-    }
-  };
-
-  const addLassoHandler = (canvas, setLassoPolys, data, highlightedOverall) => {
+  const addLassoHandler = (
+    canvas,
+    setLassoPolys,
+    data,
+    highlightedOverall,
+    disable
+  ) => {
     const context = canvas.getContext("2d");
 
+    const disableLasso = !disable && highlightedOverall !== null;
     let polys = [];
     d3.select(canvas)
       .on("mousemove", (d, i, e) => {
+        if (disableLasso) {
+          return;
+        }
         if (d3.event.buttons === 1) {
           const poly = d3.mouse(e[0]);
           polys.push(poly);
@@ -354,6 +343,9 @@ const UMAP = ({
         }
       })
       .on("mousedown", function mousedown() {
+        if (disableLasso) {
+          return;
+        }
         polys = [];
         context.lineCap = "round";
         context.strokeStyle = LASSO_COLOR;
@@ -363,6 +355,9 @@ const UMAP = ({
         context.beginPath();
       })
       .on("mouseup", () => {
+        if (disableLasso) {
+          return;
+        }
         setLassoPolys(polys);
         const lassoedData = getHighlighted(data, polys, highlightedOverall);
         onLasso(lassoedData);
@@ -404,11 +399,12 @@ const UMAP = ({
       );
 
       drawLasso(context, lassoPolys);
-      addLassoHandler(canvas, setLassoPolys, data, highlightedOverall);
+
+      addLassoHandler(canvas, setLassoPolys, data, highlightedOverall, disable);
     },
     canvasWidth,
     canvasHeight,
-    [highlightedOverall, lassoPolys]
+    [highlightedOverall, lassoPolys, disable]
   );
 
   return (
@@ -422,7 +418,15 @@ const UMAP = ({
           width={LEGEND_WIDTH}
           height={chartHeight}
           labels={subsetLabels}
-          setHighlighted={setLegendMouse}
+          disable={disable || lassoPolys.length > 0}
+          onHover={(value) => {
+            setHighlightedSubset(value);
+            onLegendHover(value);
+          }}
+          onClick={(value) => {
+            setSelectedSubset(value);
+            onLegendClick(value);
+          }}
         />
       </Grid>
     </Grid>

@@ -127,7 +127,7 @@ const VerticalLegend = ({
     },
     legendWidth,
     legendHeight,
-    [selected]
+    [selected, disable]
   );
 
   return <svg ref={svgRef} />;

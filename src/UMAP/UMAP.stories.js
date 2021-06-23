@@ -31,5 +31,17 @@ SelectedSubtype.args = {
   yParam: "UMAP_2",
   idParam: "cell_id",
   subsetParam: "subtype",
-  highlighted: "Activated CD8",
+  subset: "Activated CD8",
+};
+
+export const Static = Template.bind({});
+Static.args = {
+  width: 800,
+  height: 600,
+  data: metadata,
+  xParam: "UMAP_1",
+  yParam: "UMAP_2",
+  idParam: "cell_id",
+  subsetParam: "subtype",
+  disable: true,
 };
