@@ -328,7 +328,7 @@ const UMAP = ({
   ) => {
     const context = canvas.getContext("2d");
 
-    const disableLasso = !disable && highlightedOverall !== null;
+    const disableLasso = disable || highlightedOverall !== null;
     let polys = [];
     d3.select(canvas)
       .on("mousemove", (d, i, e) => {
@@ -416,7 +416,6 @@ const UMAP = ({
         <VerticalLegend
           title={subsetParam}
           width={LEGEND_WIDTH}
-          height={chartHeight}
           labels={subsetLabels}
           disable={disable || lassoPolys.length > 0}
           onHover={(value) => {
