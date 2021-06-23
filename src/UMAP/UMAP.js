@@ -253,6 +253,7 @@ const UMAP = ({
   subsetParam,
   idParam = "id",
   disable = false,
+  colorScale = null,
   onLasso = (data) => {},
   onLegendHover = (value) => {},
   onLegendClick = (value) => {},
@@ -291,12 +292,14 @@ const UMAP = ({
   const subsetGroups = _.groupBy(data, subsetParam);
   const subsetValues = Object.keys(subsetGroups).sort();
 
-  const subsetColors = d3
-    .scaleOrdinal()
-    .domain(subsetValues)
-    .range(
-      COLOR_ARRAY.slice(0, Math.min(subsetValues.length, COLOR_ARRAY.length))
-    );
+  const subsetColors =
+    colorScale ||
+    d3
+      .scaleOrdinal()
+      .domain(subsetValues)
+      .range(
+        COLOR_ARRAY.slice(0, Math.min(subsetValues.length, COLOR_ARRAY.length))
+      );
 
   const subsetLabels = subsetValues.map((value) => ({
     value,
@@ -404,7 +407,7 @@ const UMAP = ({
     },
     canvasWidth,
     canvasHeight,
-    [highlightedOverall, lassoPolys, disable]
+    [data, highlightedOverall, lassoPolys, disable]
   );
 
   return (
