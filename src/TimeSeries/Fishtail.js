@@ -36,14 +36,29 @@ const COLOR_ARRAY = [
   "#ffd470",
 ];
 
-const Fishtail = ({ data, subsetParam, width, height }) => {
+const Fishtail = ({
+  data,
+  subsetParam,
+  timepointParam = "timepoint",
+  width,
+  height,
+  timepoint = null,
+  subset = null,
+  disable = false,
+  colorScale = null,
+  onLegendHover = (value) => {},
+  onLegendClick = (value) => {},
+  onTimepointHover = (timepoint) => {},
+  onTimepointClick = (timepoint) => {},
+}) => {
   const [highlightedTimepoint, setHighlightedTimepoint] = useState(null);
-  const [selectedTimepoint, setSelectedTimepoint] = useState(null);
+  const [selectedTimepoint, setSelectedTimepoint] = useState(timepoint);
   const [highlightedSubset, setHighlightedSubset] = useState(null);
+  const [selectedSubset, setSelectedSubset] = useState(subset);
   const chartWidth = width - 2 * PADDING;
   const chartHeight = height - AXIS_HEIGHT;
 
-  const timeValues = _.uniq(data.map((datum) => datum["timepoint"])).sort(
+  const timeValues = _.uniq(data.map((datum) => datum[timepointParam])).sort(
     sortAlphanumeric
   );
 
@@ -52,7 +67,9 @@ const Fishtail = ({ data, subsetParam, width, height }) => {
   );
 
   const counts = timeValues.map((timepoint) => {
-    const timeData = data.filter((datum) => datum["timepoint"] === timepoint);
+    const timeData = data.filter(
+      (datum) => datum[timepointParam] === timepoint
+    );
 
     const subsetCounts = subsetValues.map(
       (subset) =>
@@ -76,12 +93,14 @@ const Fishtail = ({ data, subsetParam, width, height }) => {
     .domain(timeValues)
     .range([PADDING, PADDING + chartWidth]);
 
-  const color = d3
-    .scaleOrdinal()
-    .domain(subsetValues)
-    .range(
-      COLOR_ARRAY.slice(0, Math.min(subsetValues.length, COLOR_ARRAY.length))
-    );
+  const color =
+    colorScale ||
+    d3
+      .scaleOrdinal()
+      .domain(subsetValues)
+      .range(
+        COLOR_ARRAY.slice(0, Math.min(subsetValues.length, COLOR_ARRAY.length))
+      );
 
   const drawArea = (svg) => {
     const series = d3
@@ -105,6 +124,7 @@ const Fishtail = ({ data, subsetParam, width, height }) => {
       .y0((d) => yScale(d[0]))
       .y1((d) => (Number.isNaN(d[1]) ? yScale(d[0]) : yScale(d[1])));
 
+    const highlightedArea = highlightedSubset || selectedSubset;
     svg
       .append("g")
       .attr("pointer-events", "none")
@@ -112,7 +132,7 @@ const Fishtail = ({ data, subsetParam, width, height }) => {
       .data(series)
       .join("path")
       .attr("fill", ({ key }) =>
-        isHighlighted(key, highlightedSubset) ? color(key) : NULL_AREA_COLOR
+        isHighlighted(key, highlightedArea) ? color(key) : NULL_AREA_COLOR
       )
       .attr("d", area)
       .attr("stroke", "#FFFFFF")
@@ -157,22 +177,41 @@ const Fishtail = ({ data, subsetParam, width, height }) => {
       const mouseX = d3.mouse(e[0])[0];
 
       const timepointIndex = Math.round(mouseX / timeScale.step());
+      const timepointValue = timeValues[timepointIndex];
 
-      setHighlightedTimepoint(timeValues[timepointIndex]);
+      setHighlightedTimepoint(timepointValue);
+      onTimepointHover(timepointValue);
     };
 
     const mousedown = (d, i, e) => {
       const mouseX = d3.mouse(e[0])[0];
 
       const timepointIndex = Math.round(mouseX / timeScale.step());
+      const timepointValue = timeValues[timepointIndex];
+      const selectedValue = timepointValue === selected ? null : timepointValue;
 
-      setSelectedTimepoint(timeValues[timepointIndex]);
+      setSelectedTimepoint(selectedValue);
+      onTimepointClick(selectedValue);
     };
     svg
-      .on("mousemove", mousemove)
-      .on("click", mousedown)
+      .on("mousemove", (d, i, e) => {
+        if (disable) {
+          return;
+        }
+        mousemove(d, i, e);
+      })
+      .on("click", (d, i, e) => {
+        if (disable) {
+          return;
+        }
+        mousedown(d, i, e);
+      })
       .on("mouseout", () => {
+        if (disable) {
+          return;
+        }
         setHighlightedTimepoint(null);
+        onTimepointHover(null);
       });
   };
 
@@ -184,18 +223,14 @@ const Fishtail = ({ data, subsetParam, width, height }) => {
     },
     width,
     height,
-    [highlightedTimepoint, selectedTimepoint, highlightedSubset]
+    [
+      highlightedTimepoint,
+      selectedTimepoint,
+      highlightedSubset,
+      selectedSubset,
+      disable,
+    ]
   );
-
-  const setHighlighted = (event, value) => {
-    if (event === "mouseenter") {
-      setHighlightedSubset(value);
-    } else if (event === "mousedown") {
-      // setHighlightedSubset(value);
-    } else if (event === "mouseout") {
-      setHighlightedSubset(null);
-    }
-  };
 
   return (
     <Grid container direction="row" style={{ padding: 0 }}>
@@ -211,7 +246,15 @@ const Fishtail = ({ data, subsetParam, width, height }) => {
             label: value,
             color: color(value),
           }))}
-          setHighlighted={setHighlighted}
+          disable={disable}
+          onHover={(value) => {
+            setHighlightedSubset(value);
+            onLegendHover(value);
+          }}
+          onClick={(value) => {
+            setSelectedSubset(value);
+            onLegendClick(value);
+          }}
         />
       </Grid>
     </Grid>

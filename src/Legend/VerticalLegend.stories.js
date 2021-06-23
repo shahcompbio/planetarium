@@ -34,7 +34,6 @@ Default.args = {
     label: `Label ${value}`,
     color: COLORS[value],
   })),
-  setHighlighted: () => {},
 };
 
 export const Titleless = Template.bind({});
@@ -45,5 +44,15 @@ Titleless.args = {
     label: `Label ${value}`,
     color: COLORS[value],
   })),
-  setHighlighted: () => {},
+};
+
+export const Static = Template.bind({});
+Static.args = {
+  width: 150,
+  labels: [1, 2, 3, 4].map((value) => ({
+    value,
+    label: `Label ${value}`,
+    color: COLORS[value],
+  })),
+  disable: true,
 };

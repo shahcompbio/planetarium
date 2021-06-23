@@ -10,3 +10,30 @@ export default {
 
 export const Default = Template.bind({});
 Default.args = { width: 700, height: 400, data, subsetParam: "clone" };
+
+export const Subset = Template.bind({});
+Subset.args = {
+  width: 700,
+  height: 400,
+  data,
+  subsetParam: "clone",
+  subset: "A",
+};
+
+export const Timepoint = Template.bind({});
+Timepoint.args = {
+  width: 700,
+  height: 400,
+  data,
+  subsetParam: "clone",
+  timepoint: "X8",
+};
+
+export const Static = Template.bind({});
+Static.args = {
+  width: 700,
+  height: 400,
+  data,
+  subsetParam: "clone",
+  disable: true,
+};

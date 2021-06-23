@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import * as d3 from "d3";
 
 import { useD3 } from "../utils/useD3";
@@ -10,7 +10,15 @@ const STEP = LEGEND_SQUARE_LENGTH + LEGEND_SQUARE_SPACING;
 
 const PADDING = 20;
 
-const VerticalLegend = ({ width, labels, title, setHighlighted }) => {
+const VerticalLegend = ({
+  width,
+  labels,
+  title,
+  disable = false,
+  onClick = (value) => {},
+  onHover = (value) => value,
+}) => {
+  const [selected, setSelected] = useState(null);
   const legendWidth = width;
   const legendHeight = PADDING * 2 + labels.length * STEP;
 
@@ -42,7 +50,7 @@ const VerticalLegend = ({ width, labels, title, setHighlighted }) => {
         .data(labels)
         .enter()
         .append("g")
-        .attr("cursor", "pointer");
+        .attr("cursor", disable ? null : "pointer");
 
       subsets
         .append("rect")
@@ -80,11 +88,11 @@ const VerticalLegend = ({ width, labels, title, setHighlighted }) => {
 
         const label = findLabelValue(mouseY);
 
-        setHighlighted(label === null ? "mouseout" : "mouseenter", label);
+        onHover(label);
       };
 
       const mouseout = () => {
-        setHighlighted("mouseout", null);
+        onHover(null);
       };
 
       const click = (d, i, e) => {
@@ -92,17 +100,34 @@ const VerticalLegend = ({ width, labels, title, setHighlighted }) => {
 
         const label = findLabelValue(mouseY);
 
-        setHighlighted("mousedown", label);
+        const selectedValue = label === selected ? null : label;
+        setSelected(selectedValue);
+        onClick(selectedValue);
       };
 
       svg
-        .on("mousemove", mousemove)
-        .on("mouseout", mouseout)
-        .on("click", click);
+        .on("mousemove", (d, i, e) => {
+          if (disable) {
+            return;
+          }
+          mousemove(d, i, e);
+        })
+        .on("mouseout", () => {
+          if (disable) {
+            return;
+          }
+          mouseout();
+        })
+        .on("click", (d, i, e) => {
+          if (disable) {
+            return;
+          }
+          click(d, i, e);
+        });
     },
     legendWidth,
     legendHeight,
-    []
+    [selected]
   );
 
   return <svg ref={svgRef} />;
