@@ -224,6 +224,9 @@ const Fishtail = ({
     width,
     height,
     [
+      data,
+      timepoint,
+      subset,
       highlightedTimepoint,
       selectedTimepoint,
       highlightedSubset,
