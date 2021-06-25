@@ -1,24 +1,38 @@
 import React from "react";
 
 import * as d3 from "d3";
-import { useD3 } from "@shahlab/planetarium";
-import { Grid } from "@material-ui/core";
+import { useD3, sortAlphanumeric } from "@shahlab/planetarium";
+import _ from "lodash";
 
-const Doughnut = ({ data, colors, totalCount, width, height }) => {
+const Doughnut = ({ data, colors, width, height, subsetParam }) => {
+  const totalCount = data.length;
+  const subsetValues = _.uniq(data.map((datum) => datum[subsetParam])).sort(
+    sortAlphanumeric
+  );
+
+  const subsetCounts = _.groupBy(data, (datum) => datum[subsetParam]);
+  const subsets = subsetValues.map((subset) => ({
+    key: subset,
+    value: subsetCounts[subset],
+  }));
+
   const radius = Math.min(width, height) / 2;
   const arc = d3
     .arc()
     .innerRadius(radius * 0.3)
     .outerRadius(radius * 0.65);
 
-  const arcLabel = d3.arc().innerRadius(radius).outerRadius(radius);
+  const arcLabel = d3
+    .arc()
+    .innerRadius(radius * 0.9)
+    .outerRadius(radius * 0.9);
 
   const drawArea = (svg) => {
     const pie = d3
       .pie()
       .value((d) => d["value"].length)
       .sort(null);
-    const arcs = pie(data);
+    const arcs = pie(subsets);
 
     const path = svg
       .append("g")
@@ -110,13 +124,7 @@ const Doughnut = ({ data, colors, totalCount, width, height }) => {
     [data]
   );
 
-  return (
-    <Grid container direction="row" style={{ padding: 0 }}>
-      <Grid item>
-        <svg ref={ref} />
-      </Grid>
-    </Grid>
-  );
+  return <svg ref={ref} />;
 };
 
 export default Doughnut;

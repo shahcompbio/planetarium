@@ -52,9 +52,9 @@ const Fishtail = ({
   onTimepointClick = (timepoint) => {},
 }) => {
   const [highlightedTimepoint, setHighlightedTimepoint] = useState(null);
-  const [selectedTimepoint, setSelectedTimepoint] = useState(timepoint);
+  const [selectedTimepoint, setSelectedTimepoint] = useState(null);
   const [highlightedSubset, setHighlightedSubset] = useState(null);
-  const [selectedSubset, setSelectedSubset] = useState(subset);
+  const [selectedSubset, setSelectedSubset] = useState(null);
   const chartWidth = width - 2 * PADDING;
   const chartHeight = height - AXIS_HEIGHT;
 
@@ -65,6 +65,10 @@ const Fishtail = ({
   const subsetValues = _.uniq(data.map((datum) => datum[subsetParam])).sort(
     sortAlphanumeric
   );
+
+  const subsetOverall = highlightedSubset || subset || selectedSubset;
+  const timepointOverall =
+    highlightedTimepoint || timepoint || selectedTimepoint;
 
   const counts = timeValues.map((timepoint) => {
     const timeData = data.filter(
@@ -124,7 +128,6 @@ const Fishtail = ({
       .y0((d) => yScale(d[0]))
       .y1((d) => (Number.isNaN(d[1]) ? yScale(d[0]) : yScale(d[1])));
 
-    const highlightedArea = highlightedSubset || selectedSubset;
     svg
       .append("g")
       .attr("pointer-events", "none")
@@ -132,7 +135,7 @@ const Fishtail = ({
       .data(series)
       .join("path")
       .attr("fill", ({ key }) =>
-        isHighlighted(key, highlightedArea) ? color(key) : NULL_AREA_COLOR
+        isHighlighted(key, subsetOverall) ? color(key) : NULL_AREA_COLOR
       )
       .attr("d", area)
       .attr("stroke", "#FFFFFF")
@@ -219,18 +222,16 @@ const Fishtail = ({
     (svg) => {
       drawArea(svg);
       drawAxis(svg);
-      drawSlider(svg, highlightedTimepoint, selectedTimepoint);
+      drawSlider(svg, highlightedTimepoint, timepoint || selectedTimepoint);
     },
     width,
     height,
     [
       data,
-      timepoint,
-      subset,
       highlightedTimepoint,
       selectedTimepoint,
-      highlightedSubset,
-      selectedSubset,
+      timepoint,
+      subsetOverall,
       disable,
     ]
   );

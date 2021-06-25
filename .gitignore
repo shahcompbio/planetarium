@@ -3,11 +3,13 @@
 
 *.tsv
 *.zip
+*.h5ad
 
 # dependencies
 node_modules
 /.pnp
 .pnp.js
+
 
 
 # builds

@@ -1,92 +1,181 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import _ from "lodash";
 import "./index.css";
-import * as d3Array from "d3-array";
 
-import TimeSeriesUMAP from "./components/TimeSeriesUmap";
-import Summary from "./components/Summary";
+import * as d3 from "d3";
 
-import { makeStyles } from "@material-ui/core/styles";
-import Popper from "@material-ui/core/Popper";
-import Typography from "@material-ui/core/Typography";
+import { UMAP, Fishtail, Layout, sortAlphanumeric } from "@shahlab/planetarium";
+import TopGenesPanel from "./components/TopGenesPanel";
+import Doughnut from "./components/Doughnut";
 
 import Grid from "@material-ui/core/Grid";
-
-import Button from "@material-ui/core/Button";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import CardHeader from "@material-ui/core/CardHeader";
+import Paper from "@material-ui/core/Paper";
+import Typography from "@material-ui/core/Typography";
 
 import { theme } from "../theme/theme.js";
 import { MuiThemeProvider } from "@material-ui/core/styles";
-import CssBaseline from "@material-ui/core/CssBaseline";
+import { CssBaseline } from "@material-ui/core";
 
-import { CONSTANTS, CLONOTYPE_COLORS } from "./config";
+const SUBSET_PARAM = "clone";
+const COLOR_ARRAY = [
+  "#5E4FA2",
+  "#3288BD",
+  "#66C2A5",
+  "#FEE08B",
+  "#FDAE61",
+  "#F46D43",
+  "#D53E4F",
+  "#c9cc76",
+  "#9E0142",
+  "#C6AEFF",
+  "#BDD8FF",
+  "#BDFFB2",
+  "#FFC8AE",
+  "#FF9FBB",
+  "#b2dbd6",
+  "#ffd470",
+];
 
-const NULL_SELECTED = {
-  hover: null,
-  selected: null,
+const DataWrapper = ({ data }) => {
+  return <TimeSeries metadata={data["metadata"]} genes={data["genes"]} />;
 };
 
-const DataWrapper = ({ data }) => (
-  <TimeSeries metadata={data["metadata"]} genes={data["genes"]} />
+const Block = ({ children }) => (
+  <Grid item>
+    <Paper
+      style={{
+        margin: 10,
+        padding: 10,
+      }}
+    >
+      {children}
+    </Paper>
+  </Grid>
 );
 
 export const TimeSeries = ({ metadata, genes }) => {
-  const [selected, setSelected] = useState(NULL_SELECTED);
-  const { clonotypeParam, subtypeParam, logProbParam, timepoint } = CONSTANTS;
+  const [hoveredTimepoint, setHoveredTimepoint] = useState(null);
+  const [timepoint, setTimepoint] = useState(metadata[0]["timepoint"]);
+  const [hoveredClone, setHoveredClone] = useState(null);
+  const [clone, setClone] = useState(null);
+  const [activeGraph, setActiveGraph] = useState(null);
 
-  // Remove none
-  const clonotypeCounts = _.countBy(
-    metadata.filter((datum) => datum[clonotypeParam] !== "None"),
-    clonotypeParam
+  const subsetValues = _.uniq(
+    metadata.map((datum) => datum[SUBSET_PARAM])
+  ).sort(sortAlphanumeric);
+
+  const colorScale = d3
+    .scaleOrdinal()
+    .domain(subsetValues)
+    .range(
+      COLOR_ARRAY.slice(0, Math.min(subsetValues.length, COLOR_ARRAY.length))
+    );
+
+  const data = metadata.filter(
+    (datum) => datum["timepoint"] === (hoveredTimepoint || timepoint)
   );
 
-  const clonotypeLabels = Object.keys(clonotypeCounts)
-    .sort((a, b) => clonotypeCounts[b] - clonotypeCounts[a])
-    .slice(0, 10)
-    .map((value, index) => ({
-      value,
-      label: `SEQ${index + 1} - ${value}`,
-      color: CLONOTYPE_COLORS[index],
-    }));
+  const [highlightedCells, setHighlightedCells] = useState(data);
 
-  const subtypeTotals = _.countBy(metadata, subtypeParam);
+  useEffect(() => {
+    setHighlightedCells(data);
+  }, [hoveredTimepoint, timepoint]);
 
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
-      <Grid
-        container
-        direction="column"
-        justify="flex-start"
-        alignItems="flex-start"
-      >
-        <Grid
-          item
-          container
-          direction="row"
-          justify="flex-start"
-          alignItems="flex-start"
-        >
-          <TimeSeriesUMAP
-            chartName={"SUBTYPEUMAP"}
-            data={metadata}
-            genes={genes}
-            selected={selected["selected"]}
-            hovered={selected["hover"]}
-            setSelected={(selection) => {
-              if (selection === null) {
-                setSelected(NULL_SELECTED);
-              } else {
-                setSelected({ ...selection });
-              }
-            }}
-            chartDim={{
-              width: 750,
-              height: 600,
-            }}
-          />
+      <Grid container direction="column">
+        <Grid container direction="row">
+          <Grid item container direction="column" xs={2}>
+            <Block>
+              <Typography variant="h3">Title</Typography>
+            </Block>
+            <Block>
+              <Typography color="textSecondary" gutterBottom>
+                Cells in {timepoint}
+              </Typography>
+              <div>
+                <Typography display="inline" variant="h3" gutterBottom>
+                  {highlightedCells.length}
+                </Typography>
+                <Typography
+                  display="inline"
+                  variant="h4"
+                  color="textSecondary"
+                  gutterBottom
+                >
+                  /{data.length}
+                </Typography>
+              </div>
+            </Block>
+            {/* <Block>
+              <TopGenesPanel
+                ids={highlightedCells.map((datum) => datum["cell_id"])}
+                genes={genes}
+              />
+            </Block> */}
+            <Block>
+              <Typography color="textSecondary" gutterBottom>
+                Clone Breakdown
+              </Typography>
+              <Doughnut
+                data={highlightedCells}
+                width={250}
+                height={250}
+                subsetParam={SUBSET_PARAM}
+                colors={colorScale}
+              />
+            </Block>
+          </Grid>
+          <Grid item>
+            <Layout title="UMAP" infoText="UMAP">
+              <UMAP
+                data={data}
+                width={750}
+                height={650}
+                xParam="umap_1"
+                yParam="umap_2"
+                subsetParam={SUBSET_PARAM}
+                subset={hoveredClone || clone}
+                idParam="cell_id"
+                colorScale={colorScale}
+                onLegendHover={setHoveredClone}
+                onLegendClick={(value) => {
+                  setClone(value);
+                  setActiveGraph(value === null ? null : "umap");
+                }}
+                onLasso={(value) => {
+                  setHighlightedCells(value);
+                  setActiveGraph(value.length === data.length ? null : "umap");
+                }}
+                disable={activeGraph !== null && activeGraph !== "umap"}
+              />
+            </Layout>
+          </Grid>
+        </Grid>
+        <Grid container direction="row">
+          <Layout
+            title="Timeseries expansion"
+            infoText="Clonal expansion over time"
+          >
+            <Fishtail
+              data={metadata}
+              width={1100}
+              height={400}
+              subsetParam={SUBSET_PARAM}
+              timepoint={timepoint}
+              subset={hoveredClone || clone}
+              colorScale={colorScale}
+              onTimepointClick={setTimepoint}
+              onTimepointHover={setHoveredTimepoint}
+              onLegendHover={setHoveredClone}
+              onLegendClick={(value) => {
+                setClone(value);
+                setActiveGraph(value === null ? null : "fishtail");
+              }}
+              disable={activeGraph !== null && activeGraph !== "fishtail"}
+            />
+          </Layout>
         </Grid>
       </Grid>
     </MuiThemeProvider>
