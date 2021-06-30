@@ -1,6 +1,6 @@
 import React from "react";
-import App from "./Timeseries/Timeseries";
-import fetchFileData from "./Timeseries/data/api";
+import App from "./CITESEQ/CITESEQ";
+import fetchFileData from "./CITESEQ/data/api";
 
 const DevApp = () => {
   const data = fetchFileData();
