@@ -36,8 +36,15 @@ const COLOR_ARRAY = [
   "#ffd470",
 ];
 
-const DataWrapper = ({ data }) => {
-  return <TimeSeries metadata={data["metadata"]} genes={data["genes"]} />;
+const DataWrapper = ({ dashboardID, api, data }) => {
+  return (
+    <TimeSeries
+      metadata={data["metadata"]}
+      genes={data["genes"]}
+      dashboardID={dashboardID}
+      api={api}
+    />
+  );
 };
 
 const Block = ({ children }) => (
@@ -53,7 +60,7 @@ const Block = ({ children }) => (
   </Grid>
 );
 
-export const TimeSeries = ({ metadata, genes }) => {
+export const TimeSeries = ({ metadata, dashboardID, api }) => {
   const [hoveredTimepoint, setHoveredTimepoint] = useState(null);
   const [timepoint, setTimepoint] = useState(metadata[0]["timepoint"]);
   const [hoveredClone, setHoveredClone] = useState(null);
@@ -78,6 +85,10 @@ export const TimeSeries = ({ metadata, genes }) => {
   const [highlightedCells, setHighlightedCells] = useState(data);
 
   useEffect(() => {
+    document.title = `Timeseries - ${dashboardID}`;
+  });
+
+  useEffect(() => {
     setHighlightedCells(data);
   }, [hoveredTimepoint, timepoint]);
 
@@ -88,32 +99,30 @@ export const TimeSeries = ({ metadata, genes }) => {
         <Grid container direction="row">
           <Grid item container direction="column" xs={2}>
             <Block>
-              <Typography variant="h3">Title</Typography>
-            </Block>
-            <Block>
               <Typography color="textSecondary" gutterBottom>
-                Cells in {timepoint}
+                {dashboardID} ({hoveredTimepoint || timepoint})
               </Typography>
               <div>
-                <Typography display="inline" variant="h3" gutterBottom>
+                <Typography display="inline" variant="h5" gutterBottom>
                   {highlightedCells.length}
                 </Typography>
                 <Typography
                   display="inline"
-                  variant="h4"
+                  variant="h6"
                   color="textSecondary"
                   gutterBottom
                 >
-                  /{data.length}
+                  /{data.length} Cells
                 </Typography>
               </div>
             </Block>
-            {/* <Block>
+            <Block>
               <TopGenesPanel
                 ids={highlightedCells.map((datum) => datum["cell_id"])}
-                genes={genes}
+                api={api}
+                dashboardID={dashboardID}
               />
-            </Block> */}
+            </Block>
             <Block>
               <Typography color="textSecondary" gutterBottom>
                 Clone Breakdown
