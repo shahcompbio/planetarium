@@ -49,7 +49,7 @@ def get_gene_data(adata):
 
 def get_metadata(adata):
     umap = pd.DataFrame(adata.obsm['X_umap'])
-    umap.columns = ['UMAP_1', 'UMAP_2']
+    umap.columns = ['umap_1', 'umap_2']
     df = adata.obs[['clone', 'timepoint', 'therapy']]
     df = df.reset_index()
     df = df.merge(umap, left_index=True, right_index=True)
@@ -130,10 +130,7 @@ def clean_nans(record):
             del record[field]
 
 
-adata = sc.read('data/sa535.h5ad')
-genes = get_gene_data(adata)
-genes = genes.reset_index(drop=True)
-load_df(genes, 'sa535')
+## inject data into built template
 
 # data_dir = sys.argv[1]
 # metadata = pd.read_csv(os.path.join(data_dir, "vdjTimeSeries.tsv"), sep="\t")
@@ -159,3 +156,40 @@ load_df(genes, 'sa535')
 # output.close()
 # datalake_build=os.path.join(sys.argv[1], "build")
 # shutil.copytree(build_folder, datalake_build)
+
+if __name__ == "__main__":
+
+    title = sys.argv[1]
+    filename = sys.argv[2]
+
+    adata = sc.read(filename)
+
+    # genes = get_gene_data(adata)
+    # genes = genes.reset_index(drop=True)
+    # load_df(genes, title.lower())
+
+    metadata = get_metadata(adata).to_dict(orient='records')
+    print(metadata[0])
+    data = {
+        "metadata": metadata
+    }
+    data = json.dumps(data, indent=4)
+
+    app_dir = os.path.dirname(os.path.abspath(__file__))
+    # app_dir = os.path.abspath(os.path.join(app_dir, "../..", "build"))
+    index_template=os.path.join("/Users/leungs1/Desktop/planetarium/example/build", "index.html")
+    template = Template(open(index_template,"r").read())
+
+
+    html = template.render(data=data, dashboard_id=json.dumps(title), api_url=json.dumps('http://localhost:9200'))
+    output_html=os.path.join("/Users/leungs1/Desktop/planetarium/example/build", "timeseries.html")
+    output = open(output_html,"w")
+
+    js_txt = open(os.path.join("/Users/leungs1/Desktop/planetarium/example/build", "main.js"), 'r').read()
+    css_txt = open(os.path.join("/Users/leungs1/Desktop/planetarium/example/build", "main.css"), 'r').read()
+
+    html = html.replace('<script src="./main.js"></script>', f"<script>{js_txt}</script>")
+    html = html.replace('<link href="./main.css" rel="stylesheet">', f"<style>{css_txt}</style>")
+
+    output.write(html)
+    output.close()

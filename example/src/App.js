@@ -10,6 +10,12 @@ const DevApp = () => {
   );
 };
 
-const ProdApp = () => <App data={window.isablData} />;
+const ProdApp = () => (
+  <App
+    data={window.isablData}
+    dashboardID={window.dashboardID}
+    api={window.apiURL}
+  />
+);
 
 export default process.env.NODE_ENV === "development" ? DevApp : ProdApp;
