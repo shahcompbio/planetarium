@@ -1,6 +1,6 @@
 import React from "react";
 
-import App from "./Cellmine/Cellmine";
+import App from "./Cellmine/Cellmine.js";
 import fetchFileData from "./Cellmine/data/api";
 
 const DevApp = () => {

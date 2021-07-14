@@ -13,8 +13,18 @@ export { default as Layout } from "./InfoBar/Layout";
 
 export { default as VerticalLegend } from "./Legend/VerticalLegend";
 export { default as HorizontalLegend } from "./Legend/HorizontalLegend";
+//cellmine
+export { default as PackingCircles } from "./Cellmine/PackingCircles";
+
+// UMAP
+export { default as UMAP } from "./UMAP/UMAP";
+
+// Timeseries
+export { default as Fishtail } from "./TimeSeries/Fishtail";
 
 export { useCanvas } from "./utils/useCanvas";
 export { useD3 } from "./utils/useD3";
+export { useSvg } from "./utils/useSvg";
+export { default as sortAlphanumeric } from "./utils/sortAlphanumeric";
 
 export { isValueHighlighted, isHighlighted } from "./utils/isHighlighted";

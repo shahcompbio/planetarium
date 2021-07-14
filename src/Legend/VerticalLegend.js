@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import * as d3 from "d3";
 
 import { useD3 } from "../utils/useD3";
@@ -10,7 +10,15 @@ const STEP = LEGEND_SQUARE_LENGTH + LEGEND_SQUARE_SPACING;
 
 const PADDING = 20;
 
-const VerticalLegend = ({ width, labels, title, setHighlighted }) => {
+const VerticalLegend = ({
+  width,
+  labels,
+  title,
+  disable = false,
+  onClick = (value) => {},
+  onHover = (value) => value,
+}) => {
+  const [selected, setSelected] = useState(null);
   const legendWidth = width;
   const legendHeight = PADDING * 2 + labels.length * STEP;
 
@@ -38,10 +46,11 @@ const VerticalLegend = ({ width, labels, title, setHighlighted }) => {
 
       const subsets = svg
         .selectAll("g")
+        .attr("pointer-events", "none")
         .data(labels)
         .enter()
         .append("g")
-        .attr("cursor", "pointer");
+        .attr("cursor", disable ? null : "pointer");
 
       subsets
         .append("rect")
@@ -65,7 +74,7 @@ const VerticalLegend = ({ width, labels, title, setHighlighted }) => {
         .text((d) => d["label"]);
 
       const findLabelValue = (mouseY) => {
-        const index = Math.round((mouseY - offset) / STEP) - 1;
+        const index = Math.round((mouseY - offset) / STEP);
 
         if (0 <= index && index < labels.length) {
           return labels[index]["value"];
@@ -74,34 +83,51 @@ const VerticalLegend = ({ width, labels, title, setHighlighted }) => {
         return null;
       };
 
-      const mousemove = () => {
-        const mouseY = d3.event.clientY;
+      const mousemove = (d, i, e) => {
+        const mouseY = d3.mouse(e[0])[1];
 
         const label = findLabelValue(mouseY);
 
-        setHighlighted(label === null ? "mouseout" : "mouseenter", label);
+        onHover(label);
       };
 
       const mouseout = () => {
-        setHighlighted("mouseout", null);
+        onHover(null);
       };
 
-      const click = () => {
-        const mouseY = d3.event.clientY;
+      const click = (d, i, e) => {
+        const mouseY = d3.mouse(e[0])[1];
 
         const label = findLabelValue(mouseY);
 
-        setHighlighted("mousedown", label);
+        const selectedValue = label === selected ? null : label;
+        setSelected(selectedValue);
+        onClick(selectedValue);
       };
 
       svg
-        .on("mousemove", mousemove)
-        .on("mouseout", mouseout)
-        .on("click", click);
+        .on("mousemove", (d, i, e) => {
+          if (disable) {
+            return;
+          }
+          mousemove(d, i, e);
+        })
+        .on("mouseout", () => {
+          if (disable) {
+            return;
+          }
+          mouseout();
+        })
+        .on("click", (d, i, e) => {
+          if (disable) {
+            return;
+          }
+          click(d, i, e);
+        });
     },
     legendWidth,
     legendHeight,
-    []
+    [selected, disable]
   );
 
   return <svg ref={svgRef} />;

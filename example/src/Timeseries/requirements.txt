@@ -1,0 +1,4 @@
+elasticsearch
+scanpy
+jinja2
+pandas

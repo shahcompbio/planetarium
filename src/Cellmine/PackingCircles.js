@@ -1,151 +1,113 @@
 import React, { useState, useEffect } from "react";
 import * as d3 from "d3";
-//import Grid from "@material-ui/core/Grid";
-//import Paper from "@material-ui/core/Paper";
-import d3Tip from "d3-tip";
-import { useSvg } from "../utils/useSvg";
+import _ from "lodash";
 
-const PADDING = 10;
+import Tooltip from "../Tooltip/Tooltip";
+import { useD3 } from "../utils/useD3";
 
-const PackingCircles = ({ modifiedData, chartDim }) => {
-  const [originalDataLength] = useState(modifiedData.length);
-  const canvasWidth = chartDim["width"];
-  const canvasHeight = chartDim["height"];
+const PackingCircles = ({
+  data,
+  width,
+  height,
+  radiusParam,
+  idParam,
+  highlightedIDs = [],
+  onClick,
+  tooltipFields,
+}) => {
+  const [nodes, setNodes] = useState(null);
+  const [highlightedNode, setHighlightedNode] = useState(null);
 
-  const [simulation, saveSimulation] = useState();
+  const radius = d3
+    .scaleLinear()
+    .range([10, width * 0.15])
+    .domain(d3.extent(data, (d) => d[radiusParam]));
 
-  const chartWidth = canvasWidth - PADDING - PADDING;
-  const chartHeight = canvasHeight - PADDING - PADDING;
+  const drawHighlightedCircles = (nodes) => {
+    nodes
+      .transition()
+      .style("fill", "#52a2a2")
+      .style("fill-opacity", 0.8)
+      .attr("stroke", "black")
+      .style("stroke-width", 1);
+  };
 
-  var tooltip = d3Tip()
-    .attr("class", "d3-tip n")
-    .attr("id", "circleTip")
-    .html(
-      data =>
-        "Analysis Ticket: " +
-        data.jira_ticket +
-        "<br/>Cell Count: " +
-        data.num_sublibraries +
-        "<br/> Description:" +
-        data.description
-    )
-    .offset([-10, 0]);
-  const ref = useSvg(
-    svgRef => {
-      const svg = d3
-        .select("#canvasSelection")
-        .attr("viewBox", [0, 0, chartWidth, chartHeight]);
+  const drawUnhighlightedCircles = (nodes) => {
+    nodes
+      .transition()
+      .style("fill", "#aecece")
+      .style("fill-opacity", 0.5)
+      .style("stroke-width", 0.5);
+  };
 
-      requestAnimationFrame(() => {
-        drawCircles(modifiedData, svg, chartWidth, chartHeight);
+  const addMouse = (nodes, allNodes) => {
+    nodes
+      .on("mouseover", (data) => {
+        const selection = allNodes.filter(
+          (node) => data[idParam] !== node[idParam]
+        );
+
+        drawUnhighlightedCircles(selection);
+        setHighlightedNode(data);
+      })
+      .on("mouseleave", (data) => {
+        drawHighlightedCircles(nodes);
+        setHighlightedNode(null);
+      })
+      .on("mousedown", (data) => {
+        onClick(data);
       });
-    },
-    canvasWidth,
-    canvasHeight,
-    [modifiedData]
-  );
-  const getSelection = modifiedData =>
-    modifiedData.map(node => "#" + node["jira_ticket"]).join(",");
+  };
+
+  const removeMouse = (nodes) => {
+    nodes.on("mouseover", null).on("mouseleave", null).on("mousedown", null);
+  };
 
   useEffect(() => {
-    if (modifiedData) {
-      d3.select("#canvasSelection").call(tooltip);
-      if (modifiedData.length === originalDataLength) {
-        d3.selectAll(".node")
-          .on("mouseover", (data, index, element) => {
-            tooltip.show(data, element[index]).attr("opacity", 0.2);
-
-            const selection = d3.selectAll(".node").filter(function(node) {
-              return data.jira_ticket !== node.jira_ticket;
-            });
-            selection
-              .transition()
-              .style("fill", "#aecece")
-              .attr("stroke-width", 1);
-          })
-          .on("mouseleave", function(d) {
-            tooltip.hide(d, this);
-            d3.selectAll(getSelection(modifiedData))
-              .transition()
-              .style("fill", "#307ca0");
-          })
-          .transition()
-          .style("fill", "#307ca0");
+    // only want to do this after initial draw
+    if (nodes !== null) {
+      if (highlightedIDs.length === 0) {
+        drawHighlightedCircles(nodes);
+        addMouse(nodes, nodes);
       } else {
-        const ticketText = modifiedData
-          .map(node => node["jira_ticket"])
-          .join(" ");
+        const high = nodes.filter((node) =>
+          highlightedIDs.includes(node[idParam])
+        );
+        const dark = nodes.filter(
+          (node) => !highlightedIDs.includes(node[idParam])
+        );
 
-        d3.selectAll(".node")
-          .on("mouseover", (data, index, element) => {
-            tooltip.show(data, element[index]).attr("opacity", 0.2);
+        drawHighlightedCircles(high);
+        addMouse(high, nodes);
 
-            const selection = d3.selectAll(".node").filter(function(node) {
-              return data.jira_ticket !== node.jira_ticket;
-            });
-            selection.transition().style("fill", "#aecece");
-          })
-          .on("mouseleave", function(d) {
-            tooltip.hide(d, this);
-            d3.selectAll(getSelection(modifiedData))
-              .transition()
-              .style("fill", "#307ca0");
-          });
-
-        d3.selectAll(".node")
-          .filter(node => ticketText.indexOf(node["jira_ticket"]) === -1)
-          .on("mouseover", null)
-          .on("mouseout", null)
-          .transition()
-          .style("fill", "#aecece")
-          .attr("stroke-width", 0.5);
+        drawUnhighlightedCircles(dark);
+        removeMouse(dark);
       }
     }
-  }, [modifiedData]);
-
-  const drawCircles = (data, svg, width, height) => {
-    svg.call(tooltip);
-
-    const radius = d3
-      .scaleLinear()
-      .range([12, 200])
-      .domain(d3.extent(data, d => d.num_sublibraries));
-
-    var node = svg
+  }, [highlightedIDs, nodes === null]);
+  const ref = useD3(
+    (svg) => {
+      requestAnimationFrame(() => {
+        drawCircles(svg, data);
+      });
+    },
+    width,
+    height,
+    []
+  );
+  const drawCircles = (svg, data) => {
+    const svgNodes = svg
       .append("g")
       .selectAll("circle")
       .data(data)
       .enter()
       .append("circle")
-      .attr("class", "circles")
-      .attr("id", d => d.jira_ticket)
-      .attr("class", "node")
-      .attr("r", function(d) {
-        return radius(d.num_sublibraries);
+      .attr("id", (d) => d[idParam])
+      .attr("r", function (d) {
+        return radius(d[radiusParam]);
       })
-      .attr("cx", d => d.x)
-      .attr("cy", d => d.y)
-      .style("fill", function(d) {
-        return "#307ca0";
-      })
-      .style("fill-opacity", 0.8)
-      .attr("stroke", "black")
-      .style("stroke-width", 1)
-      .on("mouseover", (data, index, element) => {
-        tooltip.show(data, element[index]).attr("opacity", 0.2);
-
-        const selection = d3.selectAll(".node").filter(function(node) {
-          return data.jira_ticket !== node.jira_ticket;
-        });
-        selection.transition().style("fill", "#aecece");
-      })
-      .on("mouseleave", function(d) {
-        tooltip.hide(d, this);
-        d3.selectAll(getSelection(modifiedData))
-          .transition()
-          .style("fill", "#307ca0");
-      });
-    //.call(drag(simulation));
+      .attr("cx", (d) => d.x)
+      .attr("cy", (d) => d.y);
 
     const simulation = d3
       .forceSimulation()
@@ -163,68 +125,53 @@ const PackingCircles = ({ modifiedData, chartDim }) => {
         d3
           .forceCollide()
           .strength(0.2)
-          .radius(function(d) {
-            return radius(d.num_sublibraries) + 3;
+          .radius(function (d) {
+            return radius(d[radiusParam]) + 3;
           })
           .iterations(1)
       );
 
-    simulation.nodes(data).on("tick", function(d) {
-      node
-        .attr("cx", function(d) {
+    simulation.nodes(data).on("tick", () => {
+      svgNodes
+        .attr("cx", function (d) {
+          d.x = Math.max(
+            radius(d[radiusParam]) + 10,
+            Math.min(width - radius(d[radiusParam]), d.x)
+          );
           return d.x;
         })
-        .attr("cy", function(d) {
+        .attr("cy", function (d) {
+          d.y = Math.max(
+            radius(d[radiusParam]) + 10,
+            Math.min(height - radius(d[radiusParam]), d.y)
+          );
           return d.y;
         });
     });
-    saveSimulation(simulation);
-  };
 
-  const drag = simulation => {
-    function dragstarted(d) {
-      if (!d3.event.active) simulation.alphaTarget(0.2).restart();
-      d.fx = d.x;
-      d.fy = d.y;
-    }
-
-    function dragged(d) {
-      d.fx = d3.event.x;
-      d.fy = d3.event.y;
-    }
-
-    function dragended(d) {
-      d3.event.sourceEvent.stopPropagation();
-      if (!d3.event.active) simulation.alphaTarget(0);
-      d.fx = null;
-      d.fy = null;
-    }
-
-    return d3
-      .drag()
-      .on("start", dragstarted)
-      .on("drag", dragged)
-      .on("end", dragended);
+    setNodes(svgNodes);
   };
   return (
-    <div
-      style={{
-        width: chartWidth,
-        height: chartHeight,
-        position: "relative"
-      }}
-      item
-    >
-      <svg
-        id="canvasSelection"
-        ref={ref}
-        style={{
-          background: "rgb(190 214 214)",
-          width: chartWidth,
-          height: chartHeight,
-          position: "relative"
-        }}
+    <div style={{ position: "relative" }}>
+      <svg ref={ref} />
+      <Tooltip
+        getText={(node) => getTooltipText(node, tooltipFields)}
+        getX={(node) => node["x"]}
+        getY={(node) => node["y"] - radius(node[radiusParam]) + 5}
+        data={highlightedNode}
       />
+    </div>
+  );
+};
+
+const getTooltipText = (data, tooltipFields) => {
+  return (
+    <div>
+      {tooltipFields.map((field) => (
+        <p>
+          <b>{field["label"]}</b>: {data[field["param"]]}
+        </p>
+      ))}
     </div>
   );
 };
