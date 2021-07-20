@@ -151,6 +151,11 @@ export const TimeSeries = ({ metadata, dashboardID, api }) => {
                 onLegendHover={setHoveredClone}
                 onLegendClick={(value) => {
                   setClone(value);
+                  setHighlightedCells(
+                    value === null
+                      ? data
+                      : data.filter((datum) => datum[SUBSET_PARAM] === value)
+                  );
                   setActiveGraph(value === null ? null : "umap");
                 }}
                 onLasso={(value) => {
