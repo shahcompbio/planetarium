@@ -64,3 +64,13 @@ for cell in cells:
 with open('cells.json', 'w', encoding='utf-8') as file:
     json.dump(records, file, ensure_ascii=False, indent=4)
 
+with open('genes.json', 'w', encoding='utf-8') as file:
+    gene_list = list(genes['gene_id'])
+    gene_list.sort()
+    json.dump(gene_list, file, ensure_ascii=False, indent=4)
+
+
+with open('proteins.json', 'w', encoding='utf-8') as file:
+    protein_list = list(proteins['protein_id'])
+    protein_list.sort()
+    json.dump(protein_list, file, ensure_ascii=False, indent=4)

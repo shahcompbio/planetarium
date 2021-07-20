@@ -6,7 +6,7 @@ const DevApp = () => {
   const data = fetchFileData();
 
   return Object.keys(data).length === 0 ? null : (
-    <App data={data} dashboardID={"SA535"} api={"http://localhost:9200"} />
+    <App data={data} dashboardID={"Test"} api={"http://localhost:9200"} />
   );
 };
 
