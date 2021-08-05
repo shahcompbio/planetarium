@@ -1,13 +1,13 @@
 import React from "react";
 import _ from "lodash";
 
-import UMAPComponent from "./UMAP";
+import UMAPComponent from "./CategoricalUMAP";
 import metadata from "./data/metadata.json";
 
 const Template = (args) => <UMAPComponent {...args} />;
 
 export default {
-  title: "Components/UMAP/UMAP",
+  title: "Components/UMAP/CategoricalUMAP",
   component: UMAPComponent,
 };
 

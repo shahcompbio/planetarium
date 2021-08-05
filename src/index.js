@@ -17,7 +17,7 @@ export { default as HorizontalLegend } from "./Legend/HorizontalLegend";
 export { default as PackingCircles } from "./Cellmine/PackingCircles";
 
 // UMAP
-export { default as UMAP } from "./UMAP/UMAP";
+export { default as UMAP } from "./UMAP/CategoricalUMAP";
 
 // Timeseries
 export { default as Fishtail } from "./TimeSeries/Fishtail";
