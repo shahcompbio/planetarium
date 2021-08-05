@@ -8,13 +8,12 @@ import { Grid } from "@material-ui/core";
 import { useCanvas } from "../utils/useCanvas";
 import VerticalLegend from "../Legend/VerticalLegend";
 import { isValueHighlighted as isHighlighted } from "../utils/isHighlighted";
+import drawAxis from "./utils/drawAxis";
 
 const PADDING = 10;
 
 const LEGEND_WIDTH = 180;
 const AXIS_SPACE = 20;
-const AXIS_FONT = "normal 10px Helvetica";
-const AXIS_COLOR = "#000000";
 
 const LABEL_FONT = "500 12px Helvetica";
 
@@ -92,36 +91,6 @@ const drawPoints = (
         context.fill();
       });
   }
-};
-
-const drawUMAPAxis = (context, chartHeight, xParam, yParam) => {
-  context.beginPath();
-  context.font = AXIS_FONT;
-  context.globalAlpha = 1;
-
-  const START_X = AXIS_SPACE / 2;
-  const START_Y = chartHeight + AXIS_SPACE / 2;
-
-  context.fillStyle = AXIS_COLOR;
-  context.strokeStyle = AXIS_COLOR;
-  context.lineWidth = 1;
-  context.lineCap = "butt";
-  context.moveTo(START_X, START_Y);
-  context.lineTo(START_X, START_Y - 50);
-  context.stroke();
-
-  context.beginPath();
-  context.moveTo(START_X, START_Y);
-  context.lineTo(START_X + 50, START_Y);
-  context.stroke();
-
-  context.textAlign = "left";
-  context.textBaseline = "middle";
-  context.fillText(xParam, START_X + 52, START_Y);
-  context.save();
-  context.rotate((270 * Math.PI) / 180);
-  context.fillText(yParam, -(START_Y - 52), START_X);
-  context.restore();
 };
 
 const drawLasso = (context, polys) => {
@@ -370,7 +339,13 @@ const UMAP = ({
   const canvasRef = useCanvas(
     (canvas) => {
       const context = canvas.getContext("2d");
-      drawUMAPAxis(context, canvasHeight - AXIS_SPACE, xParam, yParam);
+      drawAxis(
+        context,
+        AXIS_SPACE / 2,
+        canvasHeight - AXIS_SPACE / 2,
+        xParam,
+        yParam
+      );
 
       const highlightedIDs = getHighlighted(
         data,
