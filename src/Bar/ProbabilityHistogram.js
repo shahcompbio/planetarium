@@ -19,9 +19,9 @@ import * as d3Array from "d3-array";
 import * as _ from "lodash";
 import Grid from "@material-ui/core/Grid";
 
-// import { Tooltip } from "@material-ui/core";
 import Tooltip from "../Tooltip/Tooltip";
 import { useCanvas } from "../utils/useCanvas";
+import drawAxis from "../utils/canvas/drawAxis";
 
 const HIGHLIGHTED_BAR_COLOR = "#eb5067";
 const HIGHLIGHTED_BAR_WIDTH = 2;
@@ -30,8 +30,6 @@ const X_AXIS_HEIGHT = 40;
 const Y_AXIS_WIDTH = 50;
 
 const NUM_TICKS = 25;
-const LABEL_FONT = "normal 12px Helvetica";
-const TICK_FONT = "normal 10px Helvetica";
 
 const BAR_COLOR = "#6bb9f0";
 const BAR_STROKE_COLOR = "#5c97bf";
@@ -40,54 +38,25 @@ const HIGHLIGHTED_LINE_COLOR = "#47a647";
 const LINE_COLOR = "steelblue";
 const format = d3.format(".3f");
 
-const drawAxisLabels = (
-  context,
-  x,
-  y,
-  probParam,
-  chartWidth,
-  chartHeight,
-  xMin,
-  xMax,
-  xTickWidth
-) => {
-  context.beginPath();
-  context.globalAlpha = 1;
-  context.fillStyle = "black";
-  context.textAlign = "right";
-
-  context.font = TICK_FONT;
-
-  context.textBaseline = "bottom";
-
-  x.ticks(10).forEach((tick) => {
-    context.fillText(tick, x(tick), y(0) + 15);
+const drawAxisLabels = (context, x, y) => {
+  drawAxis({
+    context,
+    xScale: x,
+    yScale: y,
+    ticks: 10,
+    orientation: "horizontal",
+    gridlines: false,
   });
 
   const format = (tick) => (tick === 0 ? "0" : d3.format(".2f")(tick));
-
-  y.ticks(10).forEach((tick) => {
-    context.globalAlpha = 1;
-    context.textBaseline = "middle";
-    context.fillText(format(tick), x(xMin) - xTickWidth, y(tick));
-    context.globalAlpha = 0.2;
-    context.lineWidth = 0.5;
-    context.beginPath();
-    context.moveTo(x(xMin), y(tick));
-    context.lineTo(x(xMax), y(tick));
-    context.stroke();
+  drawAxis({
+    context,
+    xScale: x,
+    yScale: y,
+    ticks: 10,
+    label: "Probability Density",
+    format,
   });
-
-  context.globalAlpha = 1;
-  context.font = LABEL_FONT;
-  context.textAlign = "center";
-  context.textBaseline = "hanging";
-  context.fillText(probParam, chartWidth / 2, chartHeight + X_AXIS_HEIGHT / 2);
-
-  context.save();
-  context.rotate((270 * Math.PI) / 180);
-  context.fillText("Density", -(chartHeight / 2), 5);
-  context.restore();
 };
 
 const drawBars = (
@@ -98,8 +67,8 @@ const drawBars = (
   barScale,
   total,
   setHighlightedBin,
-  highlightedSubgroup,
-  subgroupParam
+  highlightedIDs,
+  idParam
 ) => {
   const context = canvas.getContext("2d");
 
@@ -115,20 +84,33 @@ const drawBars = (
     context.fillRect(xPos, yPos, width, height);
     context.strokeRect(xPos, yPos, width, height);
   });
-
-  if (highlightedSubgroup) {
+  if (highlightedIDs !== null) {
     context.fillStyle = HIGHLIGHTED_LINE_COLOR;
     bins.forEach((bin) => {
       const content =
-        bin.filter((datum) => datum[subgroupParam] === highlightedSubgroup)
-          .length / total;
+        bin.filter((datum) => highlightedIDs.includes(datum[idParam])).length /
+        total;
       const xPos = x(bin["x0"]) + 1;
       const yPos = y(content);
-      const width = x(bin["x1"]) - x(bin["x0"]) - 2;
+      const width = Math.max(x(bin["x1"]) - x(bin["x0"]) - 2, 0);
       const height = barScale(content);
       context.fillRect(xPos, yPos, width, height);
     });
   }
+
+  // if (highlightedSubgroup) {
+  //   context.fillStyle = HIGHLIGHTED_LINE_COLOR;
+  //   bins.forEach((bin) => {
+  //     const content =
+  //       bin.filter((datum) => datum[subgroupParam] === highlightedSubgroup)
+  //         .length / total;
+  //     const xPos = x(bin["x0"]) + 1;
+  //     const yPos = y(content);
+  //     const width = Math.max(x(bin["x1"]) - x(bin["x0"]) - 2, 0);
+  //     const height = barScale(content);
+  //     context.fillRect(xPos, yPos, width, height);
+  //   });
+  // }
 
   d3.select(canvas)
     .on("mousemove", function () {
@@ -194,15 +176,7 @@ const getDensity = (data, x, probParam, ticks) => {
   return density;
 };
 
-const drawKde = (
-  context,
-  data,
-  x,
-  y,
-  probParam,
-  subgroupParam,
-  highlightedSubgroup
-) => {
+const drawKde = (context, data, x, y, probParam, idParam, highlightedIDs) => {
   const kde = (kernel, thresholds, data) =>
     thresholds.map((t) => [t, d3.mean(data, (d) => kernel(t - d))]);
 
@@ -233,12 +207,12 @@ const drawKde = (
   context.strokeStyle = LINE_COLOR;
   context.stroke();
 
-  if (highlightedSubgroup) {
+  if (highlightedIDs !== null) {
     const filteredDensity = kde(
       epanechnikov(1),
       x.ticks(NUM_TICKS * 2),
       data
-        .filter((datum) => datum[subgroupParam] === highlightedSubgroup)
+        .filter((datum) => highlightedIDs.includes(datum[idParam]))
         .map((row) => parseFloat(row[probParam]))
     );
     context.beginPath();
@@ -249,31 +223,16 @@ const drawKde = (
   }
 };
 
-const getTooltipText = (bin, subgroupParam) => {
-  const subtypeGroups = _.groupBy(bin, subgroupParam);
-
-  return (
-    <div>
-      {Object.keys(subtypeGroups)
-        .sort((a, b) => a.length - b.length)
-        .map((group) => (
-          <p>
-            {group}: {format(subtypeGroups[group].length / bin.length)}
-          </p>
-        ))}
-    </div>
-  );
-};
-
 const ProbabilityHistogram = ({
   data,
   width,
   height,
   probParam,
-  subgroupParam,
   observationParam,
   highlightedObservation,
-  highlightedSubgroup,
+  idParam = "id",
+  highlightedIDs = null,
+  getTooltipText = (bin) => `Count: ${bin.length}`,
 }) => {
   const [highlightedBin, setHighlightedBin] = useState(null);
 
@@ -281,8 +240,11 @@ const ProbabilityHistogram = ({
   const chartHeight = height - X_AXIS_HEIGHT;
 
   const allX = data.map((row) => parseFloat(row[probParam]));
-  const xMax = Math.max(...allX);
-  const xMin = Math.min(...allX);
+  const xDataMin = Math.min(...allX);
+  const xDataMax = Math.max(...allX);
+  const xDataWidth = Math.abs(xDataMax - xDataMin);
+  const xMin = xDataMin - Math.abs(xDataWidth * 0.05);
+  const xMax = xDataMax + Math.abs(xDataWidth * 0.05);
 
   const startX = Y_AXIS_WIDTH;
   const x = d3
@@ -309,17 +271,7 @@ const ProbabilityHistogram = ({
   const ref = useCanvas(
     (canvas) => {
       const context = canvas.getContext("2d");
-      drawAxisLabels(
-        context,
-        x,
-        y,
-        probParam,
-        chartWidth,
-        chartHeight,
-        xMin,
-        xMax,
-        5
-      );
+      drawAxisLabels(context, x, y);
       drawBars(
         canvas,
         bins,
@@ -328,8 +280,8 @@ const ProbabilityHistogram = ({
         barScale,
         data.length,
         setHighlightedBin,
-        highlightedSubgroup,
-        subgroupParam
+        highlightedIDs,
+        idParam
       );
       drawHighlightedBar(
         context,
@@ -342,19 +294,11 @@ const ProbabilityHistogram = ({
         y,
         barScale
       );
-      drawKde(
-        context,
-        data,
-        x,
-        y,
-        probParam,
-        subgroupParam,
-        highlightedSubgroup
-      );
+      drawKde(context, data, x, y, probParam, idParam, highlightedIDs);
     },
     width,
     height,
-    [highlightedObservation, highlightedSubgroup]
+    [highlightedObservation, highlightedIDs]
   );
 
   return (
@@ -365,7 +309,7 @@ const ProbabilityHistogram = ({
       }}
     >
       <Tooltip
-        getText={(bin) => getTooltipText(bin, subgroupParam)}
+        getText={getTooltipText}
         getX={(bin) => x(bin["x0"]) + (x(bin["x1"]) - x(bin["x0"])) / 2}
         getY={(bin) => chartHeight - barScale(bin.length / data.length)}
         data={highlightedBin}
