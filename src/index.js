@@ -23,6 +23,8 @@ export { default as UMAP } from "./UMAP/CategoricalUMAP";
 export { default as Fishtail } from "./TimeSeries/Fishtail";
 
 export { useCanvas } from "./utils/useCanvas";
+export { drawCanvasAxis } from "./utils/canvas/drawAxis";
+
 export { useD3 } from "./utils/useD3";
 export { useSvg } from "./utils/useSvg";
 export { default as sortAlphanumeric } from "./utils/sortAlphanumeric";
