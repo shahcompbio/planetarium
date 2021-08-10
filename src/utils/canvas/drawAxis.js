@@ -21,13 +21,10 @@ const drawAxis = ({
   context.textBaseline = "bottom";
 
   const scale = orientation === "vertical" ? yScale : xScale;
-  const [minValue, maxValue] = scale.domain();
-  const minPos = scale(minValue);
-  const maxPos = scale(maxValue);
+  const [minPos, maxPos] = scale.range();
 
   const lengthScale = orientation === "vertical" ? xScale : yScale;
-  const length0 = lengthScale(lengthScale.domain()[0]);
-  const length1 = lengthScale(lengthScale.domain()[1]);
+  const [length0, length1] = lengthScale.range();
 
   scale.ticks(ticks).forEach((tick) => {
     // Tick text
@@ -37,7 +34,11 @@ const drawAxis = ({
       context.fillText(format(tick), length0 - 8, scale(tick));
     } else {
       context.textAlign = "center";
-      context.fillText(tick, scale(tick), Math.max(length0, length1) + 8);
+      context.fillText(
+        format(tick),
+        scale(tick),
+        Math.max(length0, length1) + 8
+      );
     }
 
     if (gridlines) {
