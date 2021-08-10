@@ -14,6 +14,7 @@ The bars can be hovered and shown the breakdown of the density plot based off th
 */
 
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import * as d3 from "d3";
 import * as d3Array from "d3-array";
 import * as _ from "lodash";
@@ -36,7 +37,6 @@ const BAR_STROKE_COLOR = "#5c97bf";
 const HIGHLIGHTED_LINE_COLOR = "#47a647";
 
 const LINE_COLOR = "steelblue";
-const format = d3.format(".3f");
 
 const drawAxisLabels = (context, x, y) => {
   drawAxis({
@@ -225,11 +225,11 @@ const drawKde = (context, data, x, y, probParam, idParam, highlightedIDs) => {
 
 const ProbabilityHistogram = ({
   data,
-  width,
-  height,
+  width = 400,
+  height = 400,
   probParam,
   observationParam,
-  highlightedObservation,
+  highlightedObservation = null,
   idParam = "id",
   highlightedIDs = null,
   getTooltipText = (bin) => `Count: ${bin.length}`,
@@ -317,6 +317,45 @@ const ProbabilityHistogram = ({
       <canvas ref={ref} />
     </Grid>
   );
+};
+
+ProbabilityHistogram.propTypes = {
+  /**
+   * list of data points to bin
+   */
+  data: PropTypes.arrayOf(PropTypes.object).isRequired,
+  /**
+   * width of plot
+   */
+  width: PropTypes.number.isRequired,
+  /**
+   * height of plot
+   */
+  height: PropTypes.number.isRequired,
+  /**
+   * Key used to bin for histogram
+   */
+  probParam: PropTypes.string.isRequired,
+  /**
+   * Key used for observation
+   */
+  observationParam: PropTypes.string.isRequired,
+  /**
+   * Value associated with observationParam to highlight in plot
+   */
+  highlightedObservation: PropTypes.string,
+  /**
+   * Key used as ID
+   */
+  idParam: PropTypes.string,
+  /**
+   * List of IDs to highlight in plot
+   */
+  highlightedIDs: PropTypes.arrayOf(PropTypes.string),
+  /**
+   * Returns text to display when hover on bin
+   */
+  getTooltipText: PropTypes.func,
 };
 
 export default ProbabilityHistogram;

@@ -40,19 +40,23 @@ export default {
   component: Histogram,
 };
 
+// Test
+
 export const Standard = Template.bind({});
 Standard.args = {
+  data: DATA,
   width: 400,
   height: 400,
-  data: DATA,
   probParam: "prob",
-  subgroupParam: "group",
   observationParam: "obs",
+  idParam: "id",
+  highlightedObservation: null,
+  highlightedIDs: null,
   getTooltipText,
 };
 
-export const SelectedObservation = Template.bind({});
-SelectedObservation.args = {
+export const HighlightObservation = Template.bind({});
+HighlightObservation.args = {
   width: 400,
   height: 400,
   data: DATA,
@@ -61,8 +65,8 @@ SelectedObservation.args = {
   highlightedObservation: "a",
 };
 
-export const SelectedSubgroup = Template.bind({});
-SelectedSubgroup.args = {
+export const HighlightIds = Template.bind({});
+HighlightIds.args = {
   width: 400,
   height: 400,
   data: DATA,
