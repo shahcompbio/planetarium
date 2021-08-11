@@ -221,7 +221,9 @@ StackedHorizontalBar.propTypes = {
   /**
    * List of row names
    */
-  barLabels: PropTypes.arrayOf(PropTypes.string).isRequired,
+  barLabels: PropTypes.arrayOf(
+    PropTypes.oneOfType([PropTypes.string, PropTypes.object])
+  ).isRequired,
   /**
    * Name of row to highlight
    */
