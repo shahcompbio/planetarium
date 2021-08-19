@@ -72,6 +72,7 @@ const Vertical = ({
 
       subsets
         .append("rect")
+        .attr("pointer-events", "none")
         .attr("width", SQUARE_LENGTH)
         .attr("height", SQUARE_LENGTH)
         .attr("x", 5)
@@ -80,6 +81,7 @@ const Vertical = ({
 
       subsets
         .append("text")
+        .attr("pointer-events", "none")
         .attr("alignment-baseline", "hanging")
         .attr("dominant-baseline", "hanging")
         .attr("text-align", "left")
