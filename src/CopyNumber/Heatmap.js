@@ -5,11 +5,8 @@ import Grid from "@material-ui/core/Grid";
 import { useCanvas } from "../utils/useCanvas";
 import { useD3 } from "../utils/useD3";
 import { colorScale } from "./utils";
-import Legend from "../Legend/HorizontalLegend";
+import Legend from "../Legend/Horizontal";
 
-const Y_AXIS_WIDTH = 25;
-const CAT_SQUARE_SIZE = 6;
-const SQUARE_SPACING = 2;
 const MINIMAP_WIDTH = 150;
 const PADDING = 10;
 
@@ -35,7 +32,6 @@ const CopyNumberHeatmap = ({
   const legendLabels = copyNumbers.map((value) => ({
     value,
     label: value === copyNumbers.length - 1 ? `≥${value}` : value,
-    color: colorScale(value),
   }));
 
   const numRows = Math.min(
@@ -94,7 +90,12 @@ const CopyNumberHeatmap = ({
   return (
     <Grid container direction="column" style={{ width }}>
       <Grid item style={{ textAlign: "right" }}>
-        <Legend title={"Copy Number"} labels={legendLabels} />
+        <Legend
+          width={width}
+          title={"Copy Number"}
+          ticks={legendLabels}
+          colorScale={colorScale}
+        />
       </Grid>
       <Grid item container direction="row">
         <Grid

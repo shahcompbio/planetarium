@@ -158,11 +158,11 @@ Horizontal.propTypes = {
   /**
    * width
    */
-  width: PropTypes.number.isRequired,
+  width: PropTypes.number,
   /**
    * height
    */
-  height: PropTypes.number.isRequired,
+  height: PropTypes.number,
   /**
    * title for legend
    */

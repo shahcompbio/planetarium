@@ -7,7 +7,7 @@ import { useD3 } from "../utils/useD3";
 import { Grid } from "@material-ui/core";
 import { isValueHighlighted as isHighlighted } from "../utils/isHighlighted";
 import sortAlphanumeric from "../utils/sortAlphanumeric";
-import VerticalLegend from "../Legend/VerticalLegend";
+import VerticalLegend from "../Legend/Vertical";
 
 const AXIS_HEIGHT = 20;
 const PADDING = 10;
@@ -246,11 +246,8 @@ const Fishtail = ({
         <VerticalLegend
           width={100}
           title={subsetParam}
-          labels={subsetValues.map((value) => ({
-            value,
-            label: value,
-            color: color(value),
-          }))}
+          ticks={subsetValues}
+          colorScale={color}
           disable={disable}
           onHover={(value) => {
             setHighlightedSubset(value);

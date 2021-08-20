@@ -4,7 +4,7 @@ import _ from "lodash";
 
 import { Grid } from "@material-ui/core";
 import { useCanvas } from "../utils/useCanvas";
-import VerticalNumericalLegend from "../Legend/VerticalNumericalLegend";
+import Legend from "../Legend/Vertical";
 import drawAxis from "./utils/drawAxis";
 
 const PADDING = 10;
@@ -126,7 +126,7 @@ const UMAP = ({
   const subsetMax = Math.max(...subsetData);
   const subsetColors =
     colorScale ||
-    d3.scaleSequential(d3.interpolateViridis).domain([0, subsetMax]);
+    d3.scaleSequential(d3.interpolateViridis).domain([0, subsetMax]).nice();
 
   const getHighlighted = (data, polys) => {
     const polyFiltered =
@@ -230,11 +230,12 @@ const UMAP = ({
         <canvas ref={canvasRef} />
       </Grid>
       <Grid item style={{ paddingLeft: "40px" }}>
-        <VerticalNumericalLegend
+        <Legend
           title={subsetParam}
           width={LEGEND_WIDTH}
           height={height / 2}
           colorScale={subsetColors}
+          ticks={10}
         />
       </Grid>
     </Grid>

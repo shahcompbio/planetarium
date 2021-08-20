@@ -6,7 +6,7 @@ import { quantileSorted } from "d3-array";
 
 import { Grid } from "@material-ui/core";
 import { useCanvas } from "../utils/useCanvas";
-import VerticalLegend from "../Legend/VerticalLegend";
+import VerticalLegend from "../Legend/Vertical";
 import { isValueHighlighted as isHighlighted } from "../utils/isHighlighted";
 import drawAxis from "./utils/drawAxis";
 
@@ -270,12 +270,6 @@ const UMAP = ({
         COLOR_ARRAY.slice(0, Math.min(subsetValues.length, COLOR_ARRAY.length))
       );
 
-  const subsetLabels = subsetValues.map((value) => ({
-    value,
-    label: value,
-    color: subsetColors(value),
-  }));
-
   const getHighlighted = (data, polys, subsetValue) => {
     const subsetFiltered = data.filter((datum) =>
       isHighlighted(datum[subsetParam], subsetValue)
@@ -394,7 +388,8 @@ const UMAP = ({
         <VerticalLegend
           title={subsetParam}
           width={LEGEND_WIDTH}
-          labels={subsetLabels}
+          ticks={subsetValues}
+          colorScale={subsetColors}
           disable={disable || lassoPolys.length > 0}
           onHover={(value) => {
             setHighlightedSubset(value);
