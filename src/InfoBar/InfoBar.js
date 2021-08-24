@@ -11,14 +11,15 @@ const useStyles = makeStyles({
     marginBottom: 10,
   },
   arrow: {
-    padding: 15,
+    padding: 10,
     color: "#8a8484",
     backgroundColor: "#F7F8FB",
+    position: "relative",
     borderRadius: 5,
     "&:after": {
       content: "''",
       position: "absolute",
-      left: "10%",
+      left: 50,
       marginLeft: -50,
       borderTop: "solid 50px #F7F8FB",
       borderLeft: "solid 50px transparent",
