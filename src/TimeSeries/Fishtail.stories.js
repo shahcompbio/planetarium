@@ -11,8 +11,8 @@ export default {
 export const Default = Template.bind({});
 Default.args = { width: 700, height: 400, data, subsetParam: "clone" };
 
-export const Subset = Template.bind({});
-Subset.args = {
+export const HighlightSubset = Template.bind({});
+HighlightSubset.args = {
   width: 700,
   height: 400,
   data,
@@ -20,8 +20,8 @@ Subset.args = {
   subset: "A",
 };
 
-export const Timepoint = Template.bind({});
-Timepoint.args = {
+export const HighlightTimepoint = Template.bind({});
+HighlightTimepoint.args = {
   width: 700,
   height: 400,
   data,

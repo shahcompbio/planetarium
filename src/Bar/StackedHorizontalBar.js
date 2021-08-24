@@ -1,12 +1,14 @@
 import React from "react";
+import PropTypes from "prop-types";
 import * as d3 from "d3";
 
 import { useCanvas } from "../utils/useCanvas";
+import drawAxis from "../utils/canvas/drawAxis";
 import { isValueHighlighted } from "../utils/isHighlighted";
 
 /*
 
-Stacked horizontal bar chart of proportions (so they all add to 100%)
+Proportional stacked horizontal bar chart, divided by subgroups
 
 */
 
@@ -24,23 +26,23 @@ const BAR_COLORS = [
   "#9E0142",
 ];
 
-const LEGEND_HEIGHT = 50;
+const LEGEND_HEIGHT = 70;
 
 const PROP_AXIS_FONT = "normal 10px Helvetica";
 const CAT_LABEL_SPACE = 150;
 const CAT_LABEL_FONT = "normal 12px Helvetica";
 const PADDING = 10;
-const LABEL_PADDING = 5;
+const LABEL_PADDING = 20;
 
 const LEGEND_SQUARE_LENGTH = 12;
 const LEGEND_SQUARE_PADDING = 10;
 
 const StackedHorizontalBar = ({
   data,
-  width,
-  height,
+  width = 400,
+  height = 400,
   barLabels,
-  highlightedRow,
+  highlightedRow = null,
 }) => {
   const categoryValues = Object.keys(data).sort();
   const barValues =
@@ -59,18 +61,14 @@ const StackedHorizontalBar = ({
     .scaleBand()
     .domain(categoryValues)
     .range([LEGEND_HEIGHT, LEGEND_HEIGHT + chartHeight])
-    .paddingInner(0.03)
-    .paddingOuter(0.25);
+    .paddingInner(0.03);
 
   const barPosScale = d3
     .scaleLinear()
     .domain([0, 1])
     .range([PADDING, PADDING + chartWidth]);
 
-  const barSizeScale = d3
-    .scaleLinear()
-    .domain([0, 1])
-    .range([0, chartWidth]);
+  const barSizeScale = d3.scaleLinear().domain([0, 1]).range([0, chartWidth]);
 
   const colors = d3
     .scaleOrdinal()
@@ -97,7 +95,6 @@ const StackedHorizontalBar = ({
         catScale,
         barPosScale,
         chartWidth + PADDING + 2,
-        chartHeight + LEGEND_HEIGHT + LABEL_PADDING,
         highlightedRow
       );
 
@@ -152,18 +149,16 @@ const drawLabels = (
   catScale,
   barScale,
   xAxisPos,
-  yAxisPos,
   highlightedRow
 ) => {
-  const values = barScale.ticks(10);
-  context.font = PROP_AXIS_FONT;
-  context.fillStyle = "black";
-  context.textAlign = "center";
-  context.lineWidth = 1;
-  context.textBaseline = "bottom";
-
-  values.forEach((value) => {
-    context.fillText(value * 100, barScale(value), yAxisPos);
+  drawAxis({
+    context,
+    xScale: barScale,
+    yScale: catScale,
+    ticks: 10,
+    orientation: "horizontal",
+    gridlines: false,
+    format: (tick) => tick * 100,
   });
 
   context.font = CAT_LABEL_FONT;
@@ -210,4 +205,28 @@ const drawLegend = (context, barValues, colors, canvasWidth) => {
   });
 };
 
+StackedHorizontalBar.propTypes = {
+  /**
+   * object of keys of rows with counts
+   */
+  data: PropTypes.object.isRequired,
+  /**
+   * width of plot
+   */
+  width: PropTypes.number,
+  /**
+   * height of plot
+   */
+  height: PropTypes.number,
+  /**
+   * List of row names
+   */
+  barLabels: PropTypes.arrayOf(
+    PropTypes.oneOfType([PropTypes.string, PropTypes.object])
+  ).isRequired,
+  /**
+   * Name of row to highlight
+   */
+  highlightedRow: PropTypes.string,
+};
 export default StackedHorizontalBar;

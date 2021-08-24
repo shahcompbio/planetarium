@@ -25,6 +25,7 @@
     "react-data-table-component": "^6.11.7",
     "react-dom": "link:../node_modules/react-dom",
     "react-scripts": "4.0.3",
+    "react-window": "^1.8.6",
     "source-map-explorer": "^2.5.2"
   },
   "eslintConfig": {

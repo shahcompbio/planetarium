@@ -17,12 +17,14 @@ export { default as HorizontalLegend } from "./Legend/HorizontalLegend";
 export { default as PackingCircles } from "./Cellmine/PackingCircles";
 
 // UMAP
-export { default as UMAP } from "./UMAP/UMAP";
+export { default as UMAP } from "./UMAP/CategoricalUMAP";
 
 // Timeseries
 export { default as Fishtail } from "./TimeSeries/Fishtail";
 
 export { useCanvas } from "./utils/useCanvas";
+export { default as drawCanvasAxis } from "./utils/canvas/drawAxis";
+
 export { useD3 } from "./utils/useD3";
 export { useSvg } from "./utils/useSvg";
 export { default as sortAlphanumeric } from "./utils/sortAlphanumeric";

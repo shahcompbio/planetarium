@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import _ from "lodash";
 
 import * as d3 from "d3";
@@ -40,8 +41,8 @@ const Fishtail = ({
   data,
   subsetParam,
   timepointParam = "timepoint",
-  width,
-  height,
+  width = 700,
+  height = 400,
   timepoint = null,
   subset = null,
   disable = false,
@@ -263,6 +264,61 @@ const Fishtail = ({
       </Grid>
     </Grid>
   );
+};
+
+Fishtail.propTypes = {
+  /**
+   * Data points to visualize
+   */
+  data: PropTypes.arrayOf(PropTypes.object).isRequired,
+  /**
+   * Key in data that specifies subgroup
+   */
+  subsetParam: PropTypes.string.isRequired,
+  /**
+   * Key in data that specifies timepoint
+   */
+  timepointParam: PropTypes.string,
+  /**
+   * Width of plot
+   */
+  width: PropTypes.number,
+  /**
+   * Height of plot
+   */
+  height: PropTypes.number,
+  /**
+   * Value of timepoint to highlight
+   */
+  timepoint: PropTypes.string,
+  /**
+   * Value of subset to highlight
+   */
+  subset: PropTypes.string,
+  /**
+   * To disable interactions on plot
+   */
+  disable: PropTypes.bool,
+  /**
+   * Override default color scale of subsets
+   */
+  colorScale: PropTypes.func,
+  /**
+   * Callback when value on legend is hovered
+   */
+  onLegendHover: PropTypes.func,
+  /**
+   * Callback when value on legend is clicked
+   */
+  onLegendClick: PropTypes.func,
+  /**
+   * Callback when timepoint section is hovered
+   */
+  onTimepointHover: PropTypes.func,
+  /**
+   * Callback when timepoint section is clicked
+   */
+  onTimepointClick: PropTypes.func,
 };
 
 export default Fishtail;
