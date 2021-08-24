@@ -56,3 +56,14 @@ Static.args = {
   })),
   disable: true,
 };
+export const FontChange = Template.bind({});
+FontChange.args = {
+  width: 150,
+  labels: [1, 2, 3, 4].map((value) => ({
+    value,
+    label: `Label ${value}`,
+    color: COLORS[value],
+  })),
+  disable: true,
+  fontFamily: { regular: "MyFontRegular", bold: "MyFontBold", labelOffset: 3 },
+};

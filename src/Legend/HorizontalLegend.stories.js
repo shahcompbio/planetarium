@@ -59,3 +59,14 @@ CopyNumber.args = {
   })),
   title: "Copy Number",
 };
+
+export const FontChange = Template.bind({});
+FontChange.args = {
+  labels: COPY_NUMBER_COLOURS.map((value, index) => ({
+    value: index,
+    label: index === COPY_NUMBER_COLOURS.length - 1 ? `≥${index}` : index,
+    color: value,
+  })),
+  title: "Copy Number",
+  fontFamily: { regular: "MyFontRegular", bold: "MyFontBold" },
+};

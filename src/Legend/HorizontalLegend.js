@@ -8,7 +8,7 @@ const LEGEND_SQUARE_SPACING = 8;
 const PADDING_SIDE = 10;
 const PADDING_TOP = 20;
 
-const HorizontalLegend = ({ labels, title }) => {
+const HorizontalLegend = ({ labels, title, fontFamily = null }) => {
   const legendWidth =
     labels.length * (LEGEND_SQUARE_LENGTH + LEGEND_SQUARE_SPACING) +
     PADDING_SIDE * 2;
@@ -36,12 +36,12 @@ const HorizontalLegend = ({ labels, title }) => {
         .attr("alignment-baseline", "center")
         .attr("dominant-baseline", "center")
         .attr("text-anchor", "left")
-        .attr("font-family", "Helvetica")
+        .attr("font-family", fontFamily ? fontFamily["regular"] : "Helvetica")
         .attr("font-weight", "500")
         .attr("font-size", "12px")
         .attr("fill", "#000000")
         .attr("x", PADDING_SIDE)
-        .attr("y", legendHeight / 2)
+        .attr("y", (1 * legendHeight) / 3)
         .text(title);
 
       const titleWidth = PADDING_SIDE + titleText.node().getBBox().width;
@@ -75,7 +75,7 @@ const HorizontalLegend = ({ labels, title }) => {
         .attr("alignment-baseline", "hanging")
         .attr("dominant-baseline", "hanging")
         .attr("text-anchor", "middle")
-        .attr("font-family", "Helvetica")
+        .attr("font-family", fontFamily ? fontFamily["regular"] : "Helvetica")
         .attr("font-weight", "500")
         .attr("font-size", "12px")
         .attr("fill", "#000000")

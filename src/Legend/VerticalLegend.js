@@ -17,6 +17,7 @@ const VerticalLegend = ({
   disable = false,
   onClick = (value) => {},
   onHover = (value) => value,
+  fontFamily = null,
 }) => {
   const [selected, setSelected] = useState(null);
   const legendWidth = width;
@@ -24,14 +25,15 @@ const VerticalLegend = ({
 
   const svgRef = useD3(
     (svg) => {
-      let offset = 5;
+      let offset = 6;
+      const textOffset = fontFamily ? fontFamily["labelOffset"] : 0;
       if (title !== undefined) {
         const titleText = svg
           .append("text")
           .attr("alignment-baseline", "center")
           .attr("dominant-baseline", "center")
           .attr("text-anchor", "middle")
-          .attr("font-family", "Helvetica")
+          .attr("font-family", fontFamily ? fontFamily["bold"] : "Helvetica")
           .attr("font-weight", "500")
           .attr("font-size", "12px")
           .attr("fill", "#000000")
@@ -65,12 +67,12 @@ const VerticalLegend = ({
         .attr("alignment-baseline", "hanging")
         .attr("dominant-baseline", "hanging")
         .attr("text-align", "left")
-        .attr("font-family", "Helvetica")
+        .attr("font-family", fontFamily ? fontFamily["regular"] : "Helvetica")
         .attr("font-weight", "500")
         .attr("font-size", "12px")
         .attr("fill", "#000000")
         .attr("x", LEGEND_SQUARE_LENGTH + 10)
-        .attr("y", (d, i) => i * STEP + offset)
+        .attr("y", (d, i) => i * STEP + offset + textOffset)
         .text((d) => d["label"]);
 
       const findLabelValue = (mouseY) => {
