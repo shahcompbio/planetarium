@@ -17,7 +17,7 @@ const Vertical = ({
   height = 400,
   title = null,
   disable = false,
-  highlight = null,
+  reset = false,
   onClick = (value) => {},
   onHover = (value) => {},
 }) => {
@@ -33,10 +33,10 @@ const Vertical = ({
   const [selected, setSelected] = useState(null);
 
   useEffect(() => {
-    if (highlight !== selected) {
-      setSelected(highlight);
+    if (reset) {
+      setSelected(null);
     }
-  }, [highlight, selected]);
+  }, [reset]);
 
   // useEffect with new param to overwrite selected when needed
   const svgRef = useD3(
@@ -64,15 +64,14 @@ const Vertical = ({
 
       const subsets = svg
         .selectAll("g")
-        .attr("pointer-events", "none")
         .data(data)
         .enter()
         .append("g")
-        .attr("cursor", disable ? null : "pointer");
+        .style("cursor", disable ? "default" : "pointer");
 
       subsets
         .append("rect")
-        .attr("pointer-events", "none")
+        // .attr("pointer-events", "none")
         .attr("width", SQUARE_LENGTH)
         .attr("height", SQUARE_LENGTH)
         .attr("x", 5)
@@ -81,7 +80,7 @@ const Vertical = ({
 
       subsets
         .append("text")
-        .attr("pointer-events", "none")
+        // .attr("pointer-events", "none")
         .attr("alignment-baseline", "hanging")
         .attr("dominant-baseline", "hanging")
         .attr("text-align", "left")
@@ -117,7 +116,7 @@ const Vertical = ({
         onHover(null);
       };
 
-      const click = (d, i, e) => {
+      const click = (d, i, e, selected) => {
         const mouseY = d3.mouse(e[0])[1];
 
         const label = findLabelValue(mouseY);
@@ -144,12 +143,13 @@ const Vertical = ({
           if (disable) {
             return;
           }
-          click(d, i, e);
+          console.log(selected);
+          click(d, i, e, selected);
         });
     },
     width,
     height,
-    [title, colorScale, ticks]
+    [title, colorScale, ticks, onClick, onHover, selected]
   );
   return <svg ref={svgRef} />;
 };
@@ -184,13 +184,9 @@ Vertical.propTypes = {
    */
   disable: PropTypes.bool,
   /**
-   * Label to highlight
+   * Whether to reset selection
    */
-  highlight: PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.object,
-    PropTypes.string,
-  ]),
+  reset: PropTypes.bool,
   /**
    * callback for on hover on square
    */
