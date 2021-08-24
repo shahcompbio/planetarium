@@ -18,6 +18,7 @@ const Horizontal = ({
   title = null,
   disable = false,
   highlight = null,
+  fontFamily = null,
   onClick = (value) => {},
   onHover = (value) => {},
 }) => {
@@ -49,7 +50,7 @@ const Horizontal = ({
           .attr("alignment-baseline", "center")
           .attr("dominant-baseline", "center")
           .attr("text-anchor", "left")
-          .attr("font-family", "Helvetica")
+          .attr("font-family", fontFamily ? fontFamily["regular"] : "Helvetica")
           .attr("font-weight", "500")
           .attr("font-size", "12px")
           .attr("fill", "#000000")
@@ -85,7 +86,7 @@ const Horizontal = ({
         .attr("alignment-baseline", "hanging")
         .attr("dominant-baseline", "hanging")
         .attr("text-anchor", "middle")
-        .attr("font-family", "Helvetica")
+        .attr("font-family", fontFamily ? fontFamily["regular"] : "Helvetica")
         .attr("font-weight", "500")
         .attr("font-size", "12px")
         .attr("fill", "#000000")
@@ -183,6 +184,10 @@ Horizontal.propTypes = {
    * Whether interactions should be disabled
    */
   disable: PropTypes.bool,
+  /**
+   * Font for labels
+   */
+  fontFamily: PropTypes.object,
   /**
    * Label to highlight
    */

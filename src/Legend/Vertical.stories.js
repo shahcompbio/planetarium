@@ -60,6 +60,15 @@ CategoricalNoInteraction.args = {
   disable: true,
 };
 
+export const Font = Template.bind({});
+Font.args = {
+  width: 150,
+  title: "Test",
+  ticks: [1, 2, 3, 4].map((value) => ({ value, label: `Label ${value}` })),
+  colorScale: (value) => CATEGORICAL_COLORS[value],
+  fontFamily: { regular: "MyFontRegular", bold: "MyFontBold", labelOffset: 3 },
+};
+
 export const Numerical = Template.bind({});
 Numerical.args = {
   width: 150,

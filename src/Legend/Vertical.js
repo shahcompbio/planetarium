@@ -18,6 +18,7 @@ const Vertical = ({
   title = null,
   disable = false,
   reset = false,
+  fontFamily = null,
   onClick = (value) => {},
   onHover = (value) => {},
 }) => {
@@ -43,13 +44,17 @@ const Vertical = ({
     (svg) => {
       const legendHeight = PADDING * 2 + data.length * STEP;
       var offset = 0;
+      const textOffset =
+        fontFamily && fontFamily.hasOwnProperty("labelOffset")
+          ? fontFamily["labelOffset"]
+          : 0;
       if (title !== undefined) {
         const titleText = svg
           .append("text")
           .attr("alignment-baseline", "center")
           .attr("dominant-baseline", "center")
           .attr("text-anchor", "middle")
-          .attr("font-family", "Helvetica")
+          .attr("font-family", fontFamily ? fontFamily["bold"] : "Helvetica")
           .attr("font-weight", "500")
           .attr("font-size", "12px")
           .attr("fill", "#000000")
@@ -84,12 +89,12 @@ const Vertical = ({
         .attr("alignment-baseline", "hanging")
         .attr("dominant-baseline", "hanging")
         .attr("text-align", "left")
-        .attr("font-family", "Helvetica")
+        .attr("font-family", fontFamily ? fontFamily["regular"] : "Helvetica")
         .attr("font-weight", "500")
         .attr("font-size", "12px")
         .attr("fill", "#000000")
         .attr("x", SQUARE_LENGTH + 10)
-        .attr("y", (d, i) => i * STEP + offset)
+        .attr("y", (d, i) => i * STEP + offset + textOffset)
         .text((d) => d["label"]);
 
       const findLabelValue = (mouseY) => {
@@ -183,6 +188,10 @@ Vertical.propTypes = {
    * Whether interactions should be disabled
    */
   disable: PropTypes.bool,
+  /**
+   * Font for labels
+   */
+  fontFamily: PropTypes.object,
   /**
    * Whether to reset selection
    */

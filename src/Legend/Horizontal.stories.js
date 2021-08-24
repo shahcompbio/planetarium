@@ -60,10 +60,18 @@ CategoricalNoInteraction.args = {
   disable: true,
 };
 
+export const Font = Template.bind({});
+Font.args = {
+  width: 150,
+  title: "Test",
+  ticks: [1, 2, 3, 4],
+  colorScale: (value) => CATEGORICAL_COLORS[value],
+  fontFamily: { regular: "MyFontRegular", bold: "MyFontBold" },
+};
+
 export const Numerical = Template.bind({});
 Numerical.args = {
   width: 150,
-  height: 500,
   title: "Test",
   colorScale: numericalColorScale,
   ticks: 3,
@@ -72,7 +80,6 @@ Numerical.args = {
 export const NumericalTicks = Template.bind({});
 NumericalTicks.args = {
   width: 150,
-  height: 500,
   ticks: 5,
   title: "Test",
   colorScale: numericalColorScale,
@@ -81,7 +88,6 @@ NumericalTicks.args = {
 export const NumericalNoTitle = Template.bind({});
 NumericalNoTitle.args = {
   width: 150,
-  height: 500,
   ticks: 2,
   colorScale: numericalColorScale,
 };
