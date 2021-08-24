@@ -5,7 +5,7 @@ import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 
 const MARGIN = 10;
-const PADDING = 10;
+const PADDING = 0;
 
 const Layout = ({ title, infoText, children }) => {
   return (

@@ -3,19 +3,39 @@ import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
 import SvgIcon from "@material-ui/core/SvgIcon";
 
-const InfoBar = ({ title, infoText }) => {
-  return (
-    <Grid
-      item
-      style={{
-        textAlign: "right",
-        paddingRight: 10,
-        marginBottom: 10,
-      }}
-    >
-      {title + "    "}
+import { makeStyles } from "@material-ui/core/styles";
 
-      <InfoIcon infoText={infoText} />
+const useStyles = makeStyles({
+  root: {
+    textAlign: "right",
+    marginBottom: 10,
+  },
+  arrow: {
+    padding: 10,
+    color: "#8a8484",
+    backgroundColor: "#F7F8FB",
+    position: "relative",
+    borderRadius: 5,
+    "&:after": {
+      content: "''",
+      position: "absolute",
+      left: 50,
+      marginLeft: -50,
+      borderTop: "solid 50px #F7F8FB",
+      borderLeft: "solid 50px transparent",
+      borderRight: "solid 50px transparent",
+    },
+  },
+});
+const InfoBar = ({ title, infoText }) => {
+  const classes = useStyles();
+  return (
+    <Grid item className={classes.root}>
+      <div className={classes.arrow}>
+        {title + "    "}
+
+        <InfoIcon infoText={infoText} />
+      </div>
     </Grid>
   );
 };
