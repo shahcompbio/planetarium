@@ -11,13 +11,18 @@ export { default as Heatmap } from "./Heatmap/Heatmap";
 export { default as InfoBar } from "./InfoBar/InfoBar";
 export { default as Layout } from "./InfoBar/Layout";
 
-export { default as VerticalLegend } from "./Legend/VerticalLegend";
-export { default as HorizontalLegend } from "./Legend/HorizontalLegend";
+export { default as VerticalLegend } from "./Legend/Vertical";
+export { default as HorizontalLegend } from "./Legend/Horizontal";
 //cellmine
 export { default as PackingCircles } from "./Cellmine/PackingCircles";
 
 // UMAP
-export { default as UMAP } from "./UMAP/CategoricalUMAP";
+export {
+  default as UMAP,
+  drawAxis as drawUMAPAxis,
+  drawPoints as drawUMAPPoints,
+} from "./UMAP/UMAP";
+export { default as useLasso } from "./UMAP/utils/useLasso";
 
 // Timeseries
 export { default as Fishtail } from "./TimeSeries/Fishtail";
