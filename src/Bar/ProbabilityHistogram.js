@@ -38,14 +38,16 @@ const HIGHLIGHTED_LINE_COLOR = "#47a647";
 
 const LINE_COLOR = "steelblue";
 
-const drawAxisLabels = (context, x, y) => {
+const drawAxisLabels = (context, x, y, font) => {
   drawAxis({
     context,
     xScale: x,
     yScale: y,
     ticks: 10,
     orientation: "horizontal",
+    label: "Log10pgen",
     gridlines: false,
+    font: font,
   });
 
   const format = (tick) => (tick === 0 ? "0" : d3.format(".2f")(tick));
@@ -54,8 +56,9 @@ const drawAxisLabels = (context, x, y) => {
     xScale: x,
     yScale: y,
     ticks: 10,
-    label: "Probability Density",
+    label: "Cell Density",
     format,
+    font: font,
   });
 };
 
@@ -233,6 +236,7 @@ const ProbabilityHistogram = ({
   idParam = "id",
   highlightedIDs = null,
   getTooltipText = (bin) => `Count: ${bin.length}`,
+  font = "MyFontLight",
 }) => {
   const [highlightedBin, setHighlightedBin] = useState(null);
 
@@ -271,7 +275,7 @@ const ProbabilityHistogram = ({
   const ref = useCanvas(
     (canvas) => {
       const context = canvas.getContext("2d");
-      drawAxisLabels(context, x, y);
+      drawAxisLabels(context, x, y, font);
       drawBars(
         canvas,
         bins,
@@ -306,6 +310,7 @@ const ProbabilityHistogram = ({
       item
       style={{
         position: "relative",
+        paddingLeft: 10,
       }}
     >
       <Tooltip

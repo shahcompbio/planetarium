@@ -2,7 +2,12 @@ import { createMuiTheme } from "@material-ui/core/styles";
 import "../App.css";
 export const theme = createMuiTheme({
   typography: {
-    fontFamily: ["MyFontBold", "MyFontRegular", "Helvetica"].join(","),
+    fontFamily: [
+      "MyFontBold",
+      "MyFontRegular",
+      "MyFontLight",
+      "Helvetica",
+    ].join(","),
   },
   palette: {
     primary: {

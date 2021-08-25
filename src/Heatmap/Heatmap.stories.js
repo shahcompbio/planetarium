@@ -88,3 +88,15 @@ RowTotal.args = {
   highlightedColumn: null,
   rowTotal: { dog: 10, cat: 10, lion: 5 },
 };
+export const FontChange = Template.bind({});
+FontChange.args = {
+  width: 600,
+  height: 600,
+  data: DATA,
+  column: "obs",
+  row: "group",
+  highlightedRow: null,
+  font: "MyFontRegular",
+  highlightedColumn: null,
+  rowTotal: { dog: 10, cat: 10, lion: 5 },
+};

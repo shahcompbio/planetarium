@@ -78,3 +78,16 @@ HighlightIds.args = {
 
   getTooltipText,
 };
+export const FontChange = Template.bind({});
+FontChange.args = {
+  width: 400,
+  height: 400,
+  data: DATA,
+  probParam: "prob",
+  highlightedIDs: DATA.filter((datum) => datum["group"] === "dog").map(
+    (datum) => datum["id"]
+  ),
+  observationParam: "obs",
+  font: "MyFontRegular",
+  getTooltipText,
+};

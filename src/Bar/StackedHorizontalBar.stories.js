@@ -33,3 +33,13 @@ SelectedRow.args = {
   barLabels: LABELS,
   highlightedRow: "dog",
 };
+
+export const FontChange = Template.bind({});
+FontChange.args = {
+  width: 400,
+  height: 400,
+  data: DATA,
+  barLabels: LABELS,
+  font: "MyFontRegular",
+  highlightedRow: "dog",
+};

@@ -6,3 +6,7 @@
   font-family: "MyFontRegular";
   src: local("MyFontRegular"), url(./theme/Regular.otf) format("opentype");
 }
+@font-face {
+  font-family: "MyFontLight";
+  src: local("MyFontLight"), url(./theme/Light.otf) format("opentype");
+}

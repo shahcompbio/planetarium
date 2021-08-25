@@ -137,6 +137,7 @@ const UMAP = ({
   highlightIDs = null,
   colorScale = null,
   disable = false,
+  fontFamily = null,
   onLasso = (data) => {},
   onLegendHover = (value) => {},
   onLegendClick = (value) => {},
@@ -251,7 +252,7 @@ const UMAP = ({
       </Grid>
       <Grid item style={{ paddingLeft: "40px" }}>
         <Legend
-          title={subsetParam}
+          fontFamily={fontFamily}
           width={legendWidth}
           height={height / 2}
           colorScale={subsetColors}

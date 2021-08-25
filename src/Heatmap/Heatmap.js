@@ -2,17 +2,18 @@ import React from "react";
 import * as d3 from "d3";
 import _ from "lodash";
 
+import { loadFont } from "../utils/canvas/loadFont";
 import { useCanvas } from "../utils/useCanvas";
 import { isHighlighted } from "../utils/isHighlighted";
 
 const HEATMAP_NULL_COLOR = "#eeeeee";
 const HEATMAP_COLOR = ["#ffec8b", "#d91e18"];
-const CELL_FONT = "normal 12px Helvetica";
+const CELL_FONT = "normal 12px MyFontRegular";
 
-const COLUMN_LABEL_SPACE = 150;
+const COLUMN_LABEL_SPACE = 50;
 const ROW_LABEL_SPACE = 150;
 const DEFAULT_LABEL_COLOR = "#000000";
-const LABEL_FONT = "normal 12px Helvetica";
+const LABEL_FONT = "normal 12px MyFontRegular";
 
 const PADDING = 10;
 
@@ -32,7 +33,9 @@ const Heatmap = ({
   columnLabels,
   rowLabels,
   rowTotal,
+  font,
 }) => {
+  loadFont("MyFontRegular");
   const columnValues = columnLabels
     ? columnLabels.map((col) => col["value"]) || columnLabels
     : _.uniq(data.map((record) => record[column])).sort();

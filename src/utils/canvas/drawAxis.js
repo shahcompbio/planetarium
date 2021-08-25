@@ -1,5 +1,6 @@
-const LABEL_FONT = "normal 14px Helvetica";
-const TICK_FONT = "normal 12px Helvetica";
+const DEFUALT_FONT = "MyFontLight";
+const LABEL_FONT = "normal 14px ";
+const TICK_FONT = "normal 12px ";
 
 const drawAxis = ({
   context,
@@ -10,6 +11,7 @@ const drawAxis = ({
   orientation = "vertical",
   format = (tick) => tick,
   gridlines = true,
+  font = null,
 }) => {
   context.beginPath();
 
@@ -17,7 +19,7 @@ const drawAxis = ({
   context.fillStyle = "black";
   context.textAlign = "right";
 
-  context.font = TICK_FONT;
+  context.font = font ? TICK_FONT + font : TICK_FONT + DEFUALT_FONT;
   context.textBaseline = "bottom";
 
   const scale = orientation === "vertical" ? yScale : xScale;
@@ -59,7 +61,7 @@ const drawAxis = ({
 
   // Label
   context.globalAlpha = 1;
-  context.font = LABEL_FONT;
+  context.font = font ? LABEL_FONT + font : LABEL_FONT + DEFUALT_FONT;
   context.textAlign = "center";
   context.textBaseline = "hanging";
 

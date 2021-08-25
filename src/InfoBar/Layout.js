@@ -5,14 +5,13 @@ import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 
 const MARGIN = 10;
-const PADDING = 0;
+const PADDING = 10;
 
 const Layout = ({ title, infoText, children }) => {
   return (
     <Paper
       style={{
         margin: MARGIN,
-        padding: PADDING,
       }}
     >
       <Grid
@@ -22,7 +21,7 @@ const Layout = ({ title, infoText, children }) => {
         alignItems="stretch"
       >
         <InfoBar title={title} infoText={infoText} />
-        <Grid item style={{ padding: 0 }}>
+        <Grid item style={{ padding: PADDING }}>
           {children}
         </Grid>
       </Grid>

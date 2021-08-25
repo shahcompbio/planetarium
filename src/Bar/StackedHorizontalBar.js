@@ -28,9 +28,10 @@ const BAR_COLORS = [
 
 const LEGEND_HEIGHT = 70;
 
-const PROP_AXIS_FONT = "normal 10px Helvetica";
+const DEFUALT_FONT = "MyFontLight";
+const PROP_AXIS_FONT = "normal 10px ";
 const CAT_LABEL_SPACE = 150;
-const CAT_LABEL_FONT = "normal 12px Helvetica";
+const CAT_LABEL_FONT = "normal 12px ";
 const PADDING = 10;
 const LABEL_PADDING = 20;
 
@@ -43,6 +44,7 @@ const StackedHorizontalBar = ({
   height = 400,
   barLabels,
   highlightedRow = null,
+  font = "MyFontLight",
 }) => {
   const categoryValues = Object.keys(data).sort();
   const barValues =
@@ -95,10 +97,11 @@ const StackedHorizontalBar = ({
         catScale,
         barPosScale,
         chartWidth + PADDING + 2,
-        highlightedRow
+        highlightedRow,
+        font
       );
 
-      drawLegend(context, legendLabels, colors, width);
+      drawLegend(context, legendLabels, colors, width, font);
     },
 
     width,
@@ -149,7 +152,8 @@ const drawLabels = (
   catScale,
   barScale,
   xAxisPos,
-  highlightedRow
+  highlightedRow,
+  font
 ) => {
   drawAxis({
     context,
@@ -158,10 +162,11 @@ const drawLabels = (
     ticks: 10,
     orientation: "horizontal",
     gridlines: false,
+    font: font,
     format: (tick) => tick * 100,
   });
 
-  context.font = CAT_LABEL_FONT;
+  context.font = font ? CAT_LABEL_FONT + font : CAT_LABEL_FONT + DEFUALT_FONT;
   context.textAlign = "left";
   context.textBaseline = "middle";
 
@@ -175,10 +180,10 @@ const drawLabels = (
   });
 };
 
-const drawLegend = (context, barValues, colors, canvasWidth) => {
+const drawLegend = (context, barValues, colors, canvasWidth, font) => {
   context.textAlign = "center";
   context.textBaseline = "top";
-  context.font = PROP_AXIS_FONT;
+  context.font = font ? PROP_AXIS_FONT + font : PROP_AXIS_FONT + DEFUALT_FONT;
   context.globalAlpha = 1;
   const START_X = canvasWidth - 30;
   const START_Y = 20;
