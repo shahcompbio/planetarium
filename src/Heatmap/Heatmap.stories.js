@@ -22,6 +22,23 @@ const DATA = [
   { prob: 0.7, obs: "f", group: "dog" },
   { prob: 0.7, obs: "f", group: "dog" },
   { prob: 0.7, obs: "f", group: "dog" },
+
+  { prob: 0.05, obs: "a", group: "dog1" },
+  { prob: 0.05, obs: "a", group: "cat1" },
+  { prob: 0.05, obs: "a", group: "cat1" },
+  { prob: 0.05, obs: "a", group: "cat1" },
+  { prob: 0.05, obs: "a", group: "cat1" },
+  { prob: 0.05, obs: "a", group: "lion1" },
+  { prob: 0.15, obs: "b", group: "dog1" },
+  { prob: 0.05, obs: "c", group: "dog1" },
+  { prob: 0.05, obs: "c", group: "lion1" },
+  { prob: 0.2, obs: "d", group: "cat1" },
+  { prob: 0.2, obs: "d", group: "lion1" },
+  { prob: 0.2, obs: "d", group: "lion1" },
+  { prob: 0.01, obs: "e", group: "dog1" },
+  { prob: 0.7, obs: "f", group: "dog1" },
+  { prob: 0.7, obs: "f", group: "dog1" },
+  { prob: 0.7, obs: "f", group: "dog1" },
 ];
 
 export default {
@@ -99,4 +116,26 @@ FontChange.args = {
   font: "MyFontRegular",
   highlightedColumn: null,
   rowTotal: { dog: 10, cat: 10, lion: 5 },
+};
+export const Square = Template.bind({});
+Square.args = {
+  width: 600,
+  height: 600,
+  data: DATA,
+  column: "obs",
+  row: "group",
+  highlightedRow: null,
+  font: "MyFontRegular",
+  highlightedColumn: null,
+  rowTotal: {
+    dog: 10,
+    cat: 10,
+    lion: 5,
+    dog1: 12,
+    cat1: 15,
+    lion1: 10,
+    dog2: 14,
+    cat2: 13,
+    lion2: 9,
+  },
 };

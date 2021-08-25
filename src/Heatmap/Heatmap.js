@@ -35,7 +35,6 @@ const Heatmap = ({
   rowTotal,
   font,
 }) => {
-  loadFont("MyFontRegular");
   const columnValues = columnLabels
     ? columnLabels.map((col) => col["value"]) || columnLabels
     : _.uniq(data.map((record) => record[column])).sort();
@@ -229,6 +228,8 @@ const drawHeatmap = (
     const rowData = freqMap[rowName];
     const yPos = rowScale(rowName);
     const total = rowData["total"];
+    const cr = 5;
+    const pi = Math.PI;
 
     columnValues.forEach((columnName) => {
       const colFreq = rowData[columnName];
@@ -246,7 +247,19 @@ const drawHeatmap = (
       } else {
         context.fillStyle = HEATMAP_NULL_COLOR;
       }
-      context.fillRect(xPos, yPos, cellWidth, cellHeight);
+      const rect = [xPos, yPos, cellWidth, cellHeight];
+      const x1 = rect[0],
+        y1 = rect[1],
+        x2 = rect[2] + x1,
+        y2 = rect[3] + y1;
+
+      context.beginPath();
+      context.arc(x1 + cr, y1 + cr, cr, pi, 1.5 * pi); // upper left corner
+      context.arc(x2 - cr, y1 + cr, cr, 1.5 * pi, 0); // upper right corner
+      context.arc(x2 - cr, y2 - cr, cr, 0, 0.5 * pi); // lower right corner
+      context.arc(x1 + cr, y2 - cr, cr, 0.5 * pi, pi); // lower left corner
+      context.closePath();
+      context.fill();
 
       if (colFreq) {
         context.fillStyle = "black";
