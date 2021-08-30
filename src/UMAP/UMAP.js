@@ -138,6 +138,7 @@ const UMAP = ({
   colorScale = null,
   disable = false,
   fontFamily = null,
+  labels = (value) => value,
   onLasso = (data) => {},
   onLegendHover = (value) => {},
   onLegendClick = (value) => {},
@@ -258,7 +259,10 @@ const UMAP = ({
           colorScale={subsetColors}
           ticks={
             isCategorical
-              ? Object.keys(_.groupBy(data, subsetParam)).sort()
+              ? subsetColors
+                  .domain()
+                  .sort()
+                  .map((value) => ({ value, label: labels(value) }))
               : 10
           }
           onHover={(value) => {

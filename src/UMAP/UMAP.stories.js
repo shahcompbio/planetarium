@@ -33,6 +33,17 @@ Categorical.args = {
   idParam: "cell_id",
 };
 
+export const CategoricalLabels = CatTemplate.bind({});
+CategoricalLabels.args = {
+  width: 800,
+  height: 600,
+  xParam: "UMAP_1",
+  yParam: "UMAP_2",
+  subsetParam: "subtype",
+  idParam: "cell_id",
+  labels: (value) => `P ${value}`,
+};
+
 export const CategoricalSubset = CatTemplate.bind({});
 CategoricalSubset.args = {
   width: 800,
