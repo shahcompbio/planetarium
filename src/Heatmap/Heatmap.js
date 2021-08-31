@@ -13,7 +13,7 @@ const CELL_FONT = "normal 12px MyFontRegular";
 const COLUMN_LABEL_SPACE = 50;
 const ROW_LABEL_SPACE = 150;
 const DEFAULT_LABEL_COLOR = "#000000";
-const LABEL_FONT = "normal 12px MyFontRegular";
+const LABEL_FONT = "normal 12px MyFontLight";
 
 const PADDING = 10;
 
