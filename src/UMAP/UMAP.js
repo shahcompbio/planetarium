@@ -101,6 +101,30 @@ export const drawPoints = ({
     );
     context.fill();
   });
+
+  // this draws highlightedPoints on top
+  if (highlightIDs && highlightIDs.length !== data.length) {
+    data
+      .filter((datum) => highlightIDs.includes(datum[idParam]))
+      .forEach((point) => {
+        context.fillStyle =
+          point.hasOwnProperty(subsetParam) &&
+          highlightIDs.includes(point[idParam])
+            ? colorScale(point[subsetParam])
+            : NULL_POINT_COLOR;
+
+        context.beginPath();
+        context.arc(
+          xScale(point[xParam]),
+          yScale(point[yParam]),
+          POINT_RADIUS,
+          0,
+          Math.PI * 2,
+          true
+        );
+        context.fill();
+      });
+  }
 };
 
 const getColorScale = ({ data, subsetParam, isCategorical }) => {
