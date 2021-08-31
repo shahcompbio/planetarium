@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 
 var FontFaceObserver = require("fontfaceobserver");
 
@@ -8,7 +8,13 @@ var light = new FontFaceObserver("MyFontLight");
 
 export const useCanvas = (renderCanvas, width, height, dependencies) => {
   const ref = useRef(null);
+  const [fontLoad, setFontLoad] = useState(false);
 
+  useEffect(() => {
+    Promise.all([bold.load(), regular.load(), light.load()]).then(() => {
+      setFontLoad(true);
+    });
+  }, []);
   useEffect(() => {
     const canvas = ref.current;
     const context = canvas.getContext("2d");
@@ -23,14 +29,14 @@ export const useCanvas = (renderCanvas, width, height, dependencies) => {
   }, [width, height]);
 
   useEffect(() => {
-    Promise.all([bold.load(), regular.load(), light.load()]).then(() => {
-      const canvas = ref.current;
-      const context = canvas.getContext("2d");
+    const canvas = ref.current;
+    const context = canvas.getContext("2d");
+    if (fontLoad) {
       context.clearRect(0, 0, canvas.width, canvas.height);
       renderCanvas(canvas);
-    });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, dependencies);
+  }, [fontLoad, ...dependencies]);
 
   return ref;
 };
