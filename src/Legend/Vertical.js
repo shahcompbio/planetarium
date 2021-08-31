@@ -148,7 +148,6 @@ const Vertical = ({
           if (disable) {
             return;
           }
-          console.log(selected);
           click(d, i, e, selected);
         });
     },
