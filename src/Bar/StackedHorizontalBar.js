@@ -26,7 +26,7 @@ const BAR_COLORS = [
   "#9E0142",
 ];
 
-const LEGEND_HEIGHT = 70;
+const LEGEND_HEIGHT = 50;
 
 const DEFUALT_FONT = "MyFontLight";
 const PROP_AXIS_FONT = "normal 10px ";
