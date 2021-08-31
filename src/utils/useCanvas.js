@@ -1,5 +1,11 @@
 import { useRef, useEffect } from "react";
 
+var FontFaceObserver = require("fontfaceobserver");
+
+var bold = new FontFaceObserver("MyFontBold");
+var regular = new FontFaceObserver("MyFontRegular");
+var light = new FontFaceObserver("MyFontLight");
+
 export const useCanvas = (renderCanvas, width, height, dependencies) => {
   const ref = useRef(null);
 
@@ -17,10 +23,12 @@ export const useCanvas = (renderCanvas, width, height, dependencies) => {
   }, [width, height]);
 
   useEffect(() => {
-    const canvas = ref.current;
-    const context = canvas.getContext("2d");
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    renderCanvas(canvas);
+    Promise.all([bold.load(), regular.load(), light.load()]).then(() => {
+      const canvas = ref.current;
+      const context = canvas.getContext("2d");
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      renderCanvas(canvas);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, dependencies);
 
