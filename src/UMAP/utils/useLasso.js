@@ -71,10 +71,17 @@ const useLasso = (data, xScale, yScale, xParam, yParam) => {
     context.closePath();
   };
 
+  const resetLasso = () => {
+    if (lassoPolys.length > 0) {
+      setLassoPolys([]);
+      setHighlighted(null);
+    }
+  };
+
   // should just returned lasso'd data
   // with canvas, you might need to return the exact handlers, which is annoying
 
-  return [highlighted, drawLasso, addLassoHandler];
+  return [highlighted, drawLasso, addLassoHandler, resetLasso];
 };
 
 function isPointInPoly(poly, x, y) {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import _ from "lodash";
 
 import UMAP from "./UMAP";
@@ -66,4 +66,33 @@ Static.args = {
   idParam: "cell_id",
   subsetParam: "subtype",
   disable: true,
+};
+
+// Test for external reset component
+const CatButtonTemplate = (args) => {
+  const [highlightData, setHighlightData] = useState(null);
+  return (
+    <div>
+      <UMAP
+        data={catData}
+        {...args}
+        highlightIDs={
+          highlightData === null
+            ? highlightData
+            : highlightData.map((datum) => datum["cell_id"])
+        }
+        onLasso={setHighlightData}
+      />
+      <button onClick={() => setHighlightData(null)}>Reset Lasso</button>
+    </div>
+  );
+};
+export const CategoricalReset = CatButtonTemplate.bind({});
+CategoricalReset.args = {
+  width: 800,
+  height: 600,
+  xParam: "UMAP_1",
+  yParam: "UMAP_2",
+  subsetParam: "subtype",
+  idParam: "cell_id",
 };

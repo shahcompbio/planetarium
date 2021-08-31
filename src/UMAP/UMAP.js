@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 
 import * as d3 from "d3";
@@ -177,13 +177,28 @@ const UMAP = ({
   const subsetColors =
     colorScale || getColorScale({ data, subsetParam, isCategorical });
 
-  const [lassoData, drawLasso, addLassoHandler] = useLasso(
+  const [lassoData, drawLasso, addLassoHandler, resetLasso] = useLasso(
     data,
     xScale,
     yScale,
     xParam,
     yParam
   );
+
+  const prevHighlightRef = useRef();
+
+  useEffect(() => {
+    // resetLasso if highlightIDs is suddenly null and lassoData still exists
+    if (highlightIDs === null && prevHighlightRef.current !== null) {
+      if (lassoData !== null) {
+        resetLasso();
+      }
+    }
+  }, [highlightIDs, lassoData]);
+
+  useEffect(() => {
+    prevHighlightRef.current = highlightIDs;
+  }, [highlightIDs]);
 
   const [hoveredLegend, setHoveredLegend] = useState(null);
   const [clickedLegend, setClickedLegend] = useState(null);
