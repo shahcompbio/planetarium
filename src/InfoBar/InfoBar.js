@@ -1,8 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
 import SvgIcon from "@material-ui/core/SvgIcon";
+import Collapse from "@material-ui/core/Collapse";
 
+import Slide from "@material-ui/core/Slide";
+
+import ClearIcon from "@material-ui/icons/Clear";
+import TextField from "@material-ui/core/TextField";
+import SearchIcon from "@material-ui/icons/Search";
+
+import IconButton from "@material-ui/core/IconButton";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles({
@@ -29,7 +37,12 @@ const useStyles = makeStyles({
     },
   },
 });
-const InfoBar = ({ title, infoText, download = null }) => {
+const InfoBar = ({
+  title,
+  infoText,
+  download = null,
+  SearchComponent = null,
+}) => {
   const classes = useStyles();
   return (
     <Grid item className={classes.root}>
@@ -45,13 +58,46 @@ const InfoBar = ({ title, infoText, download = null }) => {
           <Grid item xs={3} style={{ textAlign: "left" }}>
             {title + "    "}
           </Grid>
-          <Grid item xs={9} style={{ textAlign: "right" }}>
+          <Grid
+            item
+            container
+            direction="row"
+            justifycontent="flex-end"
+            alignItems="right"
+            xs={9}
+            style={{ textAlign: "right", justifyContent: "flex-end" }}
+          >
+            {SearchComponent && (
+              <Search classes={classes}>
+                <SearchComponent />
+              </Search>
+            )}
             {download && <DownloadIcon download={download} classes={classes} />}
             <InfoIcon infoText={infoText} classes={classes} />
           </Grid>
         </Grid>
       </div>
     </Grid>
+  );
+};
+const Search = ({ children, classes }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <span style={{ display: "flex", float: "left" }}>
+      <Collapse direction={"left"} in={isOpen}>
+        {children}
+      </Collapse>
+      <Tooltip title={"Search"} arrow>
+        <SvgIcon
+          viewBox="0 0 20 20"
+          className={classes.svgIcon}
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          <SearchIcon fontSize="medium" />
+        </SvgIcon>
+      </Tooltip>
+    </span>
   );
 };
 
