@@ -27,6 +27,8 @@ export { default as useLasso } from "./UMAP/utils/useLasso";
 // Timeseries
 export { default as Fishtail } from "./TimeSeries/Fishtail";
 
+export { default as Select } from "./Select/VirtualizedSelect";
+
 export { useCanvas } from "./utils/useCanvas";
 export { default as drawCanvasAxis } from "./utils/canvas/drawAxis";
 
