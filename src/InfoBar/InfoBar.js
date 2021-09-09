@@ -40,6 +40,7 @@ const useStyles = makeStyles({
 const InfoBar = ({
   title,
   infoText,
+  addIcon = null,
   download = null,
   SearchComponent = null,
 }) => {
@@ -67,6 +68,7 @@ const InfoBar = ({
             xs={9}
             style={{ textAlign: "right", justifyContent: "flex-end" }}
           >
+            {addIcon}
             {SearchComponent && (
               <Search classes={classes}>
                 <SearchComponent />
