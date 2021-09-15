@@ -1,24 +1,14 @@
 import React from "react";
+import PropTypes from "prop-types";
+
 import InfoBar from "./InfoBar";
-
-import { jsPDF } from "jspdf";
-//import canvg from "canvg";
-
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-
-import TextField from "@material-ui/core/TextField";
 
 const MARGIN = 10;
 const PADDING = 10;
 
-const Layout = ({
-  title,
-  infoText,
-  children,
-  download,
-  SearchComponent = null,
-}) => {
+const Layout = ({ title, infoText, children, addIcon = null }) => {
   return (
     <Paper
       style={{
@@ -31,18 +21,38 @@ const Layout = ({
         justify="flex-start"
         alignItems="stretch"
       >
-        <InfoBar
-          title={title}
-          infoText={infoText}
-          download={download}
-          SearchComponent={SearchComponent}
-        />
+        <InfoBar title={title} infoText={infoText} addIcon={addIcon} />
         <Grid item style={{ padding: PADDING }}>
           {children}
         </Grid>
       </Grid>
     </Paper>
   );
+};
+
+Layout.propTypes = {
+  /**
+   * text on information bar
+   */
+  title: PropTypes.string,
+  /**
+   * text on tooltip hover
+   */
+  infoText: PropTypes.string,
+  /**
+   * additional components to be added to info bar
+   */
+  addIcon: PropTypes.oneOf([
+    PropTypes.elementType,
+    PropTypes.arrayOf(PropTypes.elementType),
+  ]),
+  /**
+   * items to put in layout grid
+   */
+  children: PropTypes.oneOf([
+    PropTypes.elementType,
+    PropTypes.arrayOf(PropTypes.elementType),
+  ]),
 };
 
 export default Layout;
