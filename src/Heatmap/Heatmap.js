@@ -2,7 +2,6 @@ import React from "react";
 import * as d3 from "d3";
 import _ from "lodash";
 
-import { loadFont } from "../utils/canvas/loadFont";
 import { useCanvas } from "../utils/useCanvas";
 import { isHighlighted } from "../utils/isHighlighted";
 
