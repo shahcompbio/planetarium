@@ -7,7 +7,8 @@ import isHighlighted from "../utils/isHighlighted";
 
 const HEATMAP_NULL_COLOR = "#eeeeee";
 const HEATMAP_COLOR = ["#ffec8b", "#d91e18"];
-const CELL_FONT = "normal 12px MyFontRegular";
+const CELL_FONT = "normal 14px MyFontRegular";
+const CELL_SUB_FONT = "normal 10px MyFontRegular";
 
 const COLUMN_LABEL_SPACE = 50;
 const ROW_LABEL_SPACE = 150;
@@ -27,12 +28,11 @@ const Heatmap = ({
   height,
   column,
   row,
-  highlightedColumn,
-  highlightedRow,
+  highlightedColumn = null,
+  highlightedRow = null,
   columnLabels,
   rowLabels,
   rowTotal,
-  font,
 }) => {
   const columnValues = columnLabels
     ? columnLabels.map((col) => col["value"]) || columnLabels
@@ -121,7 +121,7 @@ const Heatmap = ({
     },
     width,
     height,
-    [highlightedColumn, highlightedRow]
+    [data.length, column, row, highlightedColumn, highlightedRow]
   );
 
   return <canvas ref={ref} />;
@@ -175,7 +175,6 @@ const drawLabels = (
     }
 
     context.restore();
-    context.fill();
   });
 
   rowValues.forEach((rowData) => {
@@ -243,17 +242,28 @@ const drawHeatmap = (
       context.arc(x2 - cr, y2 - cr, cr, 0, 0.5 * pi); // lower right corner
       context.arc(x1 + cr, y2 - cr, cr, 0.5 * pi, pi); // lower left corner
       context.closePath();
+      console.log(context.fillStyle);
       context.fill();
 
       if (colFreq) {
         context.fillStyle = "black";
         context.font = CELL_FONT;
         context.textAlign = "center";
-        context.textBaseline = "middle";
+        context.textBaseline = "bottom";
         context.fillText(
-          `${colFreq} (${Math.round((colFreq * 100) / total)}%)`,
+          `${colFreq}`,
           xPos + cellWidth / 2,
           yPos + cellHeight / 2
+        );
+
+        context.font = CELL_SUB_FONT;
+        context.textBaseline = "top";
+
+        context.fillStyle = "#212121";
+        context.fillText(
+          `${Math.round((colFreq * 100) / total)}%`,
+          xPos + cellWidth / 2,
+          yPos + cellHeight / 2 + 5
         );
       }
     });

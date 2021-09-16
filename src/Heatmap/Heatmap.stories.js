@@ -53,8 +53,6 @@ Standard.args = {
   data: DATA,
   column: "obs",
   row: "group",
-  highlightedRow: null,
-  highlightedColumn: null,
 };
 
 export const SelectedRow = Template.bind({});
@@ -65,7 +63,6 @@ SelectedRow.args = {
   column: "obs",
   row: "group",
   highlightedRow: "dog",
-  highlightedColumn: null,
 };
 
 export const SelectedColumn = Template.bind({});
@@ -75,7 +72,6 @@ SelectedColumn.args = {
   data: DATA,
   column: "obs",
   row: "group",
-  highlightedRow: null,
   highlightedColumn: "c",
 };
 
@@ -86,8 +82,6 @@ SubsetColumns.args = {
   data: DATA,
   column: "obs",
   row: "group",
-  highlightedRow: null,
-  highlightedColumn: null,
   columnLabels: ["a", "b", "c"].map((value) => ({
     value,
     label: `Label ${value}`,
@@ -101,9 +95,7 @@ RowTotal.args = {
   data: DATA,
   column: "obs",
   row: "group",
-  highlightedRow: null,
-  highlightedColumn: null,
-  rowTotal: { dog: 10, cat: 10, lion: 5 },
+  rowTotal: { dog: 10, cat: 10, lion: 5, dog1: 20, cat1: 15, lion1: 10 },
 };
 export const FontChange = Template.bind({});
 FontChange.args = {
@@ -112,10 +104,7 @@ FontChange.args = {
   data: DATA,
   column: "obs",
   row: "group",
-  highlightedRow: null,
   font: "MyFontRegular",
-  highlightedColumn: null,
-  rowTotal: { dog: 10, cat: 10, lion: 5 },
 };
 export const Square = Template.bind({});
 Square.args = {
@@ -124,9 +113,7 @@ Square.args = {
   data: DATA,
   column: "obs",
   row: "group",
-  highlightedRow: null,
   font: "MyFontRegular",
-  highlightedColumn: null,
   rowTotal: {
     dog: 10,
     cat: 10,
