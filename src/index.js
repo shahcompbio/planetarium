@@ -35,4 +35,4 @@ export { default as drawCanvasAxis } from "./utils/canvas/drawAxis";
 export { useD3 } from "./utils/useD3";
 export { default as sortAlphanumeric } from "./utils/sortAlphanumeric";
 
-export { isValueHighlighted, isHighlighted } from "./utils/isHighlighted";
+export { default as isHighlighted } from "./utils/isHighlighted";

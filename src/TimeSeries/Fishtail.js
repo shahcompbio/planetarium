@@ -5,7 +5,7 @@ import _ from "lodash";
 import * as d3 from "d3";
 import { useD3 } from "../utils/useD3";
 import { Grid } from "@material-ui/core";
-import { isValueHighlighted as isHighlighted } from "../utils/isHighlighted";
+import isHighlighted from "../utils/isHighlighted";
 import sortAlphanumeric from "../utils/sortAlphanumeric";
 import VerticalLegend from "../Legend/Vertical";
 

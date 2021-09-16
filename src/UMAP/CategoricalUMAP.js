@@ -7,7 +7,7 @@ import { quantileSorted } from "d3-array";
 import { Grid } from "@material-ui/core";
 import { useCanvas } from "../utils/useCanvas";
 import VerticalLegend from "../Legend/Vertical";
-import { isValueHighlighted as isHighlighted } from "../utils/isHighlighted";
+import isHighlighted from "../utils/isHighlighted";
 import drawAxis from "./utils/drawAxis";
 
 const PADDING = 10;

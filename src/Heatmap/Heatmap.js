@@ -3,7 +3,7 @@ import * as d3 from "d3";
 import _ from "lodash";
 
 import { useCanvas } from "../utils/useCanvas";
-import { isHighlighted } from "../utils/isHighlighted";
+import isHighlighted from "../utils/isHighlighted";
 
 const HEATMAP_NULL_COLOR = "#eeeeee";
 const HEATMAP_COLOR = ["#ffec8b", "#d91e18"];
@@ -164,14 +164,7 @@ const drawLabels = (
     context.textAlign = "left";
     context.textBaseline = "bottom";
     context.fillStyle = color;
-    context.globalAlpha = isHighlighted(
-      highlightedColumn,
-      highlightedRow,
-      value,
-      undefined
-    )
-      ? 1
-      : 0.2;
+    context.globalAlpha = isHighlighted(value, highlightedColumn) ? 1 : 0.2;
 
     // artifact from NDV :(
     if (label.indexOf("/") !== -1) {
@@ -190,14 +183,7 @@ const drawLabels = (
     context.font = LABEL_FONT;
     context.fillStyle = color;
 
-    context.globalAlpha = isHighlighted(
-      highlightedColumn,
-      highlightedRow,
-      undefined,
-      value
-    )
-      ? 1
-      : 0.2;
+    context.globalAlpha = isHighlighted(value, highlightedRow) ? 1 : 0.2;
 
     context.textAlign = "left";
     context.textBaseline = "middle";
@@ -233,14 +219,13 @@ const drawHeatmap = (
     columnValues.forEach((columnName) => {
       const colFreq = rowData[columnName];
       const xPos = columnScale(columnName);
-      context.globalAlpha = isHighlighted(
-        highlightedRow,
-        highlightedColumn,
-        rowName,
-        columnName
-      )
-        ? 1
-        : 0.2;
+      context.globalAlpha =
+        highlightedColumn !== null || highlightedRow !== null
+          ? highlightedColumn === columnName || highlightedRow === rowName
+            ? 1
+            : 0.2
+          : 1;
+
       if (colFreq) {
         context.fillStyle = heatmapColor(colFreq);
       } else {
