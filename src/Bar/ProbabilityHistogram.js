@@ -302,7 +302,13 @@ const ProbabilityHistogram = ({
     },
     width,
     height,
-    [highlightedObservation, highlightedIDs]
+    [
+      data.length,
+      probParam,
+      observationParam,
+      highlightedObservation,
+      highlightedIDs,
+    ]
   );
 
   return (

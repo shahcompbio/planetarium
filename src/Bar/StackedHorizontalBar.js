@@ -106,7 +106,7 @@ const StackedHorizontalBar = ({
 
     width,
     height,
-    [highlightedRow]
+    [data, barLabels.length, highlightedRow]
   );
 
   return <canvas ref={ref} />;
