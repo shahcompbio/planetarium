@@ -19,6 +19,7 @@ build
 dist
 .rpt2_cache
 /example/env
+/example/**/*.json
 
 # misc
 .DS_Store
