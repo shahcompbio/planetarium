@@ -44,8 +44,7 @@ const Horizontal = ({
     (svg) => {
       const legendHeight = PADDING * 2 + data.length * STEP;
       var offset = PADDING;
-      if (title !== undefined) {
-        const uppercaseTitle = title[0].toUpperCase() + title.slice(1);
+      if (title !== null) {
         const titleText = svg
           .append("text")
           .attr("alignment-baseline", "center")
