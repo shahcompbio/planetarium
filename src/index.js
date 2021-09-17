@@ -10,6 +10,7 @@ export { default as Heatmap } from "./Heatmap/Heatmap";
 //infoBar
 export { default as InfoBar } from "./InfoBar/InfoBar";
 export { default as Layout } from "./InfoBar/Layout";
+export { SearchIcon, DownloadIcon } from "./InfoBar/Icons";
 
 export { default as VerticalLegend } from "./Legend/Vertical";
 export { default as HorizontalLegend } from "./Legend/Horizontal";
