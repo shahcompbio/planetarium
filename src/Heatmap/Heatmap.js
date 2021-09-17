@@ -242,7 +242,6 @@ const drawHeatmap = (
       context.arc(x2 - cr, y2 - cr, cr, 0, 0.5 * pi); // lower right corner
       context.arc(x1 + cr, y2 - cr, cr, 0.5 * pi, pi); // lower left corner
       context.closePath();
-      console.log(context.fillStyle);
       context.fill();
 
       if (colFreq) {
