@@ -18,7 +18,7 @@ const AXIS_SPACE = 20;
 const NULL_POINT_COLOR = "#e8e8e8";
 const POINT_RADIUS = 2;
 
-const AXIS_FONT = "normal 10px Helvetica";
+const AXIS_FONT = "normal 10px Noto Sans";
 const AXIS_COLOR = "#000000";
 const AXIS_LENGTH = 50;
 

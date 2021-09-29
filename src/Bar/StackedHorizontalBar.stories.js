@@ -40,6 +40,6 @@ FontChange.args = {
   height: 400,
   data: DATA,
   barLabels: LABELS,
-  font: "MyFontRegular",
+  font: "Noto Sans",
   highlightedRow: "dog",
 };

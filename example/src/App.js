@@ -1,6 +1,6 @@
 import React from "react";
-import App from "./CITESEQ/CITESEQ";
-import fetchFileData from "./CITESEQ/data/api";
+import App from "./StaticFigures/Heatmap";
+import fetchFileData from "./StaticFigures/data/heatmapApi";
 
 const DevApp = () => {
   const data = fetchFileData();

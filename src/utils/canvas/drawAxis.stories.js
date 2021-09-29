@@ -20,7 +20,7 @@ const AxisComponent = (args) => {
 
 const Template = (args) => <AxisComponent {...args} />;
 
-const scale = d3.scaleLinear().range([50, 450]);
+const scale = d3.scaleLinear().range([70, 450]);
 
 export default {
   title: "Utils/Canvas/Axis",
@@ -47,7 +47,7 @@ Horizontal.args = {
 export const Log = Template.bind({});
 Log.args = {
   xScale: scale,
-  yScale: d3.scaleLog().range([50, 450]),
+  yScale: d3.scaleLog().range([70, 450]),
   label: "Test label",
   ticks: 5,
 };

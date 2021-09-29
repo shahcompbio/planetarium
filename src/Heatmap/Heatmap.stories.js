@@ -104,7 +104,10 @@ FontChange.args = {
   data: DATA,
   column: "obs",
   row: "group",
-  font: "MyFontRegular",
+  highlightedRow: null,
+  font: "Noto Sans",
+  highlightedColumn: null,
+  rowTotal: { dog: 10, cat: 10, lion: 5 },
 };
 export const Square = Template.bind({});
 Square.args = {
@@ -113,7 +116,9 @@ Square.args = {
   data: DATA,
   column: "obs",
   row: "group",
-  font: "MyFontRegular",
+  highlightedRow: null,
+  font: "Noto Sans",
+  highlightedColumn: null,
   rowTotal: {
     dog: 10,
     cat: 10,

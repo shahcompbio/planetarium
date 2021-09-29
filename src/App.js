@@ -2,6 +2,7 @@ import React from "react";
 
 import App from "./Cellmine/Cellmine.js";
 import fetchFileData from "./Cellmine/data/api";
+import "App.css";
 
 const DevApp = () => {
   const data = fetchFileData();
@@ -11,4 +12,4 @@ const DevApp = () => {
 
 const ProdApp = () => <App data={window.isablData} />;
 
-export default (process.env.NODE_ENV === "development" ? DevApp : ProdApp);
+export default process.env.NODE_ENV === "development" ? DevApp : ProdApp;

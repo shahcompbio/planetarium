@@ -7,13 +7,13 @@ import isHighlighted from "../utils/isHighlighted";
 
 const HEATMAP_NULL_COLOR = "#eeeeee";
 const HEATMAP_COLOR = ["#ffec8b", "#d91e18"];
-const CELL_FONT = "normal 14px MyFontRegular";
-const CELL_SUB_FONT = "normal 10px MyFontRegular";
+const CELL_FONT = "normal 12px Noto Sans";
+const CELL_SUB_FONT = "normal 10px Noto Sans";
 
 const COLUMN_LABEL_SPACE = 50;
 const ROW_LABEL_SPACE = 150;
 const DEFAULT_LABEL_COLOR = "#000000";
-const LABEL_FONT = "normal 12px MyFontLight";
+const LABEL_FONT = "normal 12px Noto Sans";
 
 const PADDING = 10;
 
@@ -37,6 +37,7 @@ const Heatmap = ({
   const columnValues = columnLabels
     ? columnLabels.map((col) => col["value"]) || columnLabels
     : _.uniq(data.map((record) => record[column])).sort();
+
   const rowValues =
     rowLabels || _.uniq(data.map((record) => record[row])).sort();
 
@@ -85,8 +86,7 @@ const Heatmap = ({
   );
 
   const heatmapColor = d3
-    .scaleLinear()
-    .range(HEATMAP_COLOR)
+    .scaleSequentialLog(d3.interpolateViridis)
     .domain([0, mostFreqCount]);
 
   const ref = useCanvas(

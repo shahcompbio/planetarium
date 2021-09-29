@@ -10,7 +10,7 @@ const drawAxis = ({
   orientation = "vertical",
   format = (tick) => tick,
   gridlines = true,
-  font = "MyFontLight",
+  font = "Noto Sans",
 }) => {
   context.beginPath();
 
@@ -68,10 +68,10 @@ const drawAxis = ({
   if (orientation === "vertical") {
     context.save();
     context.rotate((270 * Math.PI) / 180);
-    context.fillText(label, -midPos, length0 - 47);
+    context.fillText(label, -midPos, length0 - 55);
     context.restore();
   } else {
-    context.fillText(label, midPos, Math.max(length0, length1) + 20);
+    context.fillText(label, midPos, Math.max(length0, length1) + 25);
   }
 };
 

@@ -1,4 +1,5 @@
-@font-face {
+@import url("https://fonts.googleapis.com/css?family=Noto+Sans:regular,bold,italic");
+/*@font-face {
   font-family: "MyFontBold";
   src: local("MyFontBold"), url(./theme/Black.otf) format("opentype");
 }
@@ -9,4 +10,8 @@
 @font-face {
   font-family: "MyFontLight";
   src: local("MyFontLight"), url(./theme/Light.otf) format("opentype");
+}*/
+
+body: {
+  font-family: "Noto Sans";
 }

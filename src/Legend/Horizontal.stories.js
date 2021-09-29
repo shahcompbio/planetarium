@@ -66,7 +66,7 @@ Font.args = {
   title: "Test",
   ticks: [1, 2, 3, 4],
   colorScale: (value) => CATEGORICAL_COLORS[value],
-  fontFamily: { regular: "MyFontRegular", bold: "MyFontBold" },
+  fontFamily: { regular: "Noto Sans", bold: "Noto Sans" },
 };
 
 export const Numerical = Template.bind({});

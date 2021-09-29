@@ -93,6 +93,9 @@ const useStyles = makeStyles({
       margin: 0,
     },
   },
+  popupIndicator: {
+    padding: "0px !important",
+  },
 });
 
 const Select = ({

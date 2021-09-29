@@ -1,6 +1,7 @@
 //bar
 export { default as ProbabilityHistogram } from "./Bar/ProbabilityHistogram";
 export { default as StackedHorizontalBar } from "./Bar/StackedHorizontalBar";
+export { default as BarChart } from "./Bar/BarChart";
 //genomeProfile
 export { default as CopyNumberProfile } from "./CopyNumber/Profile";
 export { default as CopyNumberHeatmap } from "./CopyNumber/Heatmap";

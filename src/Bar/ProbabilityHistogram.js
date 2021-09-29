@@ -28,7 +28,7 @@ const HIGHLIGHTED_BAR_COLOR = "#eb5067";
 const HIGHLIGHTED_BAR_WIDTH = 2;
 
 const X_AXIS_HEIGHT = 40;
-const Y_AXIS_WIDTH = 50;
+const Y_AXIS_WIDTH = 60;
 
 const NUM_TICKS = 25;
 
@@ -236,7 +236,7 @@ const ProbabilityHistogram = ({
   idParam = "id",
   highlightedIDs = null,
   getTooltipText = (bin) => `Count: ${bin.length}`,
-  font = "MyFontLight",
+  font = "Noto Sans",
 }) => {
   const [highlightedBin, setHighlightedBin] = useState(null);
 

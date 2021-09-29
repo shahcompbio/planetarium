@@ -28,11 +28,11 @@ const BAR_COLORS = [
 
 const LEGEND_HEIGHT = 50;
 
-const DEFUALT_FONT = "MyFontLight";
+const DEFUALT_FONT = "Noto Sans";
 const PROP_AXIS_FONT = "normal 10px ";
 const CAT_LABEL_SPACE = 150;
 const CAT_LABEL_FONT = "normal 12px ";
-const PADDING = 10;
+const PADDING = 25;
 const LABEL_PADDING = 20;
 
 const LEGEND_SQUARE_LENGTH = 12;
@@ -44,7 +44,7 @@ const StackedHorizontalBar = ({
   height = 400,
   barLabels,
   highlightedRow = null,
-  font = "MyFontLight",
+  font = null,
 }) => {
   const categoryValues = Object.keys(data).sort();
   const barValues =
