@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
 
-import { TextField } from "@material-ui/core";
+import { TextField } from "@mui/material";
 
 import InfoLayoutComponent from "./Layout";
 

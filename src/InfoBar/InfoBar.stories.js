@@ -6,7 +6,7 @@ import InfoBarComponent from "./InfoBar";
 import { SearchIcon, DownloadIcon } from "./Icons";
 
 import SelectComponent from "../Select/VirtualizedSelect";
-import { TextField } from "@material-ui/core";
+import { TextField } from "@mui/material";
 
 const Template = (args) => <InfoBarComponent {...args} />;
 

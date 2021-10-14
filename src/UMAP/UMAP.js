@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import * as d3 from "d3";
 import _ from "lodash";
 
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 import { useCanvas } from "../utils/useCanvas";
 import Legend from "../Legend/Vertical";
 import useLasso from "./utils/useLasso";

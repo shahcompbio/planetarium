@@ -1,22 +1,37 @@
 import React from "react";
-import TextField from "@material-ui/core/TextField";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import ListSubheader from "@material-ui/core/ListSubheader";
-import { useTheme, makeStyles } from "@material-ui/core/styles";
+import PropTypes from "prop-types";
+import TextField from "@mui/material/TextField";
+import Autocomplete, { autocompleteClasses } from "@mui/material/Autocomplete";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import ListSubheader from "@mui/material/ListSubheader";
+import Popper from "@mui/material/Popper";
+import { useTheme, styled } from "@mui/material/styles";
 import { VariableSizeList } from "react-window";
-import { Typography } from "@material-ui/core";
+import Typography from "@mui/material/Typography";
 
 const LISTBOX_PADDING = 8; // px
 
 function renderRow(props) {
   const { data, index, style } = props;
-  return React.cloneElement(data[index], {
-    style: {
-      ...style,
-      top: style.top + LISTBOX_PADDING,
-    },
-  });
+  const dataSet = data[index];
+  const inlineStyle = {
+    ...style,
+    top: style.top + LISTBOX_PADDING,
+  };
+
+  if (dataSet.hasOwnProperty("group")) {
+    return (
+      <ListSubheader key={dataSet.key} component="div" style={inlineStyle}>
+        {dataSet.group}
+      </ListSubheader>
+    );
+  }
+
+  return (
+    <Typography component="li" {...dataSet[0]} noWrap style={inlineStyle}>
+      {dataSet[1]}
+    </Typography>
+  );
 }
 
 const OuterElementContext = React.createContext({});
@@ -36,19 +51,28 @@ function useResetCache(data) {
   return ref;
 }
 
+// Adapter for react-window
 const ListboxComponent = React.forwardRef(function ListboxComponent(
   props,
   ref
 ) {
   const { children, ...other } = props;
-  const itemData = React.Children.toArray(children);
+  const itemData = [];
+  children.forEach((item) => {
+    itemData.push(item);
+    itemData.push(...(item.children || []));
+  });
+
   const theme = useTheme();
-  const smUp = useMediaQuery(theme.breakpoints.up("sm"), { noSsr: true });
+  const smUp = useMediaQuery(theme.breakpoints.up("sm"), {
+    noSsr: true,
+  });
+
   const itemCount = itemData.length;
   const itemSize = smUp ? 36 : 48;
 
   const getChildSize = (child) => {
-    if (React.isValidElement(child) && child.type === ListSubheader) {
+    if (child.hasOwnProperty("group")) {
       return 48;
     }
 
@@ -85,16 +109,29 @@ const ListboxComponent = React.forwardRef(function ListboxComponent(
   );
 });
 
-const useStyles = makeStyles({
-  listbox: {
+ListboxComponent.propTypes = {
+  children: PropTypes.node,
+};
+
+function random(length) {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+
+  for (let i = 0; i < length; i += 1) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+
+  return result;
+}
+
+const StyledPopper = styled(Popper)({
+  [`& .${autocompleteClasses.listbox}`]: {
     boxSizing: "border-box",
     "& ul": {
       padding: 0,
       margin: 0,
     },
-  },
-  popupIndicator: {
-    padding: "0px !important",
   },
 });
 
@@ -105,18 +142,16 @@ const Select = ({
   title = "",
   width = 300,
 }) => {
-  const classes = useStyles();
   return (
     <Autocomplete
-      id="virtualize-demo"
+      sx={{ width: width }}
       value={value}
       size="small"
-      style={{ width }}
       disableListWrap
-      classes={classes}
+      disableClearable
+      PopperComponent={StyledPopper}
       ListboxComponent={ListboxComponent}
       options={options}
-      disableClearable={true}
       onChange={(event, value) => {
         onSelect(value);
       }}
@@ -130,7 +165,7 @@ const Select = ({
           }}
         />
       )}
-      renderOption={(option) => <Typography noWrap>{option}</Typography>}
+      renderOption={(props, option) => [props, option]}
     />
   );
 };

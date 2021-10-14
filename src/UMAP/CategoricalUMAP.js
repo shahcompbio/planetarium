@@ -4,7 +4,7 @@ import _ from "lodash";
 
 import { quantileSorted } from "d3-array";
 
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 import { useCanvas } from "../utils/useCanvas";
 import VerticalLegend from "../Legend/Vertical";
 import isHighlighted from "../utils/isHighlighted";

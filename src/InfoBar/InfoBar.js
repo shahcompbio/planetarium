@@ -1,11 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import Grid from "@material-ui/core/Grid";
-import Tooltip from "@material-ui/core/Tooltip";
-import SvgIcon from "@material-ui/core/SvgIcon";
+import Grid from "@mui/material/Grid";
+import Tooltip from "@mui/material/Tooltip";
+import SvgIcon from "@mui/material/SvgIcon";
 
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles({
   root: {
@@ -39,7 +39,7 @@ const InfoBar = ({ title, infoText, addIcon = null }) => {
         <Grid
           container
           direction="row"
-          justify="space-between"
+          justifyContent="space-between"
           alignItems="center"
         >
           <Grid item xs={3} style={{ textAlign: "left" }}>
@@ -49,7 +49,7 @@ const InfoBar = ({ title, infoText, addIcon = null }) => {
             xs={9}
             container
             direction="row"
-            justify="flex-end"
+            justifyContent="flex-end"
             alignItems="center"
           >
             {addIcon}

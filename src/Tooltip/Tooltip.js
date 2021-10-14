@@ -12,7 +12,7 @@ Tooltip is primarily for svg/canvas related components. This requires some setup
 */
 
 import React from "react";
-import { Tooltip } from "@material-ui/core";
+import { Tooltip } from "@mui/material";
 
 const TooltipP = ({ getText, getX, getY, data }) => {
   return (

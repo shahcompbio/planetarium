@@ -2,7 +2,7 @@ import React from "react";
 import { useD3 } from "../utils/useD3";
 import { useCanvas } from "../utils/useCanvas";
 import * as d3 from "d3";
-import Grid from "@material-ui/core/Grid";
+import Grid from "@mui/material/Grid";
 import { colorScale, BACKGROUND_COLORS } from "./utils";
 
 export const Y_AXIS_WIDTH = 25;

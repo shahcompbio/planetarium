@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import * as d3 from "d3";
-import Grid from "@material-ui/core/Grid";
+import Grid from "@mui/material/Grid";
 
 import { useCanvas } from "../utils/useCanvas";
 import { useD3 } from "../utils/useD3";

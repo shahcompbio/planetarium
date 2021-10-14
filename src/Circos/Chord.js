@@ -4,8 +4,8 @@ import * as d3Chord from "d3-chord";
 import * as d3Array from "d3-array";
 import { getData, strokeToFill } from "gradient-path";
 
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
 
 import { useSvg } from "../utils/useSvg";
 
@@ -63,7 +63,7 @@ const Network = ({ data, chartDim, chartName }) => {
   );
 
   return (
-    <Grid container direction="row" justify="flex-start" alignItems="stretch">
+    <Grid container direction="row" justifyContent="flex-start" alignItems="stretch">
       <Paper
         style={{
           margin: 10,
@@ -75,7 +75,7 @@ const Network = ({ data, chartDim, chartName }) => {
         <Grid
           container
           direction="column"
-          justify="flex-start"
+          justifyContent="flex-start"
           alignItems="stretch"
         >
           <Grid
@@ -111,7 +111,7 @@ const Network = ({ data, chartDim, chartName }) => {
         <Grid
           container
           direction="column"
-          justify="flex-start"
+          justifyContent="flex-start"
           alignItems="stretch"
         >
           <Grid

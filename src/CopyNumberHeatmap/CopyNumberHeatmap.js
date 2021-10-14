@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import * as d3 from "d3";
-import { withStyles } from "@material-ui/core/styles";
+import withStyles from '@mui/styles/withStyles';
 
 import { scalePoint } from "d3";
 import { useCanvas } from "../utils/useCanvas";
@@ -20,7 +20,7 @@ import Categories from "./Categories.js";
 import Indicator from "./Indicator.js";
 import Legend from "./Legend.js";
 import Minimap from "./Minimap.js";
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 
 //const data = require('../test_data/CopyNumberHeatmap/copyNumberHeatmapData.json')
 const margin = {
@@ -265,7 +265,7 @@ const CopyNumberHeatmap = ({
       <Grid
         container
         direction="row"
-        justify="space-between"
+        justifyContent="space-between"
         alignItems="center"
       >
         <Grid item xs={8}>

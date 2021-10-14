@@ -18,7 +18,7 @@ import PropTypes from "prop-types";
 import * as d3 from "d3";
 import * as d3Array from "d3-array";
 import * as _ from "lodash";
-import Grid from "@material-ui/core/Grid";
+import Grid from "@mui/material/Grid";
 
 import Tooltip from "../Tooltip/Tooltip";
 import { useCanvas } from "../utils/useCanvas";
@@ -314,9 +314,9 @@ const ProbabilityHistogram = ({
   return (
     <Grid
       item
+      sx={{ pl: 2 }}
       style={{
         position: "relative",
-        paddingLeft: 10,
       }}
     >
       <Tooltip

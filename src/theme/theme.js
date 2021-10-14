@@ -1,11 +1,11 @@
-import { createMuiTheme } from "@material-ui/core/styles";
+import { createTheme } from "@mui/material/styles";
 import "../App.css";
 /*
   "MyFontBold",
   "MyFontRegular",
   "MyFontLight",
   "Helvetica",*/
-export const theme = createMuiTheme({
+export const theme = createTheme({
   typography: {
     fontFamily: ["Noto Sans"].join(","),
   },

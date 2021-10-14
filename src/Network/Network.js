@@ -5,27 +5,27 @@ import * as d3 from "d3";
 import "./App.css";
 import dashboardReducer, { initialState } from "../PlotState/dashboardReducer";
 import { DashboardProvider } from "../PlotState/dashboardState";
-import TextField from "@material-ui/core/TextField";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import TextField from "@mui/material/TextField";
+import Autocomplete from '@mui/material/Autocomplete';
 
 import Network from "../components/Network/Network";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import { makeStyles } from "@material-ui/core/styles";
-import Popper from "@material-ui/core/Popper";
-import Typography from "@material-ui/core/Typography";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import makeStyles from '@mui/styles/makeStyles';
+import Popper from "@mui/material/Popper";
+import Typography from "@mui/material/Typography";
 
-import Grid from "@material-ui/core/Grid";
+import Grid from "@mui/material/Grid";
 
-import Button from "@material-ui/core/Button";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import CardHeader from "@material-ui/core/CardHeader";
-import CardActions from "@material-ui/core/CardActions";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardHeader from "@mui/material/CardHeader";
+import CardActions from "@mui/material/CardActions";
 
 import { theme } from "../theme/theme.js";
-import { MuiThemeProvider } from "@material-ui/core/styles";
-import CssBaseline from "@material-ui/core/CssBaseline";
+import { ThemeProvider, StyledEngineProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 
 const Networks = ({ data }) => {
   /*  const [selectedAliquot, setSelectedAliquot] = useState(
@@ -37,62 +37,64 @@ const Networks = ({ data }) => {
   const [selectedAliquot, setSelectedAliquot] = useState(null);
   const [selectedCelltype, setSelectedCelltype] = useState(null);
   return (
-    <MuiThemeProvider theme={theme}>
-      <CssBaseline />
-      <DashboardProvider
-        initialState={{
-          ...initialState,
-        }}
-        reducer={dashboardReducer}
-      >
-        <Grid
-          container
-          direction="column"
-          justify="flex-start"
-          alignItems="flex-start"
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <DashboardProvider
+          initialState={{
+            ...initialState,
+          }}
+          reducer={dashboardReducer}
         >
           <Grid
-            item
             container
-            direction="row"
-            justify="flex-start"
+            direction="column"
+            justifyContent="flex-start"
             alignItems="flex-start"
           >
-            <Grid style={{ margin: 15 }}>
-              <Search
-                data={[...new Set(data.map((row) => row["aliquot"]).flat(1))]}
-                selectOption={(option) => setSelectedAliquot(option)}
-              />
-              {selectedAliquot && (
+            <Grid
+              item
+              container
+              direction="row"
+              justifyContent="flex-start"
+              alignItems="flex-start"
+            >
+              <Grid style={{ margin: 15 }}>
                 <Search
-                  data={[
-                    ...new Set(
-                      data
-                        .filter((row) => row["aliquot"] === selectedAliquot)
-                        .map((row) => row["celltypes"])
-                        .flat(1)
-                    ),
-                  ]}
-                  selectOption={(option) => setSelectedCelltype(option)}
+                  data={[...new Set(data.map((row) => row["aliquot"]).flat(1))]}
+                  selectOption={(option) => setSelectedAliquot(option)}
+                />
+                {selectedAliquot && (
+                  <Search
+                    data={[
+                      ...new Set(
+                        data
+                          .filter((row) => row["aliquot"] === selectedAliquot)
+                          .map((row) => row["celltypes"])
+                          .flat(1)
+                      ),
+                    ]}
+                    selectOption={(option) => setSelectedCelltype(option)}
+                  />
+                )}
+              </Grid>
+              {selectedCelltype && selectedAliquot && (
+                <Network
+                  chartName={"NETWORK"}
+                  data={data
+                    .filter((row) => row["aliquot"] === selectedAliquot)
+                    .filter((row) => row["celltypes"] === selectedCelltype)}
+                  chartDim={{
+                    height: 800,
+                    width: 950,
+                  }}
                 />
               )}
             </Grid>
-            {selectedCelltype && selectedAliquot && (
-              <Network
-                chartName={"NETWORK"}
-                data={data
-                  .filter((row) => row["aliquot"] === selectedAliquot)
-                  .filter((row) => row["celltypes"] === selectedCelltype)}
-                chartDim={{
-                  height: 800,
-                  width: 950,
-                }}
-              />
-            )}
           </Grid>
-        </Grid>
-      </DashboardProvider>
-    </MuiThemeProvider>
+        </DashboardProvider>
+      </ThemeProvider>
+    </StyledEngineProvider>
   );
 };
 const useStyles = makeStyles((theme) => ({

@@ -1,13 +1,16 @@
 import React from "react";
 
 import { theme } from "../src/theme/theme";
-import { MuiThemeProvider } from "@material-ui/core/styles";
+import { ThemeProvider, StyledEngineProvider } from "@mui/material/styles";
+import { ThemeProvider as EmotionThemeProvider } from "emotion-theming";
 
 export const decorators = [
   (Story) => (
-    <MuiThemeProvider theme={theme}>
-      <Story />
-    </MuiThemeProvider>
+    <EmotionThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
+        <Story />
+      </ThemeProvider>
+    </EmotionThemeProvider>
   ),
 ];
 

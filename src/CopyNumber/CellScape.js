@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Grid from "@material-ui/core/Grid";
+import Grid from "@mui/material/Grid";
 
 import Heatmap, { HEATMAP_SPACING } from "./Heatmap";
 import ChromosomeAxis, { HEIGHT as AXIS_HEIGHT } from "./ChromosomeAxis";

@@ -85,9 +85,7 @@ const Heatmap = ({
     0
   );
 
-  const heatmapColor = d3
-    .scaleSequentialLog(d3.interpolateViridis)
-    .domain([0, mostFreqCount]);
+  const heatmapColor = d3.scaleLinear(HEATMAP_COLOR).domain([0, mostFreqCount]);
 
   const ref = useCanvas(
     (canvas) => {
