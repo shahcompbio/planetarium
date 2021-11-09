@@ -9,7 +9,7 @@ import MUISearchIcon from "@material-ui/icons/Search";
 import Avatar from "@material-ui/core/Avatar";
 
 const useStyles = makeStyles({
-  svgIcon: { fontSize: 30 },
+  svgIcon: { fontSize: 28 },
 });
 
 export const SearchIcon = ({ children }) => {
@@ -19,7 +19,10 @@ export const SearchIcon = ({ children }) => {
   return (
     <span style={{ display: "flex", float: "left", paddingRight: 10 }}>
       <Tooltip title={"Search"} arrow>
-        <Avatar variant="rounded" style={{ width: isOpen ? 220 : 35 }}>
+        <Avatar
+          variant="rounded"
+          style={{ width: isOpen ? 260 : 30, height: 30 }}
+        >
           <Collapse direction={"left"} in={isOpen}>
             {children}
           </Collapse>
@@ -51,7 +54,7 @@ export const DownloadIcon = ({ download }) => {
 
   return (
     <span style={{ paddingRight: 10 }}>
-      <Avatar variant="rounded">
+      <Avatar variant="rounded" style={{ width: 30, height: 30 }}>
         <Tooltip title={"Download"} arrow>
           <SvgIcon
             viewBox="-2 -2 20 20"
