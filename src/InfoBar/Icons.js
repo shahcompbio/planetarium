@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import makeStyles from "@mui/styles/makeStyles";
 
-import Tooltip from "@material-ui/core/Tooltip";
-import SvgIcon from "@material-ui/core/SvgIcon";
-import Collapse from "@material-ui/core/Collapse";
-import MUISearchIcon from "@material-ui/icons/Search";
-import Avatar from "@material-ui/core/Avatar";
+import Tooltip from "@mui/material/Tooltip";
+import SvgIcon from "@mui/material/SvgIcon";
+import Collapse from "@mui/material/Collapse";
+import MUISearchIcon from "@mui/icons-material/Search";
+import Avatar from "@mui/material/Avatar";
 
 const useStyles = makeStyles({
   svgIcon: { fontSize: 28 },

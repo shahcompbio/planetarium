@@ -1,10 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import Grid from "@material-ui/core/Grid";
-import Tooltip from "@material-ui/core/Tooltip";
-import SvgIcon from "@material-ui/core/SvgIcon";
-import Avatar from "@material-ui/core/Avatar";
+import Grid from "@mui/material/Grid";
+import Tooltip from "@mui/material/Tooltip";
+import SvgIcon from "@mui/material/SvgIcon";
+import Avatar from "@mui/material/Avatar";
 
 import makeStyles from "@mui/styles/makeStyles";
 

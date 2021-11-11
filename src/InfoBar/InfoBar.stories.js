@@ -5,7 +5,7 @@ import InfoBarComponent from "./InfoBar";
 
 import { SearchIcon, DownloadIcon } from "./Icons";
 
-import Avatar from "@material-ui/core/Avatar";
+import Avatar from "@mui/material/Avatar";
 import SelectComponent from "../Select/VirtualizedSelect";
 import { TextField } from "@mui/material";
 
