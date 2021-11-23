@@ -60,6 +60,7 @@
     "bootstrap": "^4.6.0",
     "d3": "^5.9.2",
     "d3-array": "^2.11.0",
+    "d3-shape": "^3.0.1",
     "d3-tip": "^0.9.1",
     "fontfaceobserver": "^2.1.0",
     "jspdf": "^2.3.1",
