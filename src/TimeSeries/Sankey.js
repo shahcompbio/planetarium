@@ -2,7 +2,7 @@
 
 // Aggregate data by timepoint, clone, phenotype - we want a count
 
-import React, { useState } from "react";
+import React from "react";
 import * as d3 from "d3";
 
 import { curveBumpX } from "d3-shape";
@@ -16,6 +16,8 @@ const PADDING = 10;
 const NODE_WIDTH = 15;
 const NODE_VERTICAL_PADDING = 10;
 
+const AXIS_HEIGHT = 20;
+
 const Sankey = ({
   data,
   subsetParam,
@@ -27,7 +29,7 @@ const Sankey = ({
   timepointOrder = null,
 }) => {
   const chartWidth = width - 2 * PADDING;
-  const chartHeight = height;
+  const chartHeight = height - AXIS_HEIGHT;
 
   // Data processing
 
@@ -114,6 +116,7 @@ const Sankey = ({
       y0: scales.y(subset),
       height: scales.height(timeData["subsets"][subset]["total"]),
       color: color(subset),
+      label: subset,
     }));
 
     return [...rsf, ...records];
@@ -278,6 +281,26 @@ const Sankey = ({
         .attr("fill", (d) => `url(#${uid}-link-${d.id})`);
       // .attr("stroke", ({ index: i }) => `url(#${uid}-link-${i})`)
       // .attr("stroke-width", ({ width }) => Math.max(1, width));
+
+      svg
+        .append("g")
+        .attr("font-family", "sans-serif")
+        .attr("font-size", 10)
+        .selectAll("text")
+        .data(nodes)
+        .join("text")
+        .attr("x", (d) => (d.x0 < width / 2 ? d.x0 + d.width + 6 : d.x0 - 6))
+        .attr("y", (d) => d.y0 + d.height / 2)
+        .attr("dy", "0.35em")
+        .attr("text-anchor", (d) => (d.x0 < width / 2 ? "start" : "end"))
+        .text((d) => d.label);
+
+      const xAxis = d3.axisBottom(timeScale);
+
+      svg
+        .append("g")
+        .style("transform", `translate(0px, ${chartHeight}px)`)
+        .call(xAxis);
     },
     width,
     height,

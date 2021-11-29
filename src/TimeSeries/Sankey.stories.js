@@ -1,4 +1,5 @@
 import SankeyComponent from "./Sankey";
+import data from "./data/sankey_filtered2.json";
 
 const Template = (args) => <SankeyComponent {...args} />;
 
@@ -258,4 +259,15 @@ Example3.args = {
   data: EXAMPLE_3,
   subsetParam: "subtype",
   cloneParam: "clone",
+};
+
+export const ExampleBig = Template.bind({});
+ExampleBig.args = {
+  width: 800,
+  height: 700,
+  data,
+  subsetParam: "cell_type",
+  cloneParam: "clone_id",
+  timepointOrder: ["Pre", "Post"],
+  timepointParam: "treatment",
 };
