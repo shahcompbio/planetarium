@@ -1,20 +1,19 @@
-// Filter data for clones in both pre / post
-
-// Aggregate data by timepoint, clone, phenotype - we want a count
-
-import React from "react";
+import React, { useState } from "react";
 import * as d3 from "d3";
 
 import { curveBumpX } from "d3-shape";
 
 import _ from "lodash";
 import { useD3 } from "../utils/useD3";
+
+import isHighlighted from "../utils/isHighlighted";
 import sortAlphanumeric from "../utils/sortAlphanumeric";
 
 const PADDING = 15;
 
-const NODE_WIDTH = 20;
+const NODE_WIDTH = 16;
 const NODE_VERTICAL_PADDING = 10;
+const NULL_COLOR = "#d2d7d3";
 
 const AXIS_HEIGHT = 40;
 
@@ -30,6 +29,8 @@ const Sankey = ({
 }) => {
   const chartWidth = width - 2 * PADDING;
   const chartHeight = height - AXIS_HEIGHT;
+
+  const [highlightedNode, setHighlightedNode] = useState(null);
 
   // Data processing
 
@@ -122,10 +123,6 @@ const Sankey = ({
     return [...rsf, ...records];
   }, []);
 
-  // links need to iterate over pairs
-  // - matched by clones (then subsetted by subset)
-  // - needs to be in adjacent timepoints
-
   const timepointsButLast =
     timepoints.length > 2
       ? timepoints[(0, timepoints.length - 2)]
@@ -149,20 +146,15 @@ const Sankey = ({
           const x0 = timeScale(sourceTimepoint) + NODE_WIDTH;
           const x1 = timeScale(targetTimepoint);
 
-          // for a subset-clone pair, iterate over every instance of clone in target timepoint
-
           const targetSubsetClones = targetData["clones"].hasOwnProperty(clone)
             ? targetData["clones"][clone]["values"]
             : [];
 
           const records = targetSubsetClones.map((targetSubset) => {
-            // !!! offset needs to account that it might not start at exactly subset y0
-            // so i need to know both how clone count increases within a subset
-            // but also something about knowing proportions in the opposite timepoint? oy veyv
-
-            //  ineed to keep track of same clone different subset offset?
             return {
               id: `${sourceTimepoint}_${subset}_${targetSubset}_${clone}`,
+              source: `${sourceTimepoint}_${subset}`,
+              target: `${targetTimepoint}_${targetSubset}`,
               x0,
               x1,
               y0: calculateLinkYStart(
@@ -213,11 +205,6 @@ const Sankey = ({
 
     []
   );
-  // to draw links, needs to know:
-  // - source timepoint (x0 position)
-  // - target timepoint (x1 position)
-  // - source subset, clone, cell count (y starting positions)
-  // - target subset, clone, cell count (y ending positions)
 
   const ref = useD3(
     (svg) => {
@@ -233,7 +220,15 @@ const Sankey = ({
         .attr("y", (d) => d.y0)
         .attr("height", (d) => d.height)
         .attr("width", (d) => d.width)
-        .attr("fill", (d) => d.color);
+        .attr("fill", (d) =>
+          isHighlighted(d.id, highlightedNode) ? d.color : NULL_COLOR
+        )
+        .on("mouseenter", (d, i, e) => {
+          setHighlightedNode(d.id);
+        })
+        .on("mouseout", (d, i, e) => {
+          setHighlightedNode(null);
+        });
 
       const link = svg
         .append("g")
@@ -278,9 +273,12 @@ const Sankey = ({
           ])
         )
         .attr("fill-opacity", 0.8)
-        .attr("fill", (d) => `url(#${uid}-link-${d.id})`);
-      // .attr("stroke", ({ index: i }) => `url(#${uid}-link-${i})`)
-      // .attr("stroke-width", ({ width }) => Math.max(1, width));
+        .attr("fill", (d) =>
+          isHighlighted(d.source, highlightedNode) ||
+          isHighlighted(d.target, highlightedNode)
+            ? `url(#${uid}-link-${d.id})`
+            : NULL_COLOR
+        );
 
       svg
         .append("g")
