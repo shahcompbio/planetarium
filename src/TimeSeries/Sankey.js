@@ -11,12 +11,12 @@ import _ from "lodash";
 import { useD3 } from "../utils/useD3";
 import sortAlphanumeric from "../utils/sortAlphanumeric";
 
-const PADDING = 10;
+const PADDING = 15;
 
-const NODE_WIDTH = 15;
+const NODE_WIDTH = 20;
 const NODE_VERTICAL_PADDING = 10;
 
-const AXIS_HEIGHT = 20;
+const AXIS_HEIGHT = 40;
 
 const Sankey = ({
   data,
@@ -70,7 +70,7 @@ const Sankey = ({
   const timeScale = d3
     .scalePoint()
     .domain(timepoints)
-    .range([PADDING, PADDING + chartWidth]);
+    .range([PADDING + NODE_WIDTH / 2, PADDING + chartWidth - NODE_WIDTH / 2]);
 
   const subsetScales = timepoints.reduce((scaleMap, timepoint) => {
     const timeData = counts[timepoint];
@@ -147,7 +147,7 @@ const Sankey = ({
 
         const linkRecords = sourceClones.reduce((clonesRSF, clone) => {
           const x0 = timeScale(sourceTimepoint) + NODE_WIDTH;
-          const x1 = timeScale(targetTimepoint) - NODE_WIDTH;
+          const x1 = timeScale(targetTimepoint);
 
           // for a subset-clone pair, iterate over every instance of clone in target timepoint
 
@@ -225,6 +225,7 @@ const Sankey = ({
 
       const node = svg
         .append("g")
+        .attr("stroke", "currentColor")
         .selectAll("rect")
         .data(nodes)
         .join("rect")
@@ -236,8 +237,6 @@ const Sankey = ({
 
       const link = svg
         .append("g")
-        .attr("fill", "none")
-        .attr("stroke-opacity", 0.5)
         .selectAll("g")
         .data(links)
         .join("g")
@@ -274,10 +273,11 @@ const Sankey = ({
         .append("path")
         .attr("d", (d) =>
           area([
-            [d.x0 + 5, d.y0, d.y0 + d.h0],
+            [d.x0, d.y0, d.y0 + d.h0],
             [d.x1, d.y1, d.y1 + d.h1],
           ])
         )
+        .attr("fill-opacity", 0.8)
         .attr("fill", (d) => `url(#${uid}-link-${d.id})`);
       // .attr("stroke", ({ index: i }) => `url(#${uid}-link-${i})`)
       // .attr("stroke-width", ({ width }) => Math.max(1, width));
@@ -285,7 +285,7 @@ const Sankey = ({
       svg
         .append("g")
         .attr("font-family", "sans-serif")
-        .attr("font-size", 10)
+        .attr("font-size", 11)
         .selectAll("text")
         .data(nodes)
         .join("text")
@@ -295,12 +295,23 @@ const Sankey = ({
         .attr("text-anchor", (d) => (d.x0 < width / 2 ? "start" : "end"))
         .text((d) => d.label);
 
-      const xAxis = d3.axisBottom(timeScale);
+      const xAxis = d3.axisBottom(timeScale).tickSize(0);
 
       svg
         .append("g")
-        .style("transform", `translate(0px, ${chartHeight}px)`)
-        .call(xAxis);
+        .style(
+          "transform",
+          `translate(${NODE_WIDTH / 2}px, ${chartHeight + PADDING + 2}px)`
+        )
+        .call(xAxis)
+        .call((g) => g.select(".domain").remove())
+        .call((g) =>
+          g
+            .selectAll(".tick text")
+            .attr("font-family", "sans-serif")
+            .attr("font-size", 12)
+            .attr("font-weight", 500)
+        );
     },
     width,
     height,
