@@ -208,8 +208,6 @@ const Sankey = ({
 
   const ref = useD3(
     (svg) => {
-      const color = colorScale || d3.scaleOrdinal(nodes, d3.schemeTableau10);
-
       const node = svg
         .append("g")
         .attr("stroke", "currentColor")
