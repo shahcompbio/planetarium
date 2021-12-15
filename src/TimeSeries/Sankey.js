@@ -128,79 +128,197 @@ const Sankey = ({
       ? timepoints[(0, timepoints.length - 2)]
       : [timepoints[0]];
 
+  const linkRatios = timepoints.reduce((rsf, timepoint, index) => {
+    const sourceData = counts[timepoint];
+    const subsetValues = counts[timepoint]["subsetValues"];
+
+    const ratios = subsetValues.reduce((rsf, subset) => {
+      let record = {};
+
+      if (index > 0) {
+        record["before"] = processPairSubsetData(
+          sourceData["subsets"][subset],
+          subset,
+          counts[timepoints[index - 1]]
+        );
+      }
+
+      if (index < timepoints.length - 1) {
+        record["after"] = processPairSubsetData(
+          sourceData["subsets"][subset],
+          subset,
+          counts[timepoints[index + 1]]
+        );
+      }
+
+      return {
+        ...rsf,
+        [subset]: record,
+      };
+    }, {});
+
+    return { ...rsf, [timepoint]: ratios };
+  }, {});
+
+  // for each time point
+  // for each subset
+  // for each targetSubset
+  // x0: sourceSubset
+  // X1: targetSubset
+  // y0: sourceSubsetStartY + offset of targetSubsets prior
+  // h0: summation of sourceCloneCells * proportion of target clone cells in targetSubset
+  // y1: targetSubsetStartY + offset of sourceSubsets prior
+  // h0: summation of targetCloneCells * proportion of source clone cells in sourceSubset
+
+  // subset startY is sum of cells up to subset (subset sum by clone)
+
+  // height for given subset is summation of clones in given subset * proportion each clone in targetSubset
+
+  //  offset Y for given subset is the summation of all heights before given subset (so all targetSubsets before)
+
+  // data should have
+  // - timepoint
+  // - subset
+  // - count by clone
+  // - sum by clone
+  // - clone
+  // - count by subset
+  // - sum by subset
+  //
+
+  // - timepointOrder
+
+  console.log(linkRatios);
   const links = timepointsButLast.reduce(
     (rsf, sourceTimepoint, index) => {
       const sourceData = counts[sourceTimepoint];
+      const sourceLinkData = linkRatios[sourceTimepoint];
       const sourceScales = subsetScales[sourceTimepoint];
 
       const targetTimepoint = timepoints[index + 1];
       const targetData = counts[targetTimepoint];
       const targetScales = subsetScales[targetTimepoint];
+      const targetLinkData = linkRatios[targetTimepoint];
       // for each subset-clone pair, generate a list of links
 
+      const x0 = timeScale(sourceTimepoint) + NODE_WIDTH;
+      const x1 = timeScale(targetTimepoint);
+
       const sourceSubsets = sourceData["subsetValues"];
-      const sourceCloneLinks = sourceSubsets.reduce((subsetLinksSF, subset) => {
-        const sourceClones = sourceData["subsets"][subset]["values"];
 
-        const linkRecords = sourceClones.reduce((clonesRSF, clone) => {
-          const x0 = timeScale(sourceTimepoint) + NODE_WIDTH;
-          const x1 = timeScale(targetTimepoint);
+      const rsfRecord = sourceSubsets.reduce((rsf2, sourceSubset) => {
+        const subsetLinkData = sourceLinkData[sourceSubset]["after"];
 
-          const targetSubsetClones = targetData["clones"].hasOwnProperty(clone)
-            ? targetData["clones"][clone]["values"]
-            : [];
+        const rsf2Record = targetData["subsetValues"].reduce(
+          (rsf3, targetSubset) => {
+            const clones = subsetLinkData[targetSubset]["cloneValues"];
 
-          const records = targetSubsetClones.map((targetSubset) => {
-            return {
-              id: `${sourceTimepoint}_${subset}_${targetSubset}_${clone}`,
-              source: `${sourceTimepoint}_${subset}`,
+            const rsf3Records = clones.map((clone) => ({
+              id: `${sourceTimepoint}_${sourceSubset}_${targetSubset}_${clone}`,
+              source: `${sourceTimepoint}_${sourceSubset}`,
               target: `${targetTimepoint}_${targetSubset}`,
               x0,
               x1,
               y0: calculateLinkYStart(
                 clone,
                 sourceScales,
-                sourceData,
-                targetData,
-                subset,
+                subsetLinkData,
+                sourceSubset,
                 targetSubset
               ),
               h0: calculateLinkHeight(
                 clone,
                 sourceScales,
-                sourceData,
-                targetData,
-                subset,
+                subsetLinkData,
                 targetSubset
               ),
               y1: calculateLinkYStart(
                 clone,
                 targetScales,
-                targetData,
-                sourceData,
+                targetLinkData[targetSubset]["before"],
                 targetSubset,
-                subset
+                sourceSubset
               ),
               h1: calculateLinkHeight(
                 clone,
                 targetScales,
-                targetData,
-                sourceData,
-                targetSubset,
-                subset
+                targetLinkData[targetSubset]["before"],
+                sourceSubset
               ),
-              c0: color(subset),
+              c0: color(sourceSubset),
               c1: color(targetSubset),
-            };
-          });
+            }));
 
-          return [...clonesRSF, ...records];
-        }, []);
+            return [...rsf3, ...rsf3Records];
+          },
+          []
+        );
 
-        return [...subsetLinksSF, ...linkRecords];
+        return [...rsf2, ...rsf2Record];
       }, []);
 
-      return [...rsf, ...sourceCloneLinks];
+      // const sourceCloneLinks = sourceSubsets.reduce((subsetLinksSF, subset) => {
+      //   const sourceClones = sourceData["subsets"][subset]["values"];
+
+      //   const linkRecords = sourceClones.reduce((clonesRSF, clone) => {
+      //     const x0 = timeScale(sourceTimepoint) + NODE_WIDTH;
+      //     const x1 = timeScale(targetTimepoint);
+
+      //     const targetSubsetClones = targetData["clones"].hasOwnProperty(clone)
+      //       ? targetData["clones"][clone]["values"]
+      //       : [];
+
+      //     const records = targetSubsetClones.map((targetSubset) => {
+      //       return {
+      //         id: `${sourceTimepoint}_${subset}_${targetSubset}_${clone}`,
+      //         source: `${sourceTimepoint}_${subset}`,
+      //         target: `${targetTimepoint}_${targetSubset}`,
+      //         x0,
+      //         x1,
+      //         y0: calculateLinkYStart(
+      //           clone,
+      //           sourceScales,
+      //           sourceData,
+      //           targetData,
+      //           subset,
+      //           targetSubset
+      //         ),
+      //         h0: calculateLinkHeight(
+      //           clone,
+      //           sourceScales,
+      //           sourceData,
+      //           targetData,
+      //           subset,
+      //           targetSubset
+      //         ),
+      //         y1: calculateLinkYStart(
+      //           clone,
+      //           targetScales,
+      //           targetData,
+      //           sourceData,
+      //           targetSubset,
+      //           subset
+      //         ),
+      //         h1: calculateLinkHeight(
+      //           clone,
+      //           targetScales,
+      //           targetData,
+      //           sourceData,
+      //           targetSubset,
+      //           subset
+      //         ),
+      //         c0: color(subset),
+      //         c1: color(targetSubset),
+      //       };
+      //     });
+
+      //     return [...clonesRSF, ...records];
+      //   }, []);
+
+      //   return [...subsetLinksSF, ...linkRecords];
+      // }, []);
+
+      return [...rsf, ...rsfRecord];
     },
 
     []
@@ -361,49 +479,95 @@ const processData = (data, groupParam, countParam) => {
   return counts;
 };
 
+const processPairSubsetData = (sourceSubsetData, sourceSubset, targetData) => {
+  const targetSubsets = targetData["subsetValues"];
+  const sourceClones = sourceSubsetData["values"];
+
+  let targetSum = 0;
+  let sumObj = {};
+
+  const record = targetSubsets.reduce((rsf2, targetSubset) => {
+    const targetSubsetData = targetData["subsets"][targetSubset];
+    const clones = targetSubsetData["values"].filter((clone) =>
+      sourceClones.includes(clone)
+    );
+
+    let cellSum = 0;
+
+    const rsf2Record = clones.reduce((rsf3, clone) => {
+      const cellCount =
+        (sourceSubsetData["counts"][clone] *
+          targetData["clones"][clone]["counts"][targetSubset]) /
+        targetData["clones"][clone]["total"];
+
+      const rsf3Record = {
+        count: cellCount,
+        sum: cellSum,
+      };
+
+      cellSum += cellCount;
+
+      return {
+        ...rsf3,
+        [clone]: rsf3Record,
+      };
+    }, {});
+
+    sumObj[targetSubset] = targetSum;
+    targetSum += cellSum;
+
+    return {
+      ...rsf2,
+      [targetSubset]: {
+        total: cellSum,
+        clones: rsf2Record,
+        cloneValues: clones,
+      },
+    };
+  }, {});
+
+  return { ...record, sums: sumObj };
+};
+
 const calculateLinkYStart = (
   clone,
   scales,
   sourceData,
-  targetData,
   sourceSubset,
   targetSubset
 ) => {
+  // Subset
+
+  // height of subset
+  // offset of target subset start within subset (cumulative of ones before it)
+
+  // Clone
+
   // height of subset
   const subsetHeight = scales.y(sourceSubset);
 
   // offset of clone start within subset
-  const cloneStartHeight = scales.height(
-    sourceData["subsets"][sourceSubset]["sum"][clone]
-  );
+  const cloneStartHeight = scales.height(sourceData["sums"][targetSubset]);
 
   // offset of specific clone within clone, % of clones from target timepoint above target subset * total cells in clone in source subset
   const cloneLinkHeight = scales.height(
-    (sourceData["subsets"][sourceSubset]["counts"][clone] *
-      targetData["clones"][clone]["sum"][targetSubset]) /
-      targetData["clones"][clone]["total"]
+    sourceData[targetSubset]["clones"][clone]["sum"]
   );
 
   return subsetHeight + cloneStartHeight + cloneLinkHeight;
 };
 
-const calculateLinkHeight = (
-  clone,
-  scales,
-  sourceData,
-  targetData,
-  sourceSubset,
-  targetSubset
-) => {
+const calculateLinkHeight = (clone, scales, sourceData, targetSubset) => {
+  // Subset
+  // number of cells in source subset
+  // proportion of clone cells in target subset across all clones in source
+
+  // Clone
   // number of cells in source subset
 
   // proportion of clone cells in target subset (compared to total of clone)
 
-  return scales.height(
-    (sourceData["subsets"][sourceSubset]["counts"][clone] *
-      targetData["clones"][clone]["counts"][targetSubset]) /
-      targetData["clones"][clone]["total"]
-  );
+  return scales.height(sourceData[targetSubset]["clones"][clone]["count"]);
 };
 
 export default Sankey;
