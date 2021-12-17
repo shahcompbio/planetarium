@@ -226,6 +226,7 @@ const UMAP = ({
   onLasso = (data) => {},
   onLegendHover = (value) => {},
   onLegendClick = (value) => {},
+  MoreInfoComponent = () => null,
 }) => {
   const [highlightedSubset, setHighlightedSubset] = useState(null);
   const [selectedSubset, setSelectedSubset] = useState(null);
@@ -400,6 +401,7 @@ const UMAP = ({
             onLegendClick(value);
           }}
         />
+        <MoreInfoComponent />
       </Grid>
     </Grid>
   );

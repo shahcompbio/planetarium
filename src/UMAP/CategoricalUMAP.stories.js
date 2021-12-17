@@ -45,3 +45,16 @@ Static.args = {
   subsetParam: "subtype",
   disable: true,
 };
+
+export const MoreInfo = Template.bind({});
+MoreInfo.args = {
+  width: 800,
+  height: 600,
+  data: metadata,
+  xParam: "UMAP_1",
+  yParam: "UMAP_2",
+  idParam: "cell_id",
+  subsetParam: "subtype",
+  disable: true,
+  MoreInfoComponent: () => <div />,
+};

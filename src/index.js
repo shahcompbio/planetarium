@@ -32,6 +32,8 @@ export { default as Sankey } from "./TimeSeries/Sankey";
 
 export { default as Select } from "./Select/VirtualizedSelect";
 
+export { default as Select } from "./Select/VirtualizedSelect";
+
 export { useCanvas } from "./utils/useCanvas";
 export { default as drawCanvasAxis } from "./utils/canvas/drawAxis";
 
