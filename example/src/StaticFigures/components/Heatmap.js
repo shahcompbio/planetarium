@@ -114,7 +114,8 @@ const Heatmap = ({ patients, data }) => {
       drawLabels(context, shownGenes, geneYScale, settings);
     },
     canvasWidth,
-    canvasHeight
+    canvasHeight,
+    [settings]
   );
   /*{" "}
   <RangeOption
