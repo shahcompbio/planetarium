@@ -25,6 +25,10 @@ const Sankey = ({
   colorScale = null,
   timepointParam = "timepoint",
   timepointOrder = null,
+  onNodeHover = (node) => {},
+  onNodeClick = (node) => {},
+  onLinkHover = (link) => {},
+  onLinkClick = (link) => {},
 }) => {
   const chartWidth = width - 2 * PADDING;
   const chartHeight = height - AXIS_HEIGHT;
@@ -118,6 +122,9 @@ const Sankey = ({
     const scales = subsetScales[timepoint];
     const records = subsetsInTime.map((subset) => ({
       id: `${timepoint}_${subset}`,
+      [timepointParam]: timepoint,
+      [subsetParam]: subset,
+      [cloneParam]: timeData["subsets"][subset]["values"],
       x0: timeScale(timepoint),
       width: NODE_WIDTH,
       y0: scales.y(subset),
@@ -192,6 +199,17 @@ const Sankey = ({
         const rsf2Record = targetData["subsetValues"].map((targetSubset) => {
           return {
             id: `${sourceTimepoint}_${sourceSubset}_${targetSubset}`,
+            node0: {
+              [timepointParam]: sourceTimepoint,
+              [subsetParam]: sourceSubset,
+              [cloneParam]: sourceData["subsets"][sourceSubset]["values"],
+            },
+            node1: {
+              [timepointParam]: targetTimepoint,
+              [subsetParam]: targetSubset,
+              [cloneParam]: targetData["subsets"][targetSubset]["values"],
+            },
+            [cloneParam]: subsetLinkData[targetSubset]["cloneValues"],
             source: `${sourceTimepoint}_${sourceSubset}`,
             target: `${targetTimepoint}_${targetSubset}`,
             x0,
@@ -271,6 +289,7 @@ const Sankey = ({
             return;
           }
           setHoveredNode(d.id);
+          onNodeHover(d);
           setHoveredLink(null);
         })
         .on("mouseout", (d, i, e) => {
@@ -279,12 +298,15 @@ const Sankey = ({
             return;
           }
           setHoveredNode(null);
+          onNodeHover(null);
         })
         .on("click", (d, i, e) => {
           if (selectedNode === d.id) {
             setSelectedNode(null);
+            onNodeClick(null);
           } else {
             setSelectedNode(d.id);
+            onNodeClick(d);
           }
           setHoveredNode(null);
           setHoveredLink(null);
@@ -357,6 +379,7 @@ const Sankey = ({
           setHoveredLink(d.id);
           setHoveredSourceNode(d.source);
           setHoveredTargetNode(d.target);
+          onLinkHover(d);
         })
         .on("mouseout", (d, i, e) => {
           // if something is selected, do nothing
@@ -366,16 +389,19 @@ const Sankey = ({
           setHoveredLink(null);
           setHoveredSourceNode(null);
           setHoveredTargetNode(null);
+          onLinkHover(null);
         })
         .on("click", (d, i, e) => {
           if (selectedLink === d.id) {
             setSelectedLink(null);
             setSelectedSourceNode(null);
             setSelectedTargetNode(null);
+            onLinkClick(null);
           } else {
             setSelectedLink(d.id);
             setSelectedSourceNode(d.source);
             setSelectedTargetNode(d.target);
+            onLinkClick(d);
           }
           setHoveredNode(null);
           setHoveredLink(null);

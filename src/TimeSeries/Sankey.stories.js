@@ -270,4 +270,10 @@ ExampleBig.args = {
   cloneParam: "clone_id",
   timepointOrder: ["Pre", "Post"],
   timepointParam: "treatment",
+  onLinkClick: (data) => {
+    console.log(data);
+  },
+  onNodeClick: (data) => {
+    console.log(data);
+  },
 };
