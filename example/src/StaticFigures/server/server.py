@@ -34,12 +34,29 @@ def render(file=None):
     if file:
         adata = sc.read("./"+file)
         time = []
-        for d in adata.obs.index.tolist():
-            if  "Pre" in d:
-                time.append("Pre")
-            else:
-                time.append("Post")
-        adata.obs["timepoint"] = time
+        patientsList = []
+        #print(adata.obs.patient)
+
+        #for d in adata.obs.index.tolist():
+        #for d in adata.obs["sample"].tolist():
+        #    if  "Pre" in d:
+        #        time.append("Pre")
+        #    else:
+        #        time.append("Post")
+
+        #    if "AE" in d:
+        #        patientsList.append("AE")
+        #    elif "NP" in d:
+        #        patientsList.append("NP")
+        #    elif "BM" in d:
+        #        patientsList.append("BM")
+        #    elif "MK" in d:
+        #        patientsList.append("MK")
+
+        #adata.obs["patient"] = patientsList
+        #adata.obs["timepoint"] = time
+        print('hello')
+        print(adata.obs["timepoint"])
         timepoint = sc.tl.rank_genes_groups(adata, "timepoint")
 
         sc.tl.rank_genes_groups(adata,"timepoint")
@@ -51,10 +68,7 @@ def render(file=None):
 
         accepted = json.loads(request.data)
         accepted = accepted["data"]
-
         PATIENTS = list(set(adata.obs["patient"]))
-        print(PATIENTS)
-        #accepted = ["HLA-DRB5", "HLA-DPA1", "HLA-DPB1", "HLA-DRB1", "HLA-DRA", "HLA-DQB1", "HLA-DMA", "CD74", "CIITA","HLA-A", "HLA-DQA2", "HLA-C", "HLA-DQA1", "HLA-B", "HLA-E", "HLA-DOA", "HLA-DMB", "HLA-G", "HLA-DQB1-AS1", "HLA-F", "B2M"]
         timepoint = sc.tl.rank_genes_groups(adata,"timepoint")
 
         final = {"All":{}, 'AE':{}, 'BM':{}, 'MK':{}, 'NP':{}}
@@ -90,9 +104,10 @@ def render(file=None):
 
         #f = dict.fromkeys(accepted, {})
         #print(f)
+
         for patient in PATIENTS:
             final[patient] = {}
-
+            print(adata.obs["patient"])
             adata_patient = adata[adata.obs["patient"] == patient]
 
             sc.tl.rank_genes_groups(adata_patient, "timepoint")
@@ -107,27 +122,36 @@ def render(file=None):
             post = adata_patient[adata_patient.obs["timepoint"] == "Post"]
 
             prescaled = []
-            for g in acceptedlist:
+            indexTrack = {}
+            i = 0
 
-                premean = np.mean(pre.X[:,pre.var.index.tolist().index(g)])
-                postmean = np.mean(post.X[:,post.var.index.tolist().index(g)])
-                prescaled.append([premean,postmean])
-
+            for idx, g in enumerate(acceptedlist):
+                if g in pre.var.index.tolist() and g in post.var.index.tolist():
+                    premean = np.mean(pre.X[:,pre.var.index.tolist().index(g)])
+                    postmean = np.mean(post.X[:,post.var.index.tolist().index(g)])
+                    prescaled.append([premean,postmean])
+                    indexTrack[g] = i
+                    i = i + 1
+            print(indexTrack)
             scaler = MinMaxScaler()
             scaled = scaler.fit_transform(prescaled)
             print(scaled)
 
             for cond,fcs,gene,pvalues in zip(order,logfc,genes,adjpvals):
                 for fc, g, pval in zip(fcs,gene,pvalues):
-                    if g in acceptedlist:
+                    if g in acceptedlist and g in indexTrack:
+                        #premean = np.mean(pre.X[:,pre.var.index.tolist().index(g)])
+                        #postmean = np.mean(post.X[:,post.var.index.tolist().index(g)])
                         if str(fc) == "nan":
                             if premean < postmean:
                                 fc = "*+"
                             if premean > postmean:
                                 fc = "*-"
-                        index = acceptedlist.index(g)
+                        index = indexTrack[g]
+                        #index = acceptedlist.index(g)
                         mean = scaled[index]
                         final[patient][g] = {"Pre":str(mean[0]),"Post":str(mean[1]),"fc":str(fc),"p":str(pval)}
+                        #final[patient][g] = {"Pre":str(premean),"Post":str(postmean),"fc":str(fc),"p":str(pval)}
 
 
         with open('../data/test.json', 'w') as json_file:
