@@ -6,7 +6,6 @@ import { curveBumpX } from "d3-shape";
 import _ from "lodash";
 import { useD3 } from "../utils/useD3";
 
-import isHighlighted from "../utils/isHighlighted";
 import sortAlphanumeric from "../utils/sortAlphanumeric";
 
 const PADDING = 15;
@@ -26,13 +25,24 @@ const Sankey = ({
   colorScale = null,
   timepointParam = "timepoint",
   timepointOrder = null,
+  onNodeHover = (node) => {},
+  onNodeClick = (node) => {},
+  onLinkHover = (link) => {},
+  onLinkClick = (link) => {},
 }) => {
   const chartWidth = width - 2 * PADDING;
   const chartHeight = height - AXIS_HEIGHT;
 
-  const [highlightedNode, setHighlightedNode] = useState(null);
+  const [hoveredNode, setHoveredNode] = useState(null);
+  const [selectedNode, setSelectedNode] = useState(null);
+  const [hoveredLink, setHoveredLink] = useState(null);
+  const [selectedLink, setSelectedLink] = useState(null);
+  const [hoveredSourceNode, setHoveredSourceNode] = useState(null);
+  const [selectedSourceNode, setSelectedSourceNode] = useState(null);
+  const [hoveredTargetNode, setHoveredTargetNode] = useState(null);
+  const [selectedTargetNode, setSelectedTargetNode] = useState(null);
 
-  // Data processing
+  // Data processing - this counts the number of cells in each subtype and clone
 
   const timepoints =
     timepointOrder ||
@@ -112,6 +122,9 @@ const Sankey = ({
     const scales = subsetScales[timepoint];
     const records = subsetsInTime.map((subset) => ({
       id: `${timepoint}_${subset}`,
+      [timepointParam]: timepoint,
+      [subsetParam]: subset,
+      [cloneParam]: timeData["subsets"][subset]["values"],
       x0: timeScale(timepoint),
       width: NODE_WIDTH,
       y0: scales.y(subset),
@@ -123,11 +136,7 @@ const Sankey = ({
     return [...rsf, ...records];
   }, []);
 
-  const timepointsButLast =
-    timepoints.length > 2
-      ? timepoints[(0, timepoints.length - 2)]
-      : [timepoints[0]];
-
+  // More data processing, but this time to calculate the cell ratios for drawing, which needs information from the timepoints before and after
   const linkRatios = timepoints.reduce((rsf, timepoint, index) => {
     const sourceData = counts[timepoint];
     const subsetValues = counts[timepoint]["subsetValues"];
@@ -160,35 +169,14 @@ const Sankey = ({
     return { ...rsf, [timepoint]: ratios };
   }, {});
 
-  // for each time point
-  // for each subset
-  // for each targetSubset
-  // x0: sourceSubset
-  // X1: targetSubset
-  // y0: sourceSubsetStartY + offset of targetSubsets prior
-  // h0: summation of sourceCloneCells * proportion of target clone cells in targetSubset
-  // y1: targetSubsetStartY + offset of sourceSubsets prior
-  // h0: summation of targetCloneCells * proportion of source clone cells in sourceSubset
+  const timepointsButLast =
+    timepoints.length > 2
+      ? timepoints[(0, timepoints.length - 2)]
+      : [timepoints[0]];
 
-  // subset startY is sum of cells up to subset (subset sum by clone)
-
-  // height for given subset is summation of clones in given subset * proportion each clone in targetSubset
-
-  //  offset Y for given subset is the summation of all heights before given subset (so all targetSubsets before)
-
-  // data should have
-  // - timepoint
-  // - subset
-  // - count by clone
-  // - sum by clone
-  // - clone
-  // - count by subset
-  // - sum by subset
-  //
-
-  // - timepointOrder
-
-  console.log(linkRatios);
+  // for each timepoint
+  // for each subtype
+  // generate links for each target (subtype in next timepoint)
   const links = timepointsButLast.reduce(
     (rsf, sourceTimepoint, index) => {
       const sourceData = counts[sourceTimepoint];
@@ -199,7 +187,6 @@ const Sankey = ({
       const targetData = counts[targetTimepoint];
       const targetScales = subsetScales[targetTimepoint];
       const targetLinkData = linkRatios[targetTimepoint];
-      // for each subset-clone pair, generate a list of links
 
       const x0 = timeScale(sourceTimepoint) + NODE_WIDTH;
       const x1 = timeScale(targetTimepoint);
@@ -209,114 +196,49 @@ const Sankey = ({
       const rsfRecord = sourceSubsets.reduce((rsf2, sourceSubset) => {
         const subsetLinkData = sourceLinkData[sourceSubset]["after"];
 
-        const rsf2Record = targetData["subsetValues"].reduce(
-          (rsf3, targetSubset) => {
-            const clones = subsetLinkData[targetSubset]["cloneValues"];
-
-            const rsf3Records = clones.map((clone) => ({
-              id: `${sourceTimepoint}_${sourceSubset}_${targetSubset}_${clone}`,
-              source: `${sourceTimepoint}_${sourceSubset}`,
-              target: `${targetTimepoint}_${targetSubset}`,
-              x0,
-              x1,
-              y0: calculateLinkYStart(
-                clone,
-                sourceScales,
-                subsetLinkData,
-                sourceSubset,
-                targetSubset
-              ),
-              h0: calculateLinkHeight(
-                clone,
-                sourceScales,
-                subsetLinkData,
-                targetSubset
-              ),
-              y1: calculateLinkYStart(
-                clone,
-                targetScales,
-                targetLinkData[targetSubset]["before"],
-                targetSubset,
-                sourceSubset
-              ),
-              h1: calculateLinkHeight(
-                clone,
-                targetScales,
-                targetLinkData[targetSubset]["before"],
-                sourceSubset
-              ),
-              c0: color(sourceSubset),
-              c1: color(targetSubset),
-            }));
-
-            return [...rsf3, ...rsf3Records];
-          },
-          []
-        );
+        const rsf2Record = targetData["subsetValues"].map((targetSubset) => {
+          return {
+            id: `${sourceTimepoint}_${sourceSubset}_${targetSubset}`,
+            node0: {
+              [timepointParam]: sourceTimepoint,
+              [subsetParam]: sourceSubset,
+              [cloneParam]: sourceData["subsets"][sourceSubset]["values"],
+            },
+            node1: {
+              [timepointParam]: targetTimepoint,
+              [subsetParam]: targetSubset,
+              [cloneParam]: targetData["subsets"][targetSubset]["values"],
+            },
+            [cloneParam]: subsetLinkData[targetSubset]["cloneValues"],
+            source: `${sourceTimepoint}_${sourceSubset}`,
+            target: `${targetTimepoint}_${targetSubset}`,
+            x0,
+            x1,
+            y0: calculateLinkYStart(
+              sourceScales,
+              subsetLinkData,
+              sourceSubset,
+              targetSubset
+            ),
+            h0: calculateLinkHeight(sourceScales, subsetLinkData, targetSubset),
+            y1: calculateLinkYStart(
+              targetScales,
+              targetLinkData[targetSubset]["before"],
+              targetSubset,
+              sourceSubset
+            ),
+            h1: calculateLinkHeight(
+              targetScales,
+              targetLinkData[targetSubset]["before"],
+              sourceSubset
+            ),
+            c0: color(sourceSubset),
+            c1: color(targetSubset),
+          };
+        });
 
         return [...rsf2, ...rsf2Record];
       }, []);
-
-      // const sourceCloneLinks = sourceSubsets.reduce((subsetLinksSF, subset) => {
-      //   const sourceClones = sourceData["subsets"][subset]["values"];
-
-      //   const linkRecords = sourceClones.reduce((clonesRSF, clone) => {
-      //     const x0 = timeScale(sourceTimepoint) + NODE_WIDTH;
-      //     const x1 = timeScale(targetTimepoint);
-
-      //     const targetSubsetClones = targetData["clones"].hasOwnProperty(clone)
-      //       ? targetData["clones"][clone]["values"]
-      //       : [];
-
-      //     const records = targetSubsetClones.map((targetSubset) => {
-      //       return {
-      //         id: `${sourceTimepoint}_${subset}_${targetSubset}_${clone}`,
-      //         source: `${sourceTimepoint}_${subset}`,
-      //         target: `${targetTimepoint}_${targetSubset}`,
-      //         x0,
-      //         x1,
-      //         y0: calculateLinkYStart(
-      //           clone,
-      //           sourceScales,
-      //           sourceData,
-      //           targetData,
-      //           subset,
-      //           targetSubset
-      //         ),
-      //         h0: calculateLinkHeight(
-      //           clone,
-      //           sourceScales,
-      //           sourceData,
-      //           targetData,
-      //           subset,
-      //           targetSubset
-      //         ),
-      //         y1: calculateLinkYStart(
-      //           clone,
-      //           targetScales,
-      //           targetData,
-      //           sourceData,
-      //           targetSubset,
-      //           subset
-      //         ),
-      //         h1: calculateLinkHeight(
-      //           clone,
-      //           targetScales,
-      //           targetData,
-      //           sourceData,
-      //           targetSubset,
-      //           subset
-      //         ),
-      //         c0: color(subset),
-      //         c1: color(targetSubset),
-      //       };
-      //     });
-
-      //     return [...clonesRSF, ...records];
-      //   }, []);
-
-      //   return [...subsetLinksSF, ...linkRecords];
-      // }, []);
 
       return [...rsf, ...rsfRecord];
     },
@@ -328,7 +250,6 @@ const Sankey = ({
     (svg) => {
       const node = svg
         .append("g")
-        .attr("stroke", "currentColor")
         .selectAll("rect")
         .data(nodes)
         .join("rect")
@@ -337,13 +258,61 @@ const Sankey = ({
         .attr("height", (d) => d.height)
         .attr("width", (d) => d.width)
         .attr("fill", (d) =>
-          isHighlighted(d.id, highlightedNode) ? d.color : NULL_COLOR
+          isIDHighlighted(d.id, [
+            hoveredNode,
+            selectedNode,
+            hoveredSourceNode,
+            hoveredTargetNode,
+            selectedSourceNode,
+            selectedTargetNode,
+          ])
+            ? d.color
+            : NULL_COLOR
+        )
+        .attr("stroke", (d) =>
+          isIDHighlighted(d.id, [
+            hoveredNode,
+            selectedNode,
+            hoveredSourceNode,
+            hoveredTargetNode,
+            selectedSourceNode,
+            selectedTargetNode,
+          ])
+            ? selectedNode === d.id
+              ? "currentColor"
+              : d.color
+            : NULL_COLOR
         )
         .on("mouseenter", (d, i, e) => {
-          setHighlightedNode(d.id);
+          // if something is selected, do nothing
+          if (selectedNode || selectedLink) {
+            return;
+          }
+          setHoveredNode(d.id);
+          onNodeHover(d);
+          setHoveredLink(null);
         })
         .on("mouseout", (d, i, e) => {
-          setHighlightedNode(null);
+          // if something is selected, do nothing
+          if (selectedNode || selectedLink) {
+            return;
+          }
+          setHoveredNode(null);
+          onNodeHover(null);
+        })
+        .on("click", (d, i, e) => {
+          if (selectedNode === d.id) {
+            setSelectedNode(null);
+            onNodeClick(null);
+          } else {
+            setSelectedNode(d.id);
+            onNodeClick(d);
+          }
+          setHoveredNode(null);
+          setHoveredLink(null);
+          setSelectedLink(null);
+          setSelectedSourceNode(null);
+          setSelectedTargetNode(null);
         });
 
       const link = svg
@@ -390,11 +359,54 @@ const Sankey = ({
         )
         .attr("fill-opacity", 0.8)
         .attr("fill", (d) =>
-          isHighlighted(d.source, highlightedNode) ||
-          isHighlighted(d.target, highlightedNode)
+          [hoveredLink, selectedLink, hoveredNode, selectedNode].every(
+            (value) => !value
+          ) ||
+          [hoveredLink, selectedLink].some((value) => d.id === value) ||
+          [hoveredNode, selectedNode].some((value) => d.source === value) ||
+          [hoveredNode, selectedNode].some((value) => d.target === value)
             ? `url(#${uid}-link-${d.id})`
             : NULL_COLOR
-        );
+        )
+        .attr("stroke-width", (d) => (selectedLink === d.id ? 2 : 0))
+        .attr("stroke", (d) => `url(#${uid}-link-${d.id})`)
+        .on("mouseenter", (d, i, e) => {
+          // if something is selected, do nothing
+          if (selectedNode || selectedLink) {
+            return;
+          }
+          setHoveredNode(null);
+          setHoveredLink(d.id);
+          setHoveredSourceNode(d.source);
+          setHoveredTargetNode(d.target);
+          onLinkHover(d);
+        })
+        .on("mouseout", (d, i, e) => {
+          // if something is selected, do nothing
+          if (selectedNode || selectedLink) {
+            return;
+          }
+          setHoveredLink(null);
+          setHoveredSourceNode(null);
+          setHoveredTargetNode(null);
+          onLinkHover(null);
+        })
+        .on("click", (d, i, e) => {
+          if (selectedLink === d.id) {
+            setSelectedLink(null);
+            setSelectedSourceNode(null);
+            setSelectedTargetNode(null);
+            onLinkClick(null);
+          } else {
+            setSelectedLink(d.id);
+            setSelectedSourceNode(d.source);
+            setSelectedTargetNode(d.target);
+            onLinkClick(d);
+          }
+          setHoveredNode(null);
+          setHoveredLink(null);
+          setSelectedNode(null);
+        });
 
       svg
         .append("g")
@@ -407,6 +419,7 @@ const Sankey = ({
         .attr("y", (d) => d.y0 + d.height / 2)
         .attr("dy", "0.35em")
         .attr("text-anchor", (d) => (d.x0 < width / 2 ? "start" : "end"))
+        .attr("pointer-events", "none")
         .text((d) => d.label);
 
       const xAxis = d3.axisBottom(timeScale).tickSize(0);
@@ -435,12 +448,13 @@ const Sankey = ({
   return <svg ref={ref} />;
 };
 
+// For initial counting - this iterates through the data and keeps track of (say groupParam = subtype, countParam = clone)
+// all subtype values
+// for each subtype, all clone values
+// for each subtype, total number of cells
+// for each subtype, total number of cells per clone
+// for each subtype, summation of cells per clone (helpful for y placement)
 const processData = (data, groupParam, countParam) => {
-  // calculate counts per group
-  // summation of counts per group
-  // total per group
-  // list of values in group
-  // list of values in each count
   const groupValues = _.uniq(data.map((datum) => datum[groupParam])).sort(
     sortAlphanumeric
   );
@@ -478,6 +492,20 @@ const processData = (data, groupParam, countParam) => {
 
   return counts;
 };
+
+// For link ratios
+// The timepoints only share clone data, so when calculating how much space to allocate to each link, you need to figure out how many cells to send from timepoint 1 to timepoint 2
+// For example:
+// timepoint 1, source subtype, clone 1 = 100 cells
+// timepoint 2, target subtype 1, clone 1 = 20 cells
+// timepoint 2, target subtype 2, clone 1 = 30 cells
+
+// then from source subtype, you will want to send: (20/50) -> 40% of the cells (=40 cells) to target subtype 1, and (30/50) => 60% of the cells (=60 cells) to target subtype 2
+
+// Then to figure out how many cells to send from source subtype to target subtype, you need to sum up this ratio across all clones shared by source and target subtypes
+
+// That total/count scaled proportionally provides the height for the link
+// The y placement would be the summation of heights of all target subtypes before it - this is provided by 'sums' in the final object
 
 const processPairSubsetData = (sourceSubsetData, sourceSubset, targetData) => {
   const targetSubsets = targetData["subsetValues"];
@@ -530,44 +558,31 @@ const processPairSubsetData = (sourceSubsetData, sourceSubset, targetData) => {
 };
 
 const calculateLinkYStart = (
-  clone,
   scales,
   sourceData,
   sourceSubset,
   targetSubset
 ) => {
-  // Subset
-
-  // height of subset
-  // offset of target subset start within subset (cumulative of ones before it)
-
-  // Clone
-
   // height of subset
   const subsetHeight = scales.y(sourceSubset);
 
-  // offset of clone start within subset
+  // offset of targetSubset start within subset
   const cloneStartHeight = scales.height(sourceData["sums"][targetSubset]);
 
-  // offset of specific clone within clone, % of clones from target timepoint above target subset * total cells in clone in source subset
-  const cloneLinkHeight = scales.height(
-    sourceData[targetSubset]["clones"][clone]["sum"]
-  );
-
-  return subsetHeight + cloneStartHeight + cloneLinkHeight;
+  return subsetHeight + cloneStartHeight;
 };
 
-const calculateLinkHeight = (clone, scales, sourceData, targetSubset) => {
-  // Subset
-  // number of cells in source subset
-  // proportion of clone cells in target subset across all clones in source
+const calculateLinkHeight = (scales, sourceData, targetSubset) => {
+  return scales.height(sourceData[targetSubset]["total"]);
+};
 
-  // Clone
-  // number of cells in source subset
+const isIDHighlighted = (id, values) => {
+  // if nothing is highlighted, return true
+  if (values.every((value) => !value)) {
+    return true;
+  }
 
-  // proportion of clone cells in target subset (compared to total of clone)
-
-  return scales.height(sourceData[targetSubset]["clones"][clone]["count"]);
+  return values.some((value) => value === id);
 };
 
 export default Sankey;
