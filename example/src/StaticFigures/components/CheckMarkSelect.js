@@ -32,7 +32,7 @@ const CheckMarkSelect = ({ allGenes, selectedGenes, setSelected }) => {
   return (
     <div>
       <FormControl sx={{ m: 1, width: 300 }}>
-        <InputLabel id="demo-multiple-checkbox-label">Omit Genes</InputLabel>
+        <InputLabel id="demo-multiple-checkbox-label"></InputLabel>
         <Select
           labelId="demo-multiple-checkbox-label"
           id="demo-multiple-checkbox"

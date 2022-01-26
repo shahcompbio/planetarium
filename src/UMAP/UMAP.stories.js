@@ -7,6 +7,7 @@ import catData from "./data/metadata.json";
 
 const NumTemplate = (args) => <UMAP data={numData} {...args} />;
 const CatTemplate = (args) => <UMAP data={catData} {...args} />;
+const MoreInfoComp = () => <div>More info</div>;
 
 export default {
   title: "Components/UMAP/UMAP",
@@ -95,4 +96,15 @@ CategoricalReset.args = {
   yParam: "UMAP_2",
   subsetParam: "subtype",
   idParam: "cell_id",
+};
+
+export const MoreInfo = CatButtonTemplate.bind({});
+MoreInfo.args = {
+  width: 800,
+  height: 600,
+  xParam: "UMAP_1",
+  yParam: "UMAP_2",
+  subsetParam: "subtype",
+  idParam: "cell_id",
+  MoreInfoComponent: MoreInfoComp,
 };
