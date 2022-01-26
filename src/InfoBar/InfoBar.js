@@ -48,6 +48,7 @@ const InfoBar = ({ title, infoText, addIcon = null }) => {
           </Grid>
           <Grid
             xs={9}
+            item
             container
             direction="row"
             justifyContent="flex-end"

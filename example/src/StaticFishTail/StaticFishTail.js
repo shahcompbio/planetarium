@@ -5,49 +5,15 @@ import Paper from "@material-ui/core/Paper";
 import { theme } from "../theme/theme.js";
 import { MuiThemeProvider } from "@material-ui/core/styles";
 import { CssBaseline } from "@material-ui/core";
-import Heatmap from "./components/Heatmap";
+import { Fishtail, Sankey } from "@shahlab/planetarium";
 
 const DataWrapper = ({ data }) => {
-  const [fileName, setFileName] = useState("renormed_protein.h5ad");
-  const [defaultGenes, setDefaultGenes] = useState([
-    "HLA-DRB5",
-    "HLA-DPB1",
-    "HLA-DPA1",
-    "HLA-DRB1",
-    "HLA-DRA",
-    "HLA-DQB1",
-    "HLA-DMA",
-    "CD74",
-    "CIITA",
-    "HLA-DQA1",
-    "HLA-DQA2",
-    "HLA-A",
-    "HLA-B",
-    "HLA-C",
-    "HLA-E",
-    "HLA-DOA",
-    "HLA-DMB",
-    "HLA-DMA",
-    "HLA-G",
-    "HLA-DQB1-AS1",
-    "HLA-F",
-    "B2M",
-  ]);
+  const [fileName, setFileName] = useState("prog_AE.h5ad");
 
   return (
     <div>
       <div style={{ with: 400 }}>
         <Paper style={{ width: 700, margin: 10, padding: 10 }}>
-          <div>
-            <div>
-              <label style={{ width: "100%" }}>
-                Input Genes (comma seperated)
-              </label>
-            </div>
-            <textarea name="paragraph_text" cols="50" rows="5" id="genes-list">
-              {defaultGenes.join(",")}
-            </textarea>
-          </div>
           <div>
             <label style={{ width: "100%" }}>Input File</label>
           </div>
@@ -63,11 +29,7 @@ const DataWrapper = ({ data }) => {
             onClick={() => {
               var input = document.getElementById("input");
               if (input !== "") {
-                const genes = document.getElementById("genes-list").value;
-                fetch("http://localhost:5000/render/" + input.value + "/", {
-                  method: "POST",
-                  body: JSON.stringify({ data: genes }),
-                })
+                fetch("http://localhost:5000/render/" + input.value + "/")
                   .then(function (response) {
                     return response.json();
                   })
@@ -82,21 +44,29 @@ const DataWrapper = ({ data }) => {
         </Paper>
       </div>
 
-      <StaticFigures
-        patientsData={data["patients"]}
-        geneData={data["geneData"]}
-      />
+      <StaticFigures data={data["data"]} />
     </div>
   );
 };
-const StaticFigures = ({ patientsData, geneData }) => {
+const StaticFigures = ({ data }) => {
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
       <Grid container direction="row">
         <Block>
-          {patientsData ? (
-            <Heatmap data={geneData} patients={patientsData} />
+          {data ? (
+            <Fishtail
+              width={700}
+              height={300}
+              data={data}
+              subsetParam={"clone"}
+              cloneParam={"clone"}
+              timepointOrder={["Pre", "Post"]}
+              addTwoTimepointCurve={true}
+              timepointParam={"timepoint"}
+              //    subsetParam="clone"
+              //    treatment="timepoint"
+            />
           ) : (
             <span />
           )}

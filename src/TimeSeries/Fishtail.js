@@ -36,6 +36,13 @@ const COLOR_ARRAY = [
   "#b2dbd6",
   "#ffd470",
 ];
+const addFakeTimepoints = (data, timepointParam) =>
+  data.reduce((final, d) => {
+    var dup = Object.assign({}, d);
+    dup[timepointParam] = dup[timepointParam] + ".5";
+    final = [...final, d, dup];
+    return final;
+  }, []);
 
 const Fishtail = ({
   data,
@@ -44,9 +51,11 @@ const Fishtail = ({
   width = 700,
   height = 400,
   timepoint = null,
+  timepointOrder = null,
   subset = null,
   disable = false,
   colorScale = null,
+  addTwoTimepointCurve = false,
   onLegendHover = (value) => {},
   onLegendClick = (value) => {},
   onTimepointHover = (timepoint) => {},
@@ -59,11 +68,23 @@ const Fishtail = ({
   const chartWidth = width - 2 * PADDING;
   const chartHeight = height - AXIS_HEIGHT;
 
-  const timeValues = _.uniq(data.map((datum) => datum[timepointParam])).sort(
-    sortAlphanumeric
-  );
+  const orgData =
+    addTwoTimepointCurve && timepointOrder.length === 2
+      ? addFakeTimepoints(data, timepointParam)
+      : data;
 
-  const subsetValues = _.uniq(data.map((datum) => datum[subsetParam])).sort(
+  const timeValues = timepointOrder
+    ? addTwoTimepointCurve
+      ? timepointOrder.reduce(
+          (final, t) => (final = [...final, t, t + ".5"]),
+          []
+        )
+      : timepointOrder
+    : _.uniq(orgData.map((datum) => datum[timepointParam])).sort(
+        sortAlphanumeric
+      );
+
+  const subsetValues = _.uniq(orgData.map((datum) => datum[subsetParam])).sort(
     sortAlphanumeric
   );
 
@@ -72,13 +93,14 @@ const Fishtail = ({
     highlightedTimepoint || timepoint || selectedTimepoint;
 
   const counts = timeValues.map((timepoint) => {
-    const timeData = data.filter(
+    const timeData = orgData.filter(
       (datum) => datum[timepointParam] === timepoint
     );
 
     const subsetCounts = subsetValues.map(
       (subset) =>
-        timeData.filter((datum) => datum[subsetParam] === subset).length
+        timeData.filter((datum) => datum[subsetParam] === subset).length /
+        timeData.length
     );
 
     return {
@@ -95,7 +117,8 @@ const Fishtail = ({
 
   const timeScale = d3
     .scalePoint()
-    .domain(timeValues)
+    //.scaleTime()
+    .domain([...timeValues])
     .range([PADDING, PADDING + chartWidth]);
 
   const color =
@@ -111,8 +134,9 @@ const Fishtail = ({
     const series = d3
       .stack()
       .keys(subsetValues)
-      .offset(d3.stackOffsetWiggle)
-      .order(d3.stackOrderInsideOut)(counts);
+      .offset(d3.stackOffsetNone)
+      .order(d3.stackOrderAscending)(counts);
+    //  console.log(d3.min(series, (d) => d3.min(d, (d) => d[0])));
 
     const yScale = d3
       .scaleLinear()
@@ -124,10 +148,14 @@ const Fishtail = ({
 
     const area = d3
       .area()
-      .curve(d3.curveBasis)
-      .x((d) => timeScale(d.data.timepoint))
+      //  .curve(d3.curveMonotoneY)
+      //.curve(d3.curveBasis)
+      .x((d) => {
+        return timeScale(d.data.timepoint);
+      })
       .y0((d) => yScale(d[0]))
-      .y1((d) => (Number.isNaN(d[1]) ? yScale(d[0]) : yScale(d[1])));
+      .y1((d) => (Number.isNaN(d[1]) ? yScale(d[0]) : yScale(d[1])))
+      .curve(d3.curveCardinal);
 
     svg
       .append("g")
@@ -228,7 +256,7 @@ const Fishtail = ({
     width,
     height,
     [
-      data,
+      orgData,
       highlightedTimepoint,
       selectedTimepoint,
       timepoint,
