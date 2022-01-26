@@ -160,7 +160,7 @@ const Heatmap = ({ patients, data }) => {
   return (
     <div>
       <Grid container spacing={1} style={{ width: 700 }}>
-        <FlexList title={"Omit Genes"}>
+        <FlexList title={"Omit Genes"} key="genes">
           {[
             <CheckMarkSelect
               allGenes={Object.keys(data[patients[0]])}
@@ -170,7 +170,7 @@ const Heatmap = ({ patients, data }) => {
           ]}
         </FlexList>
 
-        <FlexList title={"Padding"}>
+        <FlexList title={"Padding"} key={"padding"}>
           <RangeOption
             label={"Inner Padding"}
             value={paddingInner}

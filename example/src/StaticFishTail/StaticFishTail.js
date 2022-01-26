@@ -49,20 +49,20 @@ const DataWrapper = ({ data }) => {
   );
 };
 const StaticFigures = ({ data }) => {
-  console.log(data);
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
       <Grid container direction="row">
         <Block>
           {data ? (
-            <Sankey
+            <Fishtail
               width={700}
-              height={400}
+              height={300}
               data={data}
               subsetParam={"clone"}
               cloneParam={"clone"}
               timepointOrder={["Pre", "Post"]}
+              addTwoTimepointCurve={true}
               timepointParam={"timepoint"}
               //    subsetParam="clone"
               //    treatment="timepoint"
