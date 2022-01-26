@@ -3,14 +3,52 @@ import * as d3 from "d3";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Checkbox from "@material-ui/core/Checkbox";
+<<<<<<< Updated upstream
+import Collapse from "@material-ui/core/Collapse";
+
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListSubheader from "@material-ui/core/ListSubheader";
+import Typography from "@material-ui/core/Typography";
+=======
+>>>>>>> Stashed changes
 
 import _ from "lodash";
 import { useCanvas } from "@shahlab/planetarium";
 import CheckMarkSelect from "./CheckMarkSelect";
+<<<<<<< Updated upstream
+const sortingArr = [
+  "CD74",
+  "CIITA",
+  "HLA-DRA",
+  "HLA-DRB1",
+  "HLA-DRB5",
+  "HLA-DPA1",
+  "HLA-DPB1",
+  "HLA-DQA1",
+  "HLA-DQA2",
+  "HLA-DQB1",
+  "HLA-DQB1-AS1",
+  "HLA-DMA",
+  "HLA-DMB",
+  "HLA-DOA",
+  "HLA-A",
+  "HLA-B",
+  "HLA-C",
+  "HLA-E",
+  "HLA-G",
+  "HLA-F",
+  "B2M",
+];
+const Heatmap = ({ patients, data }) => {
+  const [context, saveContext] = useState(null);
+  const [inputSettings, setInputSettings] = useState({});
+=======
 
 const Heatmap = ({ patients, data }) => {
   const [context, saveContext] = useState(null);
 
+>>>>>>> Stashed changes
   const [settings, setSettings] = useState(
     localStorage.getItem("heatmapSettings") === null
       ? {
@@ -27,6 +65,10 @@ const Heatmap = ({ patients, data }) => {
           labelPadding: 38,
           labelVertPadding: 9,
           pValPadding: 0,
+<<<<<<< Updated upstream
+          pValVertPadding: 0,
+=======
+>>>>>>> Stashed changes
 
           topHeadingHeight: 100,
 
@@ -39,6 +81,11 @@ const Heatmap = ({ patients, data }) => {
           allLabelPadding: 0,
           patientNamePadding: 0,
           switchAll: true,
+<<<<<<< Updated upstream
+          volume: false,
+          volumeMaxHeight: 3,
+=======
+>>>>>>> Stashed changes
 
           removePval: false,
           gradWidth: 170,
@@ -83,13 +130,25 @@ const Heatmap = ({ patients, data }) => {
     postLabel,
     pLabel,
     movePatientsPadding,
+<<<<<<< Updated upstream
+    pValVertPadding,
+=======
+>>>>>>> Stashed changes
   } = settings;
 
   const canvasHeight = patientHeight;
   const canvasWidth =
     (patients.length + 1) * patientWidth +
     (patients.length + 1) * patientSpacing;
+<<<<<<< Updated upstream
+  const [shownGenes, setShownGenes] = useState(
+    Object.keys(data[patients[0]]).sort(
+      (a, b) => sortingArr.indexOf(a) - sortingArr.indexOf(b)
+    )
+  );
+=======
   const [shownGenes, setShownGenes] = useState(Object.keys(data[patients[0]]));
+>>>>>>> Stashed changes
 
   const patientScale = d3
     .scaleBand()
@@ -108,14 +167,39 @@ const Heatmap = ({ patients, data }) => {
   const canvasRef = useCanvas(
     (canvas) => {
       const context = canvas.getContext("2d");
+<<<<<<< Updated upstream
+      context.webkitImageSmoothingEnabled = false;
+      context.mozImageSmoothingEnabled = false;
+      context.imageSmoothingEnabled = false;
+=======
+>>>>>>> Stashed changes
       saveContext(context);
       drawHeatmap(context, patients, data, patientScale, geneYScale, settings);
 
       drawLabels(context, shownGenes, geneYScale, settings);
     },
     canvasWidth,
+<<<<<<< Updated upstream
     canvasHeight,
-    [settings]
+    [settings, shownGenes]
+  );
+
+  return (
+    <div>
+      <Grid container spacing={1} style={{ width: 700 }}>
+        <FlexList title={"Omit Genes"} key="genes">
+          {[
+            <CheckMarkSelect
+              allGenes={Object.keys(data[patients[0]])}
+              selectedGenes={shownGenes}
+              setSelected={setShownGenes}
+            />,
+          ]}
+        </FlexList>
+
+        <FlexList title={"Padding"} key={"padding"}>
+=======
+    canvasHeight
   );
   /*{" "}
   <RangeOption
@@ -141,6 +225,7 @@ const Heatmap = ({ patients, data }) => {
           />
         </Grid>
         <Grid container item spacing={3}>
+>>>>>>> Stashed changes
           <RangeOption
             label={"Inner Padding"}
             value={paddingInner}
@@ -162,6 +247,10 @@ const Heatmap = ({ patients, data }) => {
             max={"1"}
             step={"0.1"}
           />
+<<<<<<< Updated upstream
+
+=======
+>>>>>>> Stashed changes
           <RangeOption
             label={"Align"}
             value={align}
@@ -171,8 +260,14 @@ const Heatmap = ({ patients, data }) => {
             max={"1"}
             step={"0.1"}
           />
+<<<<<<< Updated upstream
+
+          <RangeOption
+            label={"Second Column Padding"}
+=======
           <RangeOption
             label={"Column Padding"}
+>>>>>>> Stashed changes
             value={columnPadding}
             setValue={(value) =>
               setSettings({ ...settings, columnPadding: value })
@@ -182,8 +277,13 @@ const Heatmap = ({ patients, data }) => {
             max={"1"}
             step={"0.1"}
           />
+<<<<<<< Updated upstream
+        </FlexList>
+        <FlexList title={"Overall"}>
+=======
         </Grid>
         <Grid container item spacing={3}>
+>>>>>>> Stashed changes
           <RangeOption
             label={"Total Height"}
             value={patientHeight}
@@ -195,8 +295,15 @@ const Heatmap = ({ patients, data }) => {
             max={"2000"}
             step={"10"}
           />
+<<<<<<< Updated upstream
+          <Typography>Width:{canvasWidth}</Typography>
+          <Typography>Height:{canvasHeight}</Typography>
+        </FlexList>
+        <FlexList title={"Square"}>
+=======
         </Grid>
         <Grid container item spacing={3}>
+>>>>>>> Stashed changes
           <RangeOption
             label={"Square Width"}
             value={squareWidth}
@@ -228,8 +335,13 @@ const Heatmap = ({ patients, data }) => {
             max={"20"}
             step={"0.1"}
           />
+<<<<<<< Updated upstream
+        </FlexList>
+        <FlexList title={"Patients"}>
+=======
         </Grid>
         <Grid container item spacing={3}>
+>>>>>>> Stashed changes
           <RangeOption
             label={"Patient Width"}
             value={patientWidth}
@@ -252,6 +364,54 @@ const Heatmap = ({ patients, data }) => {
             max={"100"}
             step={"1"}
           />
+<<<<<<< Updated upstream
+        </FlexList>
+        <FlexList title={"Header"}>
+          {[
+            <RangeOption
+              label={"Header Section"}
+              value={topHeadingHeight}
+              setValue={(value) =>
+                setSettings({ ...settings, topHeadingHeight: value })
+              }
+              key={"topheading"}
+              min={"50"}
+              max={"300"}
+              step={"1"}
+            />,
+          ]}
+        </FlexList>
+      </Grid>
+
+      <canvas
+        ref={canvasRef}
+        id="heatmapCanvas"
+        width={canvasWidth * 300}
+        height={canvasHeight * 300}
+      />
+      <Grid>
+        <FlexList title={"All Section"}>
+          <RangeOption
+            label={"All Label Padding"}
+            value={allLabelPadding}
+            setValue={(value) =>
+              setSettings({ ...settings, allLabelPadding: value })
+            }
+            key={"allLabelPadding"}
+            min={"0"}
+            max={patientWidth}
+            step={"1"}
+          />
+          <RangeOption
+            label={"All Legend Padding"}
+            value={allLegendPadding}
+            setValue={(value) =>
+              setSettings({ ...settings, allLegendPadding: value })
+            }
+            key={"allLegendPadding"}
+            min={"0"}
+            max={patientWidth}
+=======
         </Grid>
 
         <RangeOption
@@ -279,6 +439,7 @@ const Heatmap = ({ patients, data }) => {
             key={"movePatientsPadding"}
             min={"0"}
             max={canvasWidth / 3}
+>>>>>>> Stashed changes
             step={"1"}
           />
           <RangeOption
@@ -292,6 +453,39 @@ const Heatmap = ({ patients, data }) => {
             max={patientHeight}
             step={"1"}
           />
+<<<<<<< Updated upstream
+        </FlexList>
+        <FlexList title={"Patient Section"}>
+          <RangeOption
+            label={"Move patient padding"}
+            value={movePatientsPadding}
+            setValue={(value) =>
+              setSettings({ ...settings, movePatientsPadding: value })
+            }
+            key={"movePatientsPadding"}
+            min={"0"}
+            max={canvasWidth / 3}
+            step={"1"}
+          />
+          <RangeOption
+            label={"Legend Padding"}
+            value={patientLegendPadding}
+            setValue={(value) =>
+              setSettings({ ...settings, patientLegendPadding: value })
+            }
+            key={"patientLegendPadding"}
+            min={"0"}
+            max={canvasWidth - patientWidth}
+            step={"1"}
+          />
+          <RangeOption
+            label={"Patient name Padding"}
+            value={patientNamePadding}
+            setValue={(value) =>
+              setSettings({ ...settings, patientNamePadding: value })
+            }
+            key={"patientNamePadding"}
+=======
           <RangeOption
             label={"All Legend Padding"}
             value={allLegendPadding}
@@ -310,13 +504,19 @@ const Heatmap = ({ patients, data }) => {
               setSettings({ ...settings, allLabelPadding: value })
             }
             key={"allLabelPadding"}
+>>>>>>> Stashed changes
             min={"0"}
             max={patientWidth}
             step={"1"}
           />
+<<<<<<< Updated upstream
+        </FlexList>
+        <FlexList title={"Label Padding"}>
+=======
         </Grid>
         <Grid container item spacing={3}>
           <p>Labels</p>
+>>>>>>> Stashed changes
           <RangeOption
             label={"Label Vertical Padding"}
             value={labelVertPadding}
@@ -336,9 +536,17 @@ const Heatmap = ({ patients, data }) => {
             }
             key={"labelpadding"}
             min={"2"}
+<<<<<<< Updated upstream
+            max={"200"}
+            step={"1"}
+          />
+        </FlexList>
+        <FlexList title={"P Value"}>
+=======
             max={"60"}
             step={"1"}
           />
+>>>>>>> Stashed changes
           <RangeOption
             label={"Pval Padding"}
             value={pValPadding}
@@ -347,6 +555,24 @@ const Heatmap = ({ patients, data }) => {
             }
             key={"pvalPadding"}
             min={"0"}
+<<<<<<< Updated upstream
+            max={"200"}
+            step={"1"}
+          />
+          <RangeOption
+            label={"Pval Vertical Padding"}
+            value={pValVertPadding}
+            setValue={(value) =>
+              setSettings({ ...settings, pValVertPadding: value })
+            }
+            key={"pvalVertPadding"}
+            min={"0"}
+            max={"100"}
+            step={"1"}
+          />
+        </FlexList>
+        <FlexList title={"Gradient"}>
+=======
             max={"60"}
             step={"1"}
           />
@@ -372,6 +598,7 @@ const Heatmap = ({ patients, data }) => {
             max={patientWidth}
             step={"1"}
           />
+>>>>>>> Stashed changes
           <RangeOption
             label={"gradient width"}
             value={gradWidth}
@@ -392,8 +619,13 @@ const Heatmap = ({ patients, data }) => {
             max={"150"}
             step={"1"}
           />
+<<<<<<< Updated upstream
+        </FlexList>
+        <FlexList title={"Labels Text"}>
+=======
         </Grid>
         <Grid container item spacing={3}>
+>>>>>>> Stashed changes
           <TextField
             required
             id="outlined-required"
@@ -421,8 +653,39 @@ const Heatmap = ({ patients, data }) => {
               setSettings({ ...settings, pLabel: event.target.value })
             }
           />
+<<<<<<< Updated upstream
+        </FlexList>
+        <FlexList title={"Volume"}>
+          <div style={{ padding: 10 }}>
+            <p>Add Volume</p>
+            <Checkbox
+              value={settings.volume}
+              onChange={() =>
+                setSettings({
+                  ...settings,
+                  volume: !settings.volume,
+                })
+              }
+              color="default"
+            />
+          </div>
+          <RangeOption
+            label={"Volume Max Height"}
+            value={settings.volumeMaxHeight}
+            setValue={(value) =>
+              setSettings({ ...settings, volumeMaxHeight: value })
+            }
+            key={"volumeMaxHeight"}
+            min={"0"}
+            max={"100"}
+            step={"1"}
+          />
+        </FlexList>
+        <FlexList title={"Options"}>
+=======
         </Grid>
         <Grid container item style={{ marginTop: 20 }}>
+>>>>>>> Stashed changes
           <div style={{ padding: 10 }}>
             <p>Remove P</p>
             <Checkbox
@@ -488,6 +751,11 @@ const Heatmap = ({ patients, data }) => {
           >
             Save Image
           </button>
+<<<<<<< Updated upstream
+        </FlexList>
+        <FlexList title={"Settings"}>
+=======
+>>>>>>> Stashed changes
           <button
             onClick={() => {
               localStorage.setItem("heatmapSettings", JSON.stringify(settings));
@@ -495,7 +763,39 @@ const Heatmap = ({ patients, data }) => {
           >
             Save Current Settings
           </button>
+<<<<<<< Updated upstream
+          <button
+            onClick={() => {
+              window.prompt(
+                "Copy to clipboard: Ctrl+C, Enter",
+                JSON.stringify(settings)
+              );
+            }}
+          >
+            Export Current Settings
+          </button>
+          <textarea
+            name="settings-input"
+            cols="50"
+            rows="10"
+            id="settings-input"
+            onChange={(event) => {
+              setInputSettings({ ...JSON.parse(event.target.value) });
+            }}
+          >
+            {}
+          </textarea>
+          <button
+            onClick={() => {
+              setSettings({ ...inputSettings });
+            }}
+          >
+            Set Settings
+          </button>
+        </FlexList>
+=======
         </Grid>
+>>>>>>> Stashed changes
       </Grid>
     </div>
   );
@@ -504,7 +804,12 @@ const Heatmap = ({ patients, data }) => {
 const drawLabels = (context, genes, geneYScale, settings) => {
   const { patientWidth, labelVertPadding, labelPadding, switchAll } = settings;
   context.fillStyle = "black";
+<<<<<<< Updated upstream
+  context.textAlign = "right";
+  context.font = "bold 16px Helvetica";
+=======
   context.font = "bold 12px Helvetica";
+>>>>>>> Stashed changes
 
   genes.map((gene) => {
     const x =
@@ -513,6 +818,10 @@ const drawLabels = (context, genes, geneYScale, settings) => {
     context.fillText(gene, x, y);
   });
 };
+<<<<<<< Updated upstream
+
+=======
+>>>>>>> Stashed changes
 const roundedSquares = (context, x, y, width, height, r) => {
   const radius = Math.min(Math.max(width - 1, 1), Math.max(height - 1, 1), r);
 
@@ -552,7 +861,10 @@ const addHeaders = (
   headersScale.domain().map((d) => {
     const padding = d === "p" ? -pvalPadding : sqaureWidth / 2;
     const x = headersScale(d) + startingX + padding - allXPadding;
+<<<<<<< Updated upstream
+=======
     //  const x = padding + startingX + headersScale(d) + sqaureWidth / 2;
+>>>>>>> Stashed changes
 
     context.save();
     context.translate(x, topHeadingHeight - 10);
@@ -587,13 +899,75 @@ const colorFlattenData = (keys, data) =>
       ],
       []
     )
+<<<<<<< Updated upstream
+  )
+    .filter((d) => d !== "nan")
+    .map((d) => parseFloat(d));
+const getGradientColorScaleByName = (data, name) => {
+  const allStats = colorFlattenData(
+    Object.keys(data).filter((d) => d === name),
+    data
+  );
+  const allHeatmapExtent = d3.extent(allStats);
+
+  //90%
+  d3.piecewise(d3.interpolateHsl, [
+    d3.rgb("#C58CE6"),
+    d3.rgb("#A595E6"),
+    d3.rgb("#937EE6"),
+    d3.rgb("#E6878F"),
+    d3.rgb("#E6494F"),
+  ]);
+
+  //darker
+  d3.piecewise(d3.interpolateHsl, [
+    d3.rgb("#996DB3"),
+    d3.rgb("#8174B3"),
+    d3.rgb("#7262B3"),
+    d3.rgb("#B3696F"),
+    d3.rgb("#B3393D"),
+  ]);
+  /*      d3.piecewise(d3.interpolateHsl, [
+        d3.rgb("#A273BD"),
+        d3.rgb("#B8A7FF"),
+        d3.rgb("#EB97D7"),
+        d3.rgb("#E6868F"),
+        d3.rgb("#DD464C"),
+      ])*/
+  /*d3.interpolate("rgb(108,99,255)", "red")*/
+
+  //d3.interpolate("rgb(108,99,255)", "#FFD653")
+
+  return d3
+    .scaleSequential(d3.interpolate("white", "#E03B2F"))
+    .domain([...allHeatmapExtent]);
+};
+const getGradientByPatient = (data, name) => {
+  const allStats = colorFlattenData(
+    Object.keys(data).filter((d) => d !== "All"),
+    data
+  );
+  const allHeatmapExtent = d3.extent(allStats);
+  //  .scaleSequential(d3.piecewise(d3.interpolateHsl, ["#99165D", "#FFD653"]))
+  //  .scaleSequential(d3.interpolate("rgb(108,99,255)", "#FFD653"))
+  //"rgb(108,99,255)"
+  return d3
+    .scaleSequential(d3.interpolate("white", "#E03B2F"))
+    .domain([...allHeatmapExtent]);
+};
+=======
   ).filter((d) => d !== "nan");
+>>>>>>> Stashed changes
 const getHeatmapColorScaleByName = (data, colourScheme, name) => {
   const allStats = colorFlattenData(
     Object.keys(data).filter((d) => d === name),
     data
   );
   const allHeatmapExtent = d3.extent(allStats);
+<<<<<<< Updated upstream
+
+=======
+>>>>>>> Stashed changes
   return d3
     .scaleSequential(
       colourScheme ? d3.interpolatePlasma : d3.interpolateViridis
@@ -620,6 +994,16 @@ const setLightContextFont = (context) => {
   context.textAlign = "center";
   context.textBaseline = "middle";
 };
+<<<<<<< Updated upstream
+const getVolumeRange = (volumeMaxHeight, colorScale) => {
+  const minMaxDiff = Math.abs(colorScale.domain()[0] - colorScale.domain()[1]);
+  return d3
+    .scaleLinear()
+    .domain([0, minMaxDiff])
+    .range([0, parseFloat(volumeMaxHeight)]);
+};
+=======
+>>>>>>> Stashed changes
 const drawHeatmap = (
   context,
   patients,
@@ -653,9 +1037,19 @@ const drawHeatmap = (
     gradWidth,
     gradHeight,
     removePval,
+<<<<<<< Updated upstream
+    volume,
+    volumeMaxHeight,
+  } = settings;
+  //  const allColorScale = getHeatmapColorScaleByName(data, colourScheme, "All");
+  //var colorScale = getPatientHeatmapColorScale(data, colourScheme);
+  const allColorScale = getGradientColorScaleByName(data, "All");
+  const colorScale = getGradientByPatient(data);
+=======
   } = settings;
   const allColorScale = getHeatmapColorScaleByName(data, colourScheme, "All");
   var colorScale = getPatientHeatmapColorScale(data, colourScheme);
+>>>>>>> Stashed changes
 
   setLightContextFont(context);
   const columnHeadings = removePval ? ["Pre", "Post"] : ["Pre", "Post", "p"];
@@ -675,8 +1069,14 @@ const drawHeatmap = (
     const y = patientHeight - 50;
     setLightContextFont(context);
     //patient name
+<<<<<<< Updated upstream
+    context.font = "normal 18px Helvetica";
+    const patientLabel = patient === "All" ? "Combined (n = 4)" : "UPN" + i;
+    context.fillText(patientLabel, x, y);
+=======
     context.fillText(patient, x, y);
 
+>>>>>>> Stashed changes
     if (patient === "All") {
       const padding = 10 - parseFloat(allLegendPadding);
 
@@ -711,15 +1111,28 @@ const drawHeatmap = (
 
       context.fillRect(topCornerX, topCornerY, gradientWidth, gradientHeight);
       context.fill();
+<<<<<<< Updated upstream
+
+      context.fillStyle = "black";
+      context.strokeStyle = "black";
+      context.font = "normal 10px Helvetica";
+      //min
+      context.lineWidth = 1;
+=======
       context.fillStyle = "black";
       context.strokeStyle = "black";
       context.font = "bold 10px Helvetica";
       //min
+>>>>>>> Stashed changes
       context.beginPath();
       context.moveTo(topCornerX, topCornerY);
       context.lineTo(topCornerX, topCornerY + 19);
       context.fillText(
+<<<<<<< Updated upstream
+        d3.format(",.3f")(allColorScale.domain()[0]),
+=======
         d3.format(",d")(allColorScale.domain()[0]),
+>>>>>>> Stashed changes
         topCornerX,
         topCornerY + 25
       );
@@ -729,7 +1142,11 @@ const drawHeatmap = (
       context.moveTo(topCornerX + gradientWidth + 1, topCornerY);
       context.lineTo(topCornerX + gradientWidth + 1, topCornerY + 19);
       context.fillText(
+<<<<<<< Updated upstream
+        d3.format(",.3f")(allColorScale.domain()[1]),
+=======
         d3.format(",.1f")(allColorScale.domain()[1]),
+>>>>>>> Stashed changes
         topCornerX + gradientWidth,
         topCornerY + 25
       );
@@ -768,11 +1185,22 @@ const drawHeatmap = (
       context.fill();
       context.fillStyle = "black";
       context.strokeStyle = "black";
+<<<<<<< Updated upstream
+      context.font = "normal 10px Helvetica";
+      //min
+      context.lineWidth = 1;
+      context.beginPath();
+      context.moveTo(topCornerX, topCornerY);
+      context.lineTo(topCornerX, topCornerY + 19);
+      //",.3f"
+      //",d"
+=======
       context.font = "bold 10px Helvetica";
       //min
       context.beginPath();
       context.moveTo(topCornerX, topCornerY);
       context.lineTo(topCornerX, topCornerY + 19);
+>>>>>>> Stashed changes
       context.fillText(
         d3.format(",d")(colorScale.domain()[0]),
         topCornerX,
@@ -780,6 +1208,11 @@ const drawHeatmap = (
       );
       context.stroke();
       //max
+<<<<<<< Updated upstream
+      //",.3f"
+      //",.1f"
+=======
+>>>>>>> Stashed changes
       context.beginPath();
       context.moveTo(topCornerX + gradientWidth + 1, topCornerY);
       context.lineTo(topCornerX + gradientWidth + 1, topCornerY + 19);
@@ -794,7 +1227,11 @@ const drawHeatmap = (
   context.beginPath();
   context.lineWidth = 1;
   context.globalAlpha = 1;
+<<<<<<< Updated upstream
+  context.font = "bold 18px Helvetica";
+=======
   context.font = "bold 14px Helvetica";
+>>>>>>> Stashed changes
   context.textAlign = "center";
   context.textBaseline = "middle";
   context.fillStyle = "black";
@@ -811,8 +1248,14 @@ const drawHeatmap = (
       patient === "All"
         ? patientScale(patient)
         : patientScale(patient) + parseFloat(movePatientsPadding);
+<<<<<<< Updated upstream
+
+    const currData = data[patient];
+    context.font = "500 18px Helvetica";
+=======
     const currData = data[patient];
     context.font = "500 12px Helvetica";
+>>>>>>> Stashed changes
     const allXPadding =
       patient === "All" && switchAll ? patientWidth - allSectionPadding : 0;
 
@@ -830,6 +1273,11 @@ const drawHeatmap = (
       switchAll
     );
 
+<<<<<<< Updated upstream
+    const volumeRange = getVolumeRange(volumeMaxHeight, allColorScale);
+
+=======
+>>>>>>> Stashed changes
     genes.map((gene) => {
       const x = startingX;
       const y = geneYScale(gene);
@@ -855,12 +1303,57 @@ const drawHeatmap = (
               parseFloat(squareHeight),
               radius
             );
+<<<<<<< Updated upstream
+            if (volume) {
+              const diff = Math.abs(currGene["Pre"] - currGene["Post"]);
+
+              const vol = patient === "All" ? volumeRange(diff) : 3;
+              //  console.log(vol);
+              if (currGene["Pre"] >= currGene["Post"] && term === "Pre") {
+                roundedSquares(
+                  context,
+                  xBox + vol,
+                  y + vol,
+                  parseFloat(squareWidth),
+                  parseFloat(squareHeight),
+                  radius
+                );
+              } else if (
+                currGene["Pre"] <= currGene["Post"] &&
+                term === "Post"
+              ) {
+                roundedSquares(
+                  context,
+                  xBox + vol,
+                  y + vol,
+                  parseFloat(squareWidth),
+                  parseFloat(squareHeight),
+                  radius
+                );
+              }
+            }
+          } else {
+            context.fillRect(xBox, y, squareWidth, squareHeight);
+            if (volume) {
+              context.fillRect(
+                xBox + parseFloat(volumeMaxHeight),
+                y + parseFloat(volumeMaxHeight),
+                squareWidth,
+                squareHeight
+              );
+            }
+          }
+        } else {
+          context.fillStyle = "black";
+          context.font = "500 20px Helvetica";
+=======
           } else {
             context.fillRect(xBox, y, squareWidth, squareHeight);
           }
         } else {
           context.fillStyle = "black";
           context.font = "bold 25px Helvetica";
+>>>>>>> Stashed changes
           const pval = parseFloat(currGene[term]);
           const pX = xBox - pValPadding;
           const pvalLabel =
@@ -871,6 +1364,16 @@ const drawHeatmap = (
               : pval <= 0.1
               ? "*"
               : "";
+<<<<<<< Updated upstream
+          /*  console.log(pval);
+          console.log(currGene);
+          if (pvalLabel !== "") {
+            console.log(pvalLabel);
+            console.log(currGene);
+          }*/
+
+=======
+>>>>>>> Stashed changes
           const pvalY = y + squareHeight / 2 + 3;
           context.fillText(pvalLabel, pX, pvalY);
         }
@@ -880,9 +1383,37 @@ const drawHeatmap = (
     });
   });
 };
+<<<<<<< Updated upstream
+const FlexList = (props) => (
+  <Grid container item spacing={3} key={props.title + "-grid"}>
+    <List
+      key={props.title + "-list"}
+      component="div"
+      disablePadding
+      style={{ display: "flex", flexDirection: "row", padding: 0 }}
+      subheader={
+        <ListSubheader
+          style={{ lineHeight: "20px" }}
+          key={props.title + "-label"}
+        >
+          {props.title}
+        </ListSubheader>
+      }
+    >
+      {props.children.map((child) => (
+        <ListItem> {child} </ListItem>
+      ))}
+    </List>
+  </Grid>
+);
+const RangeOption = ({ label, value, setValue, min, max, step, key }) => (
+  <Grid item xs={2} sm={4} md={4} key={key}>
+    <label style={{ lineHeight: "20px" }}>{label}</label>
+=======
 const RangeOption = ({ label, value, setValue, min, max, step, key }) => (
   <Grid item xs={2} sm={4} md={4} key={key}>
     <label>{label}</label>
+>>>>>>> Stashed changes
     <input
       style={{ position: "relative" }}
       type="range"
