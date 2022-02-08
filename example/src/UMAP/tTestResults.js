@@ -1,12 +1,6 @@
-import React, { useState, useRef, Fragment } from "react";
+import React from "react";
 
 import * as d3 from "d3";
-import { useD3, DownloadIcon } from "@shahlab/planetarium";
-import _ from "lodash";
-
-import makeStyles from "@mui/styles/makeStyles";
-
-import { Layout } from "@shahlab/planetarium";
 
 import {
   Box,
@@ -18,10 +12,6 @@ import {
   TableCell,
   TableRow,
 } from "@mui/material";
-
-const useStyles = makeStyles((theme) => ({
-  root: {},
-}));
 
 const TtestResults = ({ data, type, isLoading, count }) => {
   return count ? (

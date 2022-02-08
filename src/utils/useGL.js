@@ -1,7 +1,7 @@
 import { useRef, useCallback } from "react";
 import * as d3 from "d3";
 
-export function useGL(width, height, id = "umapCanvas") {
+export function useGL(width, height, ids = ["umapCanvas"]) {
   const ref = useRef(null);
   const setRef = useCallback(
     (node) => {
@@ -9,16 +9,17 @@ export function useGL(width, height, id = "umapCanvas") {
       }
 
       if (node) {
-        const canvas = node.appendChild(document.createElement("canvas"));
+        ids.map((id) => {
+          const canvas = node.appendChild(document.createElement("canvas"));
+          canvas.id = id;
 
-        canvas.id = id;
-
-        const context = canvas.getContext("webgl");
-        let scale = window.devicePixelRatio;
-        canvas.style.width = width + "px";
-        canvas.style.height = height + "px";
-        canvas.width = width * scale;
-        canvas.height = height * scale;
+          const context = canvas.getContext("webgl");
+          let scale = window.devicePixelRatio;
+          canvas.style.width = width + "px";
+          canvas.style.height = height + "px";
+          canvas.width = width * scale;
+          canvas.height = height * scale;
+        });
       }
 
       ref.current = node;

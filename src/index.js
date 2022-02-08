@@ -25,8 +25,6 @@ export {
   drawPoints as drawUMAPPoints,
 } from "./UMAP/UMAP";
 
-export { default as UMAPlarge } from "./UMAP/UMAPlarge";
-
 export { default as useLasso } from "./UMAP/utils/useLasso";
 
 // Timeseries
@@ -36,6 +34,7 @@ export { default as Select } from "./Select/VirtualizedSelect";
 
 export { useCanvas } from "./utils/useCanvas";
 export { default as drawCanvasAxis } from "./utils/canvas/drawAxis";
+
 export { useGL } from "./utils/useGL";
 export { useD3 } from "./utils/useD3";
 export { default as sortAlphanumeric } from "./utils/sortAlphanumeric";

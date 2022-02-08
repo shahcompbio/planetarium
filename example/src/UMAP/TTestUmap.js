@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from "react";
-import _ from "lodash";
+import React from "react";
 
 import { Layout, UMAP } from "@shahlab/planetarium";
-import { CircularProgress } from "@mui/material";
 
 import TtestResults from "./tTestResults";
 
@@ -34,7 +32,7 @@ const TTestUmap = ({
         colorScale={colorScale}
         onLasso={onLasso}
         onLegendClick={onLegendClick}
-        disable={disable}
+        disable={false}
         highlightIDs={highlightIDs}
         MoreInfoComponent={() => (
           <TtestResults

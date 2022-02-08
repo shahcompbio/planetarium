@@ -3,7 +3,7 @@ export const CONSTANTS = {
   yParam: "UMAP_2",
   clonotypeParam: "clone_id",
   cellIdParam: "cell_id",
-  subtypeParam: "subtype",
+  subtypeParam: "cell_type",
   logProbParam: "log10_probability",
 };
 

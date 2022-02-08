@@ -18,7 +18,10 @@ import PaperFormatter from "./PaperFormatter/PaperFormatter";
 import UMAP from "./UMAP/UMAP";
 import fetchFileData from "./UMAP/data/api";
 
-const componentList = ["UMAP", "Static Heatmap", "Static FishTail"];
+import Test from "./Test/Test";
+import * as d3 from "d3";
+
+const componentList = ["UMAP", "Static Heatmap", "Static FishTail", "Test"];
 const getAppComponent = (selection, data) => {
   switch (selection) {
     case "UMAP":
@@ -44,8 +47,22 @@ const getAppComponent = (selection, data) => {
         />
       );
       break;
+    case "Test":
+      return (
+        <Test
+          dashboardID={"Layers"}
+          api={"http://localhost:9200"}
+          data={data["metadata"]}
+        />
+      );
+      break;
   }
 };
+/*  <Test
+    dashboardID={"Test"}
+    api={"http://localhost:9200"}
+    data={data["metadata"]}
+  />*/
 function getAppData(selection) {
   switch (selection) {
     case "UMAP":
@@ -56,6 +73,9 @@ function getAppData(selection) {
       break;
     case "Static Heatmap":
       return staticFigureFetchData();
+      break;
+    case "Test":
+      return fetchFileData();
       break;
   }
 }
@@ -113,9 +133,9 @@ const DevAppWrapper = () => {
   );
 };
 const DevApp = ({ selectedDashboard, setSelectedDashboard }) => {
-  console.log(selectedDashboard);
   const data = getAppData(selectedDashboard);
-  console.log(data);
+  d3.select("iframe").style("z-index", -10);
+
   return Object.keys(data).length === 0 ? null : (
     <div>
       <SideDrawer

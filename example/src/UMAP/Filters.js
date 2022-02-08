@@ -21,6 +21,8 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 
 import { createUseStyles } from "react-jss";
 
+import { sortAlphanumeric } from "@shahlab/planetarium";
+
 const greyColor = "rgb(211 211 211)";
 const darkGrey = "rgb(153 153 153)";
 const fillGreen = "#47e547";
@@ -124,7 +126,7 @@ const FilterDropdown = ({
         .map((value, index) => ({ v: value, index: index }))
         .filter((v) => v["v"] === selected[1])[0]["index"]
     : -1;
-  console.log(title);
+
   return [
     <ListItemButton
       onClick={handleClick}
@@ -172,7 +174,7 @@ const FilterDropdown = ({
     </ListItemButton>,
     <Collapse in={open} timeout="auto" unmountOnExit>
       <List component="div" disablePadding>
-        {values.map((value, i) => {
+        {values.sort(sortAlphanumeric).map((value, i) => {
           const isFirstItem = i == 0;
           const isLastItem = i === values.length - 1;
           const isLitUp = selectedValueIndex !== -1 && i <= selectedValueIndex;

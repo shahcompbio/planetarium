@@ -4,14 +4,9 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import ListItemText from "@mui/material/ListItemText";
-import Divider from "@mui/material/Divider";
-
 import MenuList from "@mui/material/MenuList";
 import MenuItem from "@mui/material/MenuItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
-import ContentCut from "@mui/icons-material/ContentCut";
-import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
-import CircleIcon from "@mui/icons-material/Circle";
 import BiotechIcon from "@mui/icons-material/Biotech";
 import BubbleChartIcon from "@mui/icons-material/BubbleChart";
 import LayersClearIcon from "@mui/icons-material/LayersClear";
@@ -22,7 +17,7 @@ const useStyles = makeStyles({
     backgroundColor: "none",
     paddingLeft: 17,
     paddingRight: 6,
-    paddingBottom: 10,
+    paddingBottom: 0,
     minWidth: 275,
     marginTop: 15,
     marginLeft: 15,
@@ -41,24 +36,36 @@ const MetaData = ({ sample, hasSelection, totalCount, setHighlight }) => {
     >
       <Grid item>
         <Header classes={classes} sample={sample} totalCount={totalCount} />
+
         <Paper
-          sx={{ width: "100%", maxWidth: "90%", margin: 1, marginLeft: 8 }}
+          sx={{
+            width: "100%",
+            maxWidth: "252px",
+            margin: 1,
+            marginLeft: 8,
+            marginTop: 0,
+            padding: 2,
+            paddingRight: 0,
+          }}
         >
           <MenuList style={{ padding: 0 }}>
             <MenuItem
+              key={"clear-menuItem"}
               disabled={!hasSelection}
               onClick={() => {
                 setHighlight();
               }}
-              style={{ height: "100%" }}
+              style={{ height: "100%", width: "100%" }}
             >
-              <ListItemIcon>
+              <ListItemIcon key={"clear-listItemIcon"}>
                 <LayersClearIcon fontSize="small" />
               </ListItemIcon>
-              <ListItemText>Clear</ListItemText>
-              <Typography variant="body2" color="text.secondary">
-                ⌘X
-              </Typography>
+              <ListItemText key={"clear-listItemText"}>Clear</ListItemText>
+              <div style={{ paddingRight: 21 }}>
+                <Typography variant="body2" color="text.secondary">
+                  ⌘X
+                </Typography>
+              </div>
             </MenuItem>
           </MenuList>
         </Paper>
@@ -69,22 +76,31 @@ const MetaData = ({ sample, hasSelection, totalCount, setHighlight }) => {
 
 const Header = ({ classes, sample, totalCount }) => (
   <div className={classes.rootWithMarginTop}>
-    <Paper sx={{ width: "100%", maxWidth: "100%" }}>
-      <MenuList>
-        <MenuItem>
-          <ListItemIcon>
-            <BiotechIcon fontSize="small" />
+    <MenuList key={"header-menuList"}>
+      <Paper
+        sx={{ width: "100%", maxWidth: "100%", padding: 2, marginBottom: 2 }}
+      >
+        <MenuItem key={"sample-menuItem"}>
+          <ListItemIcon key={"sample-listItemIcon"}>
+            <BiotechIcon fontSize="small" key={"sample-bioTechIcon"} />
           </ListItemIcon>
-          <ListItemText>{sample}</ListItemText>
+          <ListItemText key={"sample-listItemText"}>{sample}</ListItemText>
         </MenuItem>
-        <MenuItem>
-          <ListItemIcon>
-            <BubbleChartIcon fontSize="small" />
+      </Paper>
+      <Paper sx={{ width: "100%", maxWidth: "100%", padding: 2 }}>
+        <MenuItem key={"cellCount-menuItem"}>
+          <ListItemIcon key={"cellCount-listItemIcon"}>
+            <BubbleChartIcon
+              fontSize="small"
+              key={"cellCount-bubbleChartIcon"}
+            />
           </ListItemIcon>
-          <ListItemText>{totalCount} cells</ListItemText>
+          <ListItemText key={"cellCount-listItemText"}>
+            {totalCount} cells
+          </ListItemText>
         </MenuItem>
-      </MenuList>
-    </Paper>
+      </Paper>
+    </MenuList>
   </div>
 );
 

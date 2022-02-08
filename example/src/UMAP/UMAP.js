@@ -82,8 +82,25 @@ export const VDJ = ({ metadata, degs, filters }) => {
             }
           });
       }
+    } else if (selectSubset !== null) {
+      const ids = data
+        .filter((datum) => datum[subset] === selectSubset)
+        .map((datum) => datum["cell_id"])
+        .join(",");
+
+      fetch(url + "/ttestSantosh/", {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify({ data: ids }),
+      })
+        .then((res) => res.json())
+        .then((result) => {
+          if (result.data) {
+            settTestData(result.data);
+          }
+        });
     }
-  }, [selectIDs]);
+  }, [selectIDs, selectSubset]);
 
   const phenotypeValues = Object.keys(_.groupBy(data, subset)).sort();
   const phenotypeColorScale = d3
@@ -162,6 +179,7 @@ export const VDJ = ({ metadata, degs, filters }) => {
                 setFilters={setSelectFilters}
               />
             </Paper>
+
             <TTestUmap
               width={700}
               height={600}
