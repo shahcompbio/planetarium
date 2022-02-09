@@ -1,7 +1,6 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 
 import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
 import Switch from "@material-ui/core/Switch";
 
 import { theme } from "../theme/theme.js";
@@ -15,10 +14,10 @@ import {
   Layout,
 } from "@shahlab/planetarium";
 import Reg from "./Reg.js";
-//import Reg2 from "./Reg2.js";
+import Menu from "./Menu.js";
 
 import { CssBaseline } from "@material-ui/core";
-//import data from "./metadata.json";
+
 import "./Test.css";
 import _ from "lodash";
 
@@ -40,8 +39,8 @@ const COLOR_ARRAY = [
   "#D53E4F",
   "#c9cc76",
 ];
-const DataWrapper = ({ data }) => {
-  return <Test data={data} />;
+const DataWrapper = ({ data, filters }) => {
+  return <Test data={data} filters={filters} />;
 };
 
 export const drawAxis = ({ context, xPos, yPos, xLabel, yLabel }) => {
@@ -93,12 +92,10 @@ const getColorScale = ({ data, subsetParam, isCategorical }) => {
       .nice();
   }
 };
-//filter on filter
-//filter on legend
-//filter on lasso
 
 const Test = ({
   data,
+  filters,
   onLasso = (data) => {},
   disable = false,
   idParam = "cell_id",
@@ -112,16 +109,20 @@ const Test = ({
   MoreInfoComponent = () => null,
   layerNames = ["umapCanvas1", "umapCanvas2"],
 }) => {
-  const [layersMetadata, setLayerMetaData] = useState({
-    0: { name: "layer 1 " },
-    1: { name: "layer 2 " },
+  const [layerFilters, setLayerFilters] = useState({
+    0: { filters: null },
+    1: { filters: null },
   });
-  const [layerFilters, setLayers] = useState({
-    0: { filters: [] },
-    1: { filters: [] },
-  });
+
   const [activeLayer, setActiveLayer] = useState(0);
   const [canvas, setCanvas] = useState(null);
+
+  useEffect(() => {
+    if (layerFilters[activeLayer]["filters"] !== null) {
+      const filters = layerFilters[activeLayer]["filters"];
+      console.log(filters);
+    }
+  }, [layerFilters]);
 
   const isCategorical =
     typeof data.filter((datum) => datum.hasOwnProperty(subsetParam))[0][
@@ -217,25 +218,26 @@ const Test = ({
       <CssBaseline />
       <Grid style={{ height: canvasHeight, width: canvasWidth }}>
         <Switch
-          checked={activeLayer}
+          checked={Boolean(activeLayer)}
           onChange={(event) => {
             setActiveLayer(!activeLayer);
           }}
         />
+
         <Layout title={""} infoText={""}>
           <Grid
             container
             direction="row"
-            style={{ padding: 0, position: "relative" }}
+            style={{ padding: 0, position: "relative", height: canvasHeight }}
           >
             <Grid item style={{ position: "relative" }} ref={wrapperRef}>
               {canvas && (
                 <Reg
                   canvasRef={canvas[activeLayer]}
+                  pointSize={activeLayer + 2}
                   data={data}
                   width={700}
                   height={600}
-                  data={data}
                   xParam={xParam}
                   yParam={yParam}
                   xScale={xScale}
@@ -243,7 +245,7 @@ const Test = ({
                   subsetParam={subsetParam}
                 />
               )}
-              <canvas ref={canvasRef} />
+              <canvas ref={canvasRef} style={{ zIndex: 100 }} />
             </Grid>
             <Grid
               item
@@ -255,7 +257,6 @@ const Test = ({
               }}
             >
               <VerticalLegend
-                fontFamily={AXIS_FONT}
                 width={legendWidth}
                 height={canvasHeight / 2}
                 colorScale={subsetColors}
@@ -284,6 +285,12 @@ const Test = ({
             </Grid>
           </Grid>
         </Layout>
+        <Menu
+          filters={filters}
+          activeLayer={activeLayer}
+          layerFilters={layerFilters}
+          setLayerFilters={(filters) => setLayerFilters(filters)}
+        />
       </Grid>
     </MuiThemeProvider>
   );

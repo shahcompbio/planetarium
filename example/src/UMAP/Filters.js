@@ -1,21 +1,13 @@
 import React, { useState } from "react";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid";
-import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import ListSubheader from "@mui/material/ListSubheader";
-import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import Collapse from "@mui/material/Collapse";
-import Accordion from "@mui/material/Accordion";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import AccordionSummary from "@mui/material/AccordionSummary";
 
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 
@@ -26,7 +18,6 @@ import { sortAlphanumeric } from "@shahlab/planetarium";
 const greyColor = "rgb(211 211 211)";
 const darkGrey = "rgb(153 153 153)";
 const fillGreen = "#47e547";
-const green = "#5fd538";
 
 const filterMapping = {
   response: "Response",
@@ -211,7 +202,7 @@ const FilterDropdown = ({
                     stroke: greyColor,
                   }}
                 />
-                //nothing is selected
+                /*nothing is selected*/
                 {isMiddleItem &&
                   !isSelected && [
                     <rect
@@ -236,7 +227,7 @@ const FilterDropdown = ({
                       }}
                     />,
                   ]}
-                //you are below the selected item
+                /*you are below the selected item*/
                 {isMiddleItem &&
                   !isLitUp &&
                   isSelected &&
@@ -297,7 +288,7 @@ const FilterDropdown = ({
                       }}
                     />,
                   ]}
-                //you are a green rect above a selected item
+                /*you are a green rect above a selected item*/
                 {isMiddleItem && !isSelectedItem && isSelected && isLitUp && (
                   <rect
                     x={"31"}

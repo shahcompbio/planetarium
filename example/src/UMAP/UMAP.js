@@ -48,7 +48,6 @@ const url = process.env.HOST ? process.env.HOST : "http://localhost:5000";
 export const VDJ = ({ metadata, degs, filters }) => {
   const { clonotypeParam, subtypeParam, xParam, yParam } = CONSTANTS;
 
-  const [selectPhenotype, setSelectPhenotype] = useState(null);
   const [selectClone, setSelectClone] = useState(null);
   const [selectIDs, setSelectIDs] = useState(null);
   const [activeGraph, setActiveGraph] = useState(null);

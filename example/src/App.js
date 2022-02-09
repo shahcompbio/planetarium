@@ -53,6 +53,7 @@ const getAppComponent = (selection, data) => {
           dashboardID={"Layers"}
           api={"http://localhost:9200"}
           data={data["metadata"]}
+          filters={data["filters"]}
         />
       );
       break;
