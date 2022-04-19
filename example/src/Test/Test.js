@@ -13,8 +13,10 @@ import {
   useGL,
   Layout,
 } from "@shahlab/planetarium";
+
 import Reg from "./Reg.js";
 import Menu from "./Menu.js";
+import { matchSorter } from "match-sorter";
 
 import { CssBaseline } from "@material-ui/core";
 
@@ -22,13 +24,16 @@ import "./Test.css";
 import _ from "lodash";
 
 import * as d3 from "d3";
+import { drawAxis } from "./util.js";
+
 const PADDING = 10;
 const AXIS_SPACE = 20;
 const NUM_LEGEND_WIDTH = 70;
 const AXIS_LENGTH = 50;
 const AXIS_FONT = "Helvetica";
 const AXIS_COLOR = "#000000";
-
+const canvasWidth = 700;
+const canvasHeight = 600;
 const COLOR_ARRAY = [
   "#5E4FA2",
   "#3288BD",
@@ -39,41 +44,93 @@ const COLOR_ARRAY = [
   "#D53E4F",
   "#c9cc76",
 ];
-const DataWrapper = ({ data, filters }) => {
-  return <Test data={data} filters={filters} />;
+const testFilters = {
+  patient: ["K", "Q", "O", "P"],
+  response: ["PR/SD"],
+  cell_type: ["CD4", "B Cell", "CD8"],
 };
+const DataWrapper = ({ data, filters, idParam = "cell_id" }) => {
+  const [filteredData, setFilteredData] = useState([...data]);
+  const [layerFilters, setLayerFilter] = useState({
+    0: { filters: { ...testFilters }, lasso: null },
+    1: { filters: null, lasso: null },
+  });
+  const [activeLayer, setActiveLayer] = useState(0);
 
-export const drawAxis = ({ context, xPos, yPos, xLabel, yLabel }) => {
-  context.beginPath();
-  context.font = AXIS_FONT;
-  context.globalAlpha = 1;
+  const changeLayer = (event) => {
+    const newActive = activeLayer ? 0 : 1;
+    setActiveLayer(newActive);
+    const filter = layerFilters[newActive]["filters"];
+    const newFilteredData =
+      filter === null
+        ? data
+        : getDataFromFilters(layerFilters[newActive]["filters"], data, idParam);
+    setFilteredData([...newFilteredData]);
+  };
 
-  context.fillStyle = AXIS_COLOR;
-  context.strokeStyle = AXIS_COLOR;
-  context.lineWidth = 1;
-  context.lineCap = "butt";
-  context.moveTo(xPos, yPos);
-  context.lineTo(xPos, yPos - AXIS_LENGTH);
-  context.stroke();
+  return (
+    <MuiThemeProvider theme={theme}>
+      <CssBaseline />
+      <Grid style={{ height: canvasHeight, width: canvasWidth }}>
+        <Switch
+          checked={Boolean(activeLayer)}
+          onChange={(event) => changeLayer(event)}
+        />
+        {filteredData.length > 0 ? (
+          <Test
+            data={data}
+            filteredData={filteredData}
+            setFilteredData={setFilteredData}
+            activeLayer={activeLayer}
+            layerFilters={layerFilters}
+            filters={filters}
+            onLasso={(lassoData) => {
+              //console.log(lassoData);
+              //console.log(layerFilters);
 
-  context.beginPath();
-  context.moveTo(xPos, yPos);
-  context.lineTo(xPos + AXIS_LENGTH, yPos);
-  context.stroke();
+              var newLayerFilter = layerFilters;
+              var newFilteredData = lassoData;
+              if (lassoData !== null) {
+                newLayerFilter[activeLayer]["lasso"] = {
+                  selectionLength: lassoData.length,
+                  selectedFrom: filteredData.length,
+                };
+              } else {
+                //removed lasso from plot
+                newLayerFilter[activeLayer]["lasso"] = null;
+                newFilteredData = getDataFromFilters(
+                  layerFilters[activeLayer]["filters"],
+                  data,
+                  idParam
+                );
+              }
 
-  context.textAlign = "left";
-  context.textBaseline = "middle";
-  context.fillText(xLabel, xPos + AXIS_LENGTH + 2, yPos);
-  context.save();
-  context.rotate((270 * Math.PI) / 180);
-  context.fillText(yLabel, -(yPos - AXIS_LENGTH - 2), xPos);
-  context.restore();
+              setLayerFilter({ ...newLayerFilter });
+              setFilteredData([...newFilteredData]);
+            }}
+          />
+        ) : (
+          <div>No results</div>
+        )}
+        <Menu
+          filters={filters}
+          activeLayer={activeLayer}
+          layerFilters={layerFilters}
+          setLayerFilters={(filters) => {
+            console.log(filters);
+            return setLayerFilter({ ...filters });
+          }}
+        />
+      </Grid>
+    </MuiThemeProvider>
+  );
 };
 
 const getColorScale = ({ data, subsetParam, isCategorical }) => {
   if (isCategorical) {
     const subsetGroups = _.groupBy(data, subsetParam);
     const subsetValues = Object.keys(subsetGroups).sort();
+
     return d3
       .scaleOrdinal()
       .domain(subsetValues)
@@ -92,40 +149,67 @@ const getColorScale = ({ data, subsetParam, isCategorical }) => {
       .nice();
   }
 };
+const getDataFromFilters = (filters, data, idParam) => {
+  //  console.log(filters);
+  return Object.keys(filters).reduce(
+    (dataLeft, filter) => {
+      const interMatches = filters[filter].reduce((final, curr) => {
+        /*or filter*/
+        //  console.log(dataLeft);
+        //  console.log(curr);
+        const matches = matchSorter(dataLeft, curr, {
+          maxRanking: matchSorter.rankings.EQUALS,
+          keys: [(item) => item[filter]],
+        });
+        //console.log(matches);
+        final = [...final, ...matches];
+        return final;
+      }, []);
+      //  console.log(interMatches);
+      /* get all the unique matches by cell id*/
+      return [
+        ...new Map(interMatches.map((item) => [item[idParam], item])).values(),
+      ];
+    },
+    [...data]
+  );
+};
 
 const Test = ({
   data,
+  filteredData,
+  setFilteredData,
   filters,
-  onLasso = (data) => {},
+  activeLayer,
+  layerFilters,
   disable = false,
+  onLasso = (data) => {},
   idParam = "cell_id",
   xParam = "UMAP_1",
   yParam = "UMAP_2",
   subsetParam = "cell_type",
   highlightIDs = null,
-  onLegendHover = (value) => {},
-  onLegendClick = (value) => {},
   labels = (value) => value,
   MoreInfoComponent = () => null,
   layerNames = ["umapCanvas1", "umapCanvas2"],
 }) => {
-  const [layerFilters, setLayerFilters] = useState({
-    0: { filters: null },
-    1: { filters: null },
-  });
-
-  const [activeLayer, setActiveLayer] = useState(0);
   const [canvas, setCanvas] = useState(null);
 
   useEffect(() => {
+    console.log("edddditf");
+    console.log(layerFilters[activeLayer]["filters"]);
     if (layerFilters[activeLayer]["filters"] !== null) {
-      const filters = layerFilters[activeLayer]["filters"];
-      console.log(filters);
+      const newFilters = layerFilters[activeLayer]["filters"];
+      console.log(newFilters);
+      console.log(data);
+      const newFilteredData = getDataFromFilters(newFilters, data, idParam);
+      console.log(newFilteredData);
+      setFilteredData([...newFilteredData]);
     }
   }, [layerFilters]);
 
   const isCategorical =
-    typeof data.filter((datum) => datum.hasOwnProperty(subsetParam))[0][
+    typeof filteredData.filter((datum) => datum.hasOwnProperty(subsetParam))[0][
       subsetParam
     ] === "string";
 
@@ -134,8 +218,6 @@ const Test = ({
     : (value, datum) =>
         datum.hasOwnProperty(subsetParam) && datum[subsetParam] >= value[0];
 
-  const canvasWidth = 700;
-  const canvasHeight = 600;
   const [wrapperRef] = useGL(canvasWidth, canvasHeight, layerNames);
 
   const legendWidth = NUM_LEGEND_WIDTH;
@@ -143,14 +225,19 @@ const Test = ({
   const chartWidth = canvasWidth - AXIS_SPACE;
   const chartHeight = canvasHeight - AXIS_SPACE - PADDING - PADDING;
 
-  const yData = data.map((d) => parseFloat(d[yParam]));
-  const xData = data.map((d) => parseFloat(d[xParam]));
+  const yData = filteredData.map((d) => parseFloat(d[yParam]));
+  const xData = filteredData.map((d) => parseFloat(d[xParam]));
 
   const yMin = Math.min(...yData);
   const yMax = Math.max(...yData);
   const xMin = Math.min(...xData);
   const xMax = Math.max(...xData);
-  const subsetColors = getColorScale({ data, subsetParam, isCategorical });
+
+  const subsetColors = getColorScale({
+    data: filteredData,
+    subsetParam,
+    isCategorical,
+  });
 
   const xScale = d3
     .scaleLinear()
@@ -175,7 +262,7 @@ const Test = ({
   }, [wrapperRef]);
 
   const [lassoData, drawLasso, addLassoHandler, resetLasso] = useLasso(
-    data,
+    filteredData,
     xScale,
     yScale,
     xParam,
@@ -202,97 +289,83 @@ const Test = ({
     },
     canvasWidth,
     canvasHeight,
-    [data, disable, subsetParam, subsettedIDs]
+    [filteredData, disable, subsetParam, subsettedIDs]
   );
 
   const getLegendData = (value) => {
     return value === null
       ? value
-      : data
+      : filteredData
           .filter((datum) => legendFilter(value, datum))
           .map((datum) => datum[idParam]);
   };
 
   return (
-    <MuiThemeProvider theme={theme}>
-      <CssBaseline />
-      <Grid style={{ height: canvasHeight, width: canvasWidth }}>
-        <Switch
-          checked={Boolean(activeLayer)}
-          onChange={(event) => {
-            setActiveLayer(!activeLayer);
+    <Layout title={""} infoText={""}>
+      <Grid
+        container
+        direction="row"
+        style={{ padding: 0, position: "relative", height: canvasHeight }}
+      >
+        <Grid
+          item
+          style={{ position: "relative", padding: 0 }}
+          ref={wrapperRef}
+        >
+          {canvas && (
+            <Reg
+              canvasRef={canvas[activeLayer]}
+              pointSize={activeLayer + 4}
+              data={filteredData}
+              width={700}
+              height={600}
+              xParam={xParam}
+              yParam={yParam}
+              xScale={xScale}
+              yScale={yScale}
+              subsetParam={subsetParam}
+            />
+          )}
+          <canvas ref={canvasRef} style={{ zIndex: 100 }} />
+        </Grid>
+        <Grid
+          item
+          style={{
+            paddingLeft: "40px",
+            float: "right",
+            position: "absolute",
+            right: 0,
           }}
-        />
-
-        <Layout title={""} infoText={""}>
-          <Grid
-            container
-            direction="row"
-            style={{ padding: 0, position: "relative", height: canvasHeight }}
-          >
-            <Grid item style={{ position: "relative" }} ref={wrapperRef}>
-              {canvas && (
-                <Reg
-                  canvasRef={canvas[activeLayer]}
-                  pointSize={activeLayer + 2}
-                  data={data}
-                  width={700}
-                  height={600}
-                  xParam={xParam}
-                  yParam={yParam}
-                  xScale={xScale}
-                  yScale={yScale}
-                  subsetParam={subsetParam}
-                />
-              )}
-              <canvas ref={canvasRef} style={{ zIndex: 100 }} />
-            </Grid>
-            <Grid
-              item
-              style={{
-                paddingLeft: "40px",
-                float: "right",
-                position: "absolute",
-                right: 0,
-              }}
-            >
-              <VerticalLegend
-                width={legendWidth}
-                height={canvasHeight / 2}
-                colorScale={subsetColors}
-                ticks={
-                  isCategorical
-                    ? subsetColors
-                        .domain()
-                        .sort()
-                        .map((value) => ({ value, label: labels(value) }))
-                    : 10
-                }
-                onHover={(value) => {
-                  const legendData = getLegendData(value);
-                  setHoveredLegend(legendData);
-                  onLegendHover(value);
-                }}
-                onClick={(value) => {
-                  const legendData = getLegendData(value);
-                  setClickedLegend(legendData);
-                  onLegendClick(value);
-                }}
-                disable={disable || lassoData !== null}
-                reset={highlightIDs !== null}
-              />
-              <MoreInfoComponent />
-            </Grid>
-          </Grid>
-        </Layout>
-        <Menu
-          filters={filters}
-          activeLayer={activeLayer}
-          layerFilters={layerFilters}
-          setLayerFilters={(filters) => setLayerFilters(filters)}
-        />
+        >
+          <VerticalLegend
+            width={legendWidth}
+            height={canvasHeight / 2}
+            colorScale={subsetColors}
+            ticks={
+              isCategorical
+                ? subsetColors
+                    .domain()
+                    .sort()
+                    .map((value) => ({ value, label: labels(value) }))
+                : 10
+            }
+            onHover={(value) => {
+              const legendData = getLegendData(value);
+              setHoveredLegend(legendData);
+              //  onLegendHover(value);
+            }}
+            onClick={(value) => {
+              const legendData = getLegendData(value);
+              setClickedLegend(legendData);
+              //  onLegendClick(value);
+            }}
+            disable={disable || lassoData !== null}
+            reset={highlightIDs !== null}
+          />
+          <MoreInfoComponent />
+        </Grid>
       </Grid>
-    </MuiThemeProvider>
+    </Layout>
   );
 };
 

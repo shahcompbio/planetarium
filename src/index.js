@@ -25,6 +25,8 @@ export {
   drawPoints as drawUMAPPoints,
 } from "./UMAP/UMAP";
 
+export { default as WebglUMAP } from "./UMAP/ReglUmap.js";
+
 export { default as useLasso } from "./UMAP/utils/useLasso";
 
 // Timeseries

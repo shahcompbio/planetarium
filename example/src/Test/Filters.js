@@ -14,49 +14,74 @@ const addToFilters = (activeFilters, name, value) => {
   }
   return activeFilters;
 };
-const removeFilters = (activeFilters, name, value) => {
-  if (activeFilters[name].length === 1) {
-    delete activeFilters[name];
+
+export const removeFilters = (activeFilters, type, value) => {
+  if (activeFilters[type].length === 1) {
+    delete activeFilters[type];
   } else {
-    const index = activeFilters[name].indexOf(value);
-    activeFilters[name].splice(index, 1);
+    const index = activeFilters[type].indexOf(value);
+    activeFilters[type].splice(index, 1);
   }
   return activeFilters;
 };
+
+export const setMainStateWithNewFilters = (
+  layerFilters,
+  activeLayer,
+  newFilters,
+  setLayerFilters
+) => {
+  var newLayerFilters = layerFilters;
+  newLayerFilters[activeLayer]["filters"] = newFilters;
+  console.log(newLayerFilters);
+  setLayerFilters(newLayerFilters);
+};
+
 const Filters = ({ filters, setLayerFilters, layerFilters, activeLayer }) => {
-  const [checked, setChecked] = useState(null);
+  const [checked, setChecked] = useState([-1]);
 
   const [activeFilters, setActiveFilters] = useState({});
+
+  useEffect(() => {
+    const newActiveFilter = layerFilters[activeLayer]["filters"];
+    const filter = newActiveFilter ? newActiveFilter : {};
+    const oldChecked = newActiveFilter
+      ? Object.keys(newActiveFilter).reduce(
+          (final, heading) => {
+            final = [...final, ...filter[heading]];
+            return final;
+          },
+          [-1]
+        )
+      : [-1];
+    setChecked([-1, ...oldChecked]);
+    setActiveFilters({ ...filter });
+  }, [activeLayer]);
+
   const handleToggle = (value, name) => () => {
     var newFilters = activeFilters;
-    if (checked !== null) {
+    if (value) {
       const currentIndex = checked.indexOf(value);
       const newChecked = [...checked];
 
       if (currentIndex === -1) {
         newChecked.push(value);
         newFilters = addToFilters(newFilters, name, value);
+        console.log(newFilters);
       } else {
         newChecked.splice(currentIndex, 1);
         newFilters = removeFilters(newFilters, name, value);
+        console.log(newFilters);
       }
-      setActiveFilters(newFilters);
+      setMainStateWithNewFilters(
+        layerFilters,
+        activeLayer,
+        newFilters,
+        setLayerFilters
+      );
       setChecked(newChecked);
-    } else {
-      newFilters = addToFilters(newFilters, name, value);
-      setActiveFilters(newFilters);
-
-      setChecked([value]);
     }
   };
-
-  useEffect(() => {
-    if (activeFilters) {
-      var newLayerFilters = layerFilters;
-      newLayerFilters[activeLayer]["filters"] = activeFilters;
-      setLayerFilters(newLayerFilters);
-    }
-  }, [activeFilters, setLayerFilters]);
 
   return (
     <List

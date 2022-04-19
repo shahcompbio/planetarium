@@ -1,12 +1,9 @@
-import all from "./test.json";
+import all from "./test1.json";
 
 const fetchData = () => ({
-<<<<<<< HEAD
-  patients: Object.keys(all[0]),
-  geneData: all[0],
-=======
-  data: all,
->>>>>>> c576b242efc8a204358ed304cc4923c0e804ea0b
+  clones: all["clones"],
+  data: all["data"],
+  //  data: all["data"].filter((d) => d["clone"].indexOf("MK") !== -1),
 });
 
 export default fetchData;

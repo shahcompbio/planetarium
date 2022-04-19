@@ -9,9 +9,13 @@ const useLasso = (data, xScale, yScale, xParam, yParam) => {
 
   const getHighlighted = (polys) => {
     if (polys.length > 0) {
-      return data.filter((datum) =>
-        isPointInPoly(polys, xScale(datum[xParam]), yScale(datum[yParam]))
-      );
+      return data.filter((datum) => {
+        return isPointInPoly(
+          polys,
+          xScale(datum[xParam]),
+          yScale(datum[yParam])
+        );
+      });
     }
     return null;
   };

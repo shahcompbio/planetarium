@@ -39,11 +39,32 @@ const COLOR_ARRAY = [
 const addFakeTimepoints = (data, timepointParam) =>
   data.reduce((final, d) => {
     var dup = Object.assign({}, d);
+    //  var dup2 = Object.assign({}, d);
+    //  dup2[timepointParam] = dup2[timepointParam] + ".25";
     dup[timepointParam] = dup[timepointParam] + ".5";
+
     final = [...final, d, dup];
     return final;
   }, []);
+const addGradientToSvg = (svg, preColor, postColor, name) => {
+  var lg = svg
+    .append("defs")
+    .append("linearGradient")
+    .attr("id", "mygrad-" + name)
+    .attr("x1", "0%")
+    .attr("x2", "100%")
+    .attr("y1", "0%")
+    .attr("y2", "0%"); //since its a vertical linear gradient
+  lg.append("stop")
+    .attr("offset", "0%")
+    .style("stop-color", preColor) //end in red
+    .style("stop-opacity", 1);
 
+  lg.append("stop")
+    .attr("offset", "100%")
+    .style("stop-color", postColor) //start in blue
+    .style("stop-opacity", 1);
+};
 const Fishtail = ({
   data,
   subsetParam,
@@ -52,10 +73,13 @@ const Fishtail = ({
   height = 400,
   timepoint = null,
   timepointOrder = null,
+  legendSorting = null,
   subset = null,
   disable = false,
   colorScale = null,
+  cloneColor = null,
   addTwoTimepointCurve = false,
+  interpolateColor = false,
   onLegendHover = (value) => {},
   onLegendClick = (value) => {},
   onTimepointHover = (timepoint) => {},
@@ -84,9 +108,11 @@ const Fishtail = ({
         sortAlphanumeric
       );
 
-  const subsetValues = _.uniq(orgData.map((datum) => datum[subsetParam])).sort(
-    sortAlphanumeric
-  );
+  const subsetValues = legendSorting
+    ? _.uniq(orgData.map((datum) => datum[subsetParam])).sort(
+        (a, b) => legendSorting.indexOf(a) - legendSorting.indexOf(b)
+      )
+    : _.uniq(orgData.map((datum) => datum[subsetParam])).sort(sortAlphanumeric);
 
   const subsetOverall = highlightedSubset || subset || selectedSubset;
   const timepointOverall =
@@ -163,9 +189,26 @@ const Fishtail = ({
       .selectAll("path")
       .data(series)
       .join("path")
-      .attr("fill", ({ key }) =>
-        isHighlighted(key, subsetOverall) ? color(key) : NULL_AREA_COLOR
-      )
+      .attr("fill", ({ key }) => {
+        if (interpolateColor) {
+          const pre = timepointOrder[0];
+          const post = timepointOrder[1];
+          const preNum = cloneColor[key + "-" + pre];
+          const postNum = cloneColor[key + "-" + post];
+          const preColor = color(preNum);
+          const postColor = color(postNum);
+
+          addGradientToSvg(svg, preColor, postColor, key);
+          return "url(#mygrad-" + key + ")";
+        } else {
+          return isHighlighted(key, subsetOverall)
+            ? cloneColor !== null
+              ? color(cloneColor[key])
+              : color(key)
+            : NULL_AREA_COLOR;
+        }
+      })
+      .attr("id", ({ key }) => key)
       .attr("d", area)
       .attr("stroke", "#FFFFFF")
       .attr("stroke-width", 1)
@@ -276,6 +319,7 @@ const Fishtail = ({
           title={subsetParam}
           ticks={subsetValues}
           colorScale={color}
+          cloneColor={cloneColor}
           disable={disable}
           onHover={(value) => {
             setHighlightedSubset(value);

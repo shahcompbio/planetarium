@@ -12,7 +12,6 @@ export function useGL(width, height, ids = ["umapCanvas"]) {
         ids.map((id) => {
           const canvas = node.appendChild(document.createElement("canvas"));
           canvas.id = id;
-
           const context = canvas.getContext("webgl");
           let scale = window.devicePixelRatio;
           canvas.style.width = width + "px";

@@ -10,6 +10,9 @@ import ListItemText from "@mui/material/ListItemText";
 import StaticFigures from "./StaticFigures/StaticFigures";
 import staticFigureFetchData from "./StaticFigures/data/api";
 
+import StaticPeds from "./StaticFigures/StaticPeds";
+import pedsFetchData from "./StaticFigures/data/apiPeds";
+
 import StaticFishTail from "./StaticFishTail/StaticFishTail";
 import staticFishData from "./StaticFishTail/data/api";
 
@@ -18,11 +21,22 @@ import PaperFormatter from "./PaperFormatter/PaperFormatter";
 import UMAP from "./UMAP/UMAP";
 import fetchFileData from "./UMAP/data/api";
 
+import Newick from "./NewickTree/Newick";
+import fetchTree from "./NewickTree/data/api";
+
 import Test from "./Test/Test";
 import * as d3 from "d3";
 
-const componentList = ["UMAP", "Static Heatmap", "Static FishTail", "Test"];
+const componentList = [
+  "UMAP",
+  "Static Heatmap",
+  "Static FishTail",
+  "Test",
+  "Newick",
+  "Peds",
+];
 const getAppComponent = (selection, data) => {
+  console.log(data);
   switch (selection) {
     case "UMAP":
       return (
@@ -34,7 +48,8 @@ const getAppComponent = (selection, data) => {
         <StaticFishTail
           dashboardID={"Test"}
           api={"http://localhost:9200"}
-          data={data}
+          data={data["data"]}
+          cloneColor={data["clones"]}
         />
       );
       break;
@@ -56,14 +71,27 @@ const getAppComponent = (selection, data) => {
           filters={data["filters"]}
         />
       );
+    case "Newick":
+      return (
+        <Newick
+          dashboardID={"Layers"}
+          api={"http://localhost:9200"}
+          data={data["data"]}
+        />
+      );
+      break;
+    case "Peds":
+      return (
+        <StaticPeds
+          dashboardID={"Layers"}
+          api={"http://localhost:9200"}
+          data={data}
+        />
+      );
       break;
   }
 };
-/*  <Test
-    dashboardID={"Test"}
-    api={"http://localhost:9200"}
-    data={data["metadata"]}
-  />*/
+
 function getAppData(selection) {
   switch (selection) {
     case "UMAP":
@@ -77,6 +105,11 @@ function getAppData(selection) {
       break;
     case "Test":
       return fetchFileData();
+    case "Newick":
+      return fetchTree();
+      break;
+    case "Peds":
+      return pedsFetchData();
       break;
   }
 }
@@ -121,9 +154,10 @@ const SideDrawer = ({ setSelectedDashboard }) => {
   );
 };
 const DevAppWrapper = () => {
+  //const [selectedDashboard, setSelectedDashboard] = useState("Static FishTail");
   const [selectedDashboard, setSelectedDashboard] = useState(
     localStorage.getItem("planetariumDashboard") === null
-      ? "Static Heatmap"
+      ? "Static FishTail"
       : localStorage.getItem("planetariumDashboard")
   );
   return (

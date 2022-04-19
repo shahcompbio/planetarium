@@ -11,7 +11,7 @@ import ListSubheader from "@material-ui/core/ListSubheader";
 import Typography from "@material-ui/core/Typography";
 
 import _ from "lodash";
-import { useCanvas } from "@shahlab/planetarium";
+import { useCanvas, sortAlphanumeric } from "@shahlab/planetarium";
 import CheckMarkSelect from "./CheckMarkSelect";
 const sortingArr = [
   "CD74",
@@ -36,7 +36,8 @@ const sortingArr = [
   "HLA-F",
   "B2M",
 ];
-const Heatmap = ({ patients, data }) => {
+const HeatmapPeds = ({ data, patients }) => {
+  console.log(data);
   const [context, saveContext] = useState(null);
   const [inputSettings, setInputSettings] = useState({});
   const [settings, setSettings] = useState(
@@ -116,29 +117,28 @@ const Heatmap = ({ patients, data }) => {
     movePatientsPadding,
     pValVertPadding,
   } = settings;
-
+  console.log(patients.length);
   const canvasHeight = patientHeight;
   const canvasWidth =
     (patients.length + 1) * patientWidth +
     (patients.length + 1) * patientSpacing;
-  const [shownGenes, setShownGenes] = useState(
-    Object.keys(data[patients[0]]).sort(
+  const [yAxis, setYAxis] = useState(
+    Object.keys(data).sort(
       (a, b) => sortingArr.indexOf(a) - sortingArr.indexOf(b)
     )
   );
-
-  const patientScale = d3
+  const groupByScale = d3
     .scaleBand()
-    .domain(patients)
+    .domain([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
     .range([40, canvasWidth - 40])
     .paddingInner(paddingInner)
     .paddingOuter(paddingOuter)
     .align(align)
     .round(false);
 
-  const geneYScale = d3
+  const yScale = d3
     .scaleBand()
-    .domain([...shownGenes])
+    .domain([...patients])
     .range([topHeadingHeight, patientHeight - 70]);
 
   const canvasRef = useCanvas(
@@ -148,13 +148,11 @@ const Heatmap = ({ patients, data }) => {
       context.mozImageSmoothingEnabled = false;
       context.imageSmoothingEnabled = false;
       saveContext(context);
-      drawHeatmap(context, patients, data, patientScale, geneYScale, settings);
-
-      drawLabels(context, shownGenes, geneYScale, settings);
+      drawHeatmap(context, patients, data, groupByScale, yScale, settings);
     },
     canvasWidth,
     canvasHeight,
-    [settings, shownGenes]
+    [settings]
   );
 
   return (
@@ -164,8 +162,8 @@ const Heatmap = ({ patients, data }) => {
           {[
             <CheckMarkSelect
               allGenes={Object.keys(data[patients[0]])}
-              selectedGenes={shownGenes}
-              setSelected={setShownGenes}
+              selectedGenes={[]}
+              setSelected={null}
             />,
           ]}
         </FlexList>
@@ -177,7 +175,7 @@ const Heatmap = ({ patients, data }) => {
             setValue={(value) =>
               setSettings({ ...settings, paddingInner: value })
             }
-            min={"-10"}
+            min={"0"}
             max={"1"}
             step={"0.1"}
           />
@@ -282,9 +280,9 @@ const Heatmap = ({ patients, data }) => {
               setSettings({ ...settings, patientSpacing: value })
             }
             key={"range8"}
-            min={"1"}
+            min={"0.2"}
             max={"100"}
-            step={"1"}
+            step={"0.5"}
           />
         </FlexList>
         <FlexList title={"Header"}>
@@ -306,7 +304,7 @@ const Heatmap = ({ patients, data }) => {
 
       <canvas
         ref={canvasRef}
-        id="heatmapCanvas2"
+        id="heatmapCanvas"
         style={{ position: "relative" }}
         width={canvasWidth * 300}
         height={canvasHeight * 300}
@@ -654,32 +652,15 @@ const roundedSquares = (context, x, y, width, height, r) => {
   context.restore();
   context.fill();
 };
-const addHeaders = (
-  context,
-  headersScale,
-  startingX,
-  topHeadingHeight,
-  sqaureWidth,
-  preLabel,
-  postLabel,
-  pLabel,
-  pvalPadding,
-  allXPadding
-) => {
-  headersScale.domain().map((d) => {
-    const padding = d === "p" ? -pvalPadding : sqaureWidth / 2;
-    const x = headersScale(d) + startingX + padding - allXPadding;
-
-    context.save();
-    context.translate(x, topHeadingHeight - 10);
-    context.rotate(-Math.PI / 4);
-    context.textAlign = "left";
-    context.font = "500 14px Helvetica";
-    context.fillStyle = "black";
-    const label = d === "Pre" ? preLabel : d === "Post" ? postLabel : pLabel;
-    context.fillText(label, 0, 0);
-    context.restore();
-  });
+const addSideHeaders = (context, x, y, label) => {
+  context.save();
+  context.translate(x, y);
+  context.rotate(-Math.PI / 4);
+  context.textAlign = "right";
+  context.font = "100 14px Helvetica";
+  context.fillStyle = "black";
+  context.fillText(label, 0, 0);
+  context.restore();
 };
 const rangeFunc = (start, end, step) => {
   const len = Math.floor((end - start) / step) + 1;
@@ -754,8 +735,9 @@ const getGradientByPatient = (data, name) => {
   //  .scaleSequential(d3.piecewise(d3.interpolateHsl, ["#99165D", "#FFD653"]))
   //  .scaleSequential(d3.interpolate("rgb(108,99,255)", "#FFD653"))
   //"rgb(108,99,255)"
+  //"white", "#E03B2F"
   return d3
-    .scaleSequential(d3.interpolate("white", "#E03B2F"))
+    .scaleSequential(d3.interpolate("white", ""))
     .domain([...allHeatmapExtent]);
 };
 const getHeatmapColorScaleByName = (data, colourScheme, name) => {
@@ -791,21 +773,8 @@ const setLightContextFont = (context) => {
   context.textAlign = "center";
   context.textBaseline = "middle";
 };
-const getVolumeRange = (volumeMaxHeight, colorScale) => {
-  const minMaxDiff = Math.abs(colorScale.domain()[0] - colorScale.domain()[1]);
-  return d3
-    .scaleLinear()
-    .domain([0, minMaxDiff])
-    .range([0, parseFloat(volumeMaxHeight)]);
-};
-const drawHeatmap = (
-  context,
-  patients,
-  data,
-  patientScale,
-  geneYScale,
-  settings
-) => {
+
+const drawHeatmap = (context, groups, data, groupScale, yScale, settings) => {
   const {
     patientWidth,
     patientHeight,
@@ -834,284 +803,68 @@ const drawHeatmap = (
     volume,
     volumeMaxHeight,
   } = settings;
-  //  const allColorScale = getHeatmapColorScaleByName(data, colourScheme, "All");
-  //var colorScale = getPatientHeatmapColorScale(data, colourScheme);
-  const allColorScale = getGradientColorScaleByName(data, "All");
-  const colorScale = getGradientByPatient(data);
+
+  const allData = groups
+    .reduce((final, group) => [...final, data[group][0]["genes"]], [])
+    .reduce(
+      (final, values) => [...final, ...values.map((d) => parseFloat(d[1]))],
+      []
+    );
+  const allHeatmapExtent = d3.extent(allData);
+  //  console.log(allHeatmapExtent);
+  //#6c63ff
+  //#E03B2F
+  const colorScale = d3
+    .scaleSequential(d3.interpolate("white", "#E03B2F"))
+    .domain([...allHeatmapExtent]);
 
   setLightContextFont(context);
-  const columnHeadings = removePval ? ["Pre", "Post"] : ["Pre", "Post", "p"];
+  //  const columnHeadings = removePval ? ["Pre", "Post"] : ["Pre", "Post", "p"];
 
   const gradientHeight = parseFloat(gradHeight);
   const gradientWidth = parseFloat(gradWidth);
+  groups.map((group) => {
+    //console.log(startingX);
 
-  patients.map((patient, i) => {
-    const startingXGrad = patientScale(patient);
-    const x =
-      patient === "All"
-        ? patientScale(patient) + patientWidth / 2 - 10 - allLabelPadding
-        : patientScale(patient) +
-          patientWidth / 2 -
-          10 +
-          parseFloat(patientNamePadding);
-    const y = patientHeight - 50;
-    setLightContextFont(context);
-    //patient name
-    context.font = "normal 18px Helvetica";
-    const patientLabel = patient === "All" ? "Combined (n = 4)" : "UPN" + i;
-    context.fillText(patientLabel, x, y);
-    if (patient === "All") {
-      const padding = 10 - parseFloat(allLegendPadding);
+    const yPos = yScale(group);
+    context.beginPath();
+    context.lineWidth = 1;
+    context.globalAlpha = 1;
+    context.font = "light 12px Helvetica";
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.fillStyle = "black";
+    context.fillText(group, 50, yPos + 7);
+    const values = data[group][0]["genes"].map((d) => d[0]);
+    [...Array(10).keys()].map((key, i) => {
+      const startingX = groupScale(i) + 20;
+      const range = key * 5;
+      const bottomColumnHeadings = values.slice(range, range + 5);
 
-      const allX = padding + parseFloat(startingXGrad);
+      const insideGroup = d3
+        .scaleBand()
+        .domain([...bottomColumnHeadings])
+        .range([0, patientWidth])
+        .paddingInner(columnPadding);
 
-      var axis = context.createLinearGradient(
-        allX,
-        90,
-        allX + gradientWidth,
-        90
-      );
-      const step = Math.abs(
-        (allColorScale.domain()[0] - allColorScale.domain()[1]) / 10
-      );
-      const range = rangeFunc(
-        allColorScale.domain()[0],
-        allColorScale.domain()[1],
-        step
-      );
-      const colorRangeStep = 1 / 10;
-      const colourRange = rangeFunc(0, 1, colorRangeStep);
+      context.fillText(groups[i], startingX, 20);
 
-      range.map((d, i) => {
-        const stop = colourRange[i];
-        axis.addColorStop(stop, allColorScale(d));
-      });
+      bottomColumnHeadings.map((heading, index) => {
+        const xPos = startingX + insideGroup(heading);
 
-      context.fillStyle = axis;
+        const squareVale = parseFloat(
+          data[group][0]["genes"][range + index][1]
+        );
+        ///console.log(squareVale);
+        const color = colorScale(squareVale);
+        //  console.log(color);
+        context.fillStyle = color;
 
-      const topCornerX = startingXGrad + padding;
-      const topCornerY = y + 18;
-
-      context.fillRect(topCornerX, topCornerY, gradientWidth, gradientHeight);
-      context.fill();
-
-      context.fillStyle = "black";
-      context.strokeStyle = "black";
-      context.font = "normal 10px Helvetica";
-      //min
-      context.lineWidth = 1;
-      context.beginPath();
-      context.moveTo(topCornerX, topCornerY);
-      context.lineTo(topCornerX, topCornerY + 19);
-      context.fillText(
-        d3.format(",.3f")(allColorScale.domain()[0]),
-        topCornerX,
-        topCornerY + 25
-      );
-      context.stroke();
-      //max
-      context.beginPath();
-      context.moveTo(topCornerX + gradientWidth + 1, topCornerY);
-      context.lineTo(topCornerX + gradientWidth + 1, topCornerY + 19);
-      context.fillText(
-        d3.format(",.3f")(allColorScale.domain()[1]),
-        topCornerX + gradientWidth,
-        topCornerY + 25
-      );
-      context.stroke();
-    } else if (i === patients.length - 1) {
-      const startingXGradPatient =
-        parseFloat(startingXGrad) + parseFloat(movePatientsPadding);
-
-      const padding = 10;
-      var axis = context.createLinearGradient(
-        startingXGradPatient + padding - patientLegendPadding,
-        90,
-        startingXGradPatient + gradientWidth + padding - patientLegendPadding,
-        90
-      );
-      const step = Math.abs(
-        (colorScale.domain()[0] - colorScale.domain()[1]) / 10
-      );
-      const range = rangeFunc(
-        colorScale.domain()[0],
-        colorScale.domain()[1],
-        step
-      );
-      const colorRangeStep = 1 / 10;
-      const colourRange = rangeFunc(0, 1, colorRangeStep);
-
-      range.map((d, i) => {
-        const stop = colourRange[i];
-        axis.addColorStop(stop, colorScale(d));
-      });
-
-      context.fillStyle = axis;
-      const topCornerX = startingXGradPatient + padding - patientLegendPadding;
-      const topCornerY = y + 18;
-      context.fillRect(topCornerX, topCornerY, gradientWidth, gradHeight);
-      context.fill();
-      context.fillStyle = "black";
-      context.strokeStyle = "black";
-      context.font = "normal 10px Helvetica";
-      //min
-      context.lineWidth = 1;
-      context.beginPath();
-      context.moveTo(topCornerX, topCornerY);
-      context.lineTo(topCornerX, topCornerY + 19);
-      //",.3f"
-      //",d"
-      context.fillText(
-        d3.format(",d")(colorScale.domain()[0]),
-        topCornerX,
-        topCornerY + 25
-      );
-      context.stroke();
-      //max
-      //",.3f"
-      //",.1f"
-      context.beginPath();
-      context.moveTo(topCornerX + gradientWidth + 1, topCornerY);
-      context.lineTo(topCornerX + gradientWidth + 1, topCornerY + 19);
-      context.fillText(
-        d3.format(",.1f")(colorScale.domain()[1]),
-        topCornerX + gradientWidth,
-        topCornerY + 25
-      );
-      context.stroke();
-    }
-  });
-  context.beginPath();
-  context.lineWidth = 1;
-  context.globalAlpha = 1;
-  context.font = "bold 18px Helvetica";
-  context.textAlign = "center";
-  context.textBaseline = "middle";
-  context.fillStyle = "black";
-  const perPatient = d3
-    .scaleBand()
-    .domain([...columnHeadings])
-    .range([0, patientWidth])
-    .paddingInner(columnPadding);
-
-  const genes = Object.keys(data[patients[0]]);
-
-  patients.map((patient) => {
-    const startingX =
-      patient === "All"
-        ? patientScale(patient)
-        : patientScale(patient) + parseFloat(movePatientsPadding);
-
-    const currData = data[patient];
-    context.font = "500 18px Helvetica";
-    const allXPadding =
-      patient === "All" && switchAll ? patientWidth - allSectionPadding : 0;
-
-    addHeaders(
-      context,
-      perPatient,
-      startingX,
-      topHeadingHeight,
-      squareWidth,
-      preLabel,
-      postLabel,
-      pLabel,
-      pValPadding,
-      allXPadding,
-      switchAll
-    );
-
-    const volumeRange = getVolumeRange(volumeMaxHeight, allColorScale);
-
-    genes.map((gene) => {
-      const x = startingX;
-      const y = geneYScale(gene);
-      const currGene = currData[gene];
-
-      perPatient.domain().map((term) => {
-        const xBox = perPatient(term) + x - allXPadding;
-        if (term !== "p") {
-          context.fillStyle =
-            patient === "All"
-              ? allColorScale(currGene[term])
-              : colorScale(currGene[term]);
-
-          if (radius > 0) {
-            context.strokeStyle = blackOutline
-              ? "black"
-              : colorScale(currGene[term]);
-            roundedSquares(
-              context,
-              xBox,
-              y,
-              parseFloat(squareWidth),
-              parseFloat(squareHeight),
-              radius
-            );
-            if (volume) {
-              const diff = Math.abs(currGene["Pre"] - currGene["Post"]);
-
-              const vol = patient === "All" ? volumeRange(diff) : 3;
-              //  console.log(vol);
-              if (currGene["Pre"] >= currGene["Post"] && term === "Pre") {
-                roundedSquares(
-                  context,
-                  xBox + vol,
-                  y + vol,
-                  parseFloat(squareWidth),
-                  parseFloat(squareHeight),
-                  radius
-                );
-              } else if (
-                currGene["Pre"] <= currGene["Post"] &&
-                term === "Post"
-              ) {
-                roundedSquares(
-                  context,
-                  xBox + vol,
-                  y + vol,
-                  parseFloat(squareWidth),
-                  parseFloat(squareHeight),
-                  radius
-                );
-              }
-            }
-          } else {
-            context.fillRect(xBox, y, squareWidth, squareHeight);
-            if (volume) {
-              context.fillRect(
-                xBox + parseFloat(volumeMaxHeight),
-                y + parseFloat(volumeMaxHeight),
-                squareWidth,
-                squareHeight
-              );
-            }
-          }
-        } else {
-          context.fillStyle = "black";
-          context.font = "500 20px Helvetica";
-          const pval = parseFloat(currGene[term]);
-          const pX = xBox - pValPadding;
-          const pvalLabel =
-            pval <= 0.005
-              ? "***"
-              : pval <= 0.05
-              ? "**"
-              : pval <= 0.1
-              ? "*"
-              : "";
-          /*  console.log(pval);
-          console.log(currGene);
-          if (pvalLabel !== "") {
-            console.log(pvalLabel);
-            console.log(currGene);
-          }*/
-
-          const pvalY = y + squareHeight / 2 + 3;
-          context.fillText(pvalLabel, pX, pvalY);
-        }
-
-        return;
+        context.strokeStyle = blackOutline ? "black" : "white";
+        roundedSquares(context, xPos, yPos, 15, 15, 2);
+        context.fill();
+        context.fillStyle = "black";
+        addSideHeaders(context, xPos + 10, patientHeight - 65, heading);
       });
     });
   });
@@ -1154,4 +907,4 @@ const RangeOption = ({ label, value, setValue, min, max, step, key }) => (
     />
   </Grid>
 );
-export default Heatmap;
+export default HeatmapPeds;

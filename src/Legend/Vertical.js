@@ -19,6 +19,7 @@ const Vertical = ({
   disable = false,
   reset = false,
   fontFamily = null,
+  cloneColor = null,
   onClick = (value) => {},
   onHover = (value) => {},
 }) => {
@@ -81,7 +82,11 @@ const Vertical = ({
         .attr("height", SQUARE_LENGTH)
         .attr("x", 5)
         .attr("y", (d, i) => i * STEP + offset)
-        .attr("fill", (d) => colorScale(d["value"]));
+        .attr("fill", (d) =>
+          cloneColor
+            ? colorScale(cloneColor[d["value"]])
+            : colorScale(d["value"])
+        );
 
       subsets
         .append("text")

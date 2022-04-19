@@ -68,8 +68,18 @@ const Menu = ({ filters, activeLayer, layerFilters, setLayerFilters }) => {
           <Typography sx={{ width: "33%", flexShrink: 0 }}>Layers</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <LayersMenu layerName={"Layer 1"} />
-          <LayersMenu layerName={"Layer 2"} />
+          <LayersMenu
+            layerName={"Layer 1"}
+            layerFilters={layerFilters}
+            thisLayer={0}
+            setLayerFilters={(filters) => setLayerFilters(filters)}
+          />
+          <LayersMenu
+            layerName={"Layer 2"}
+            layerFilters={layerFilters}
+            thisLayer={1}
+            setLayerFilters={(filters) => setLayerFilters(filters)}
+          />
         </AccordionDetails>
       </Accordion>
       <Accordion
