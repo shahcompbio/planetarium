@@ -39,13 +39,12 @@ const COLOR_ARRAY = [
 const addFakeTimepoints = (data, timepointParam) =>
   data.reduce((final, d) => {
     var dup = Object.assign({}, d);
-    //  var dup2 = Object.assign({}, d);
-    //  dup2[timepointParam] = dup2[timepointParam] + ".25";
     dup[timepointParam] = dup[timepointParam] + ".5";
 
     final = [...final, d, dup];
     return final;
   }, []);
+
 const addGradientToSvg = (svg, preColor, postColor, name) => {
   var lg = svg
     .append("defs")
@@ -143,7 +142,6 @@ const Fishtail = ({
 
   const timeScale = d3
     .scalePoint()
-    //.scaleTime()
     .domain([...timeValues])
     .range([PADDING, PADDING + chartWidth]);
 
@@ -162,7 +160,6 @@ const Fishtail = ({
       .keys(subsetValues)
       .offset(d3.stackOffsetNone)
       .order(d3.stackOrderAscending)(counts);
-    //  console.log(d3.min(series, (d) => d3.min(d, (d) => d[0])));
 
     const yScale = d3
       .scaleLinear()
@@ -174,8 +171,6 @@ const Fishtail = ({
 
     const area = d3
       .area()
-      //  .curve(d3.curveMonotoneY)
-      //.curve(d3.curveBasis)
       .x((d) => {
         return timeScale(d.data.timepoint);
       })
