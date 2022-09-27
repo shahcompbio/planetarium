@@ -79,6 +79,7 @@ const Fishtail = ({
   cloneColor = null,
   addTwoTimepointCurve = false,
   interpolateColor = false,
+  normalize = true,
   onLegendHover = (value) => {},
   onLegendClick = (value) => {},
   onTimepointHover = (timepoint) => {},
@@ -121,12 +122,26 @@ const Fishtail = ({
     const timeData = orgData.filter(
       (datum) => datum[timepointParam] === timepoint
     );
+    //2 - 0.6667
+    //3 - 0.3846
+    //4 - 0.709
 
-    const subsetCounts = subsetValues.map(
-      (subset) =>
-        timeData.filter((datum) => datum[subsetParam] === subset).length /
-        timeData.length
-    );
+    const percent = timepoint.indexOf("F") !== -1 ? 0.6667 : 1;
+    console.log(timepoint);
+    console.log(percent);
+    const subsetCounts = normalize
+      ? subsetValues.map(
+          (subset) =>
+            timeData.filter((datum) => datum[subsetParam] === subset).length /
+            timeData.length
+        )
+      : subsetValues.map(
+          (subset) =>
+            Math.round(
+              timeData.filter((datum) => datum[subsetParam] === subset).length *
+                percent
+            ) / timeData.length
+        );
 
     return {
       timepoint,
@@ -139,7 +154,6 @@ const Fishtail = ({
       ),
     };
   });
-
   const timeScale = d3
     .scalePoint()
     .domain([...timeValues])
@@ -153,13 +167,113 @@ const Fishtail = ({
       .range(
         COLOR_ARRAY.slice(0, Math.min(subsetValues.length, COLOR_ARRAY.length))
       );
+  console.log(subsetValues);
+  /*const order = [
+    "C26",
+    "C7",
+    "C12",
+    "C4",
+    "C18",
+    "C24",
+    "C14",
+    "C9",
+    "C6",
+    "C0",
+    "C13",
+    "C16",
+    "C23",
+    "C10",
+    "C2",
+    "C19",
+    "C5",
+    "C21",
+    "C8",
+    "C11",
+    "C15",
+    "C1",
+    "C22",
+    "C17",
+    "C20",
+    "C27",
+    "C28",
+    "C25",
+    "C3",
+  ].map((d) => "04_04_" + d);*/
+  /*const order = [
+    "C1",
+    "C3",
+    "C6",
+    "C8",
+    "C0",
+    "C7",
+    "C11",
+    "C12",
+    "C15",
+    "C14",
+    "C5",
+    "C4",
+    "C13",
+    "C2",
+    "C10",
+    "C9",
+  ].map((d) => "03_03_" + d);*/
+  /*    "C6",
+      "C17",
+      "C16",
+      "C5",
+      "C1",
+      "C8",
+      "C4",
+      "C9",
+      "C13",
+      "C3",
+      "C19",
+      "C12",
+      "C11",
+      "C20",
+      "C0",
+      "C2",
+      "C10",
+      "C7",
+      "C14",
+      "C15",
+      "C18",*/
 
+  /*const order = [
+    "C6",
+    "C5",
+    "C17",
+    "C16",
+    "C4",
+    "C1",
+    "C9",
+    "C8",
+    "C13",
+    "C3",
+    "C19",
+    "C12",
+    "C11",
+    "C20",
+    "C0",
+    "C10",
+    "C7",
+    "C2",
+    "C14",
+    "C15",
+    "C13",
+    "C2",
+    "C18",
+  ].map((d) => "01_" + d);*/
+  const order = legendSorting.map((d) => d.split("-")[0]);
+  console.log(counts);
+  console.log(order);
   const drawArea = (svg) => {
     const series = d3
       .stack()
-      .keys(subsetValues)
+      .keys(order)
       .offset(d3.stackOffsetNone)
-      .order(d3.stackOrderAscending)(counts);
+      .order(d3.stackOrderNone)(counts);
+    //d3.stackOrderAscending
 
     const yScale = d3
       .scaleLinear()
@@ -335,30 +449,47 @@ Fishtail.propTypes = {
    * Data points to visualize
    */
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
+
   /**
    * Key in data that specifies subgroup
    */
   subsetParam: PropTypes.string.isRequired,
+
   /**
    * Key in data that specifies timepoint
    */
   timepointParam: PropTypes.string,
+
   /**
    * Width of plot
    */
   width: PropTypes.number,
+
   /**
    * Height of plot
    */
   height: PropTypes.number,
+
   /**
    * Value of timepoint to highlight
    */
   timepoint: PropTypes.string,
+
+  /**
+   * Array consisting of order of timepoints
+   **/
+  timepointOrder: PropTypes.array,
+
+  /**
+   * Order of legend options to sort by
+   **/
+  legendSorting: PropTypes.array,
+
   /**
    * Value of subset to highlight
    */
   subset: PropTypes.string,
+
   /**
    * To disable interactions on plot
    */
@@ -367,18 +498,42 @@ Fishtail.propTypes = {
    * Override default color scale of subsets
    */
   colorScale: PropTypes.func,
+
+  /**
+   * Color of gradient between two timepoints
+   **/
+  //cloneColor: PropTypes.arrayOf(PropTypes.object),
+
+  /**
+   * Option to add curve to plot by adding fake timepoints
+   **/
+  addTwoTimepointCurve: PropTypes.bool,
+
+  /**
+   * Option to interpolate color, must include cloneColor
+   **/
+  interpolateColor: PropTypes.bool,
+
+  /**
+   * Option to remove normalization of strands
+   **/
+  normalize: PropTypes.bool,
+
   /**
    * Callback when value on legend is hovered
    */
   onLegendHover: PropTypes.func,
+
   /**
    * Callback when value on legend is clicked
    */
   onLegendClick: PropTypes.func,
+
   /**
    * Callback when timepoint section is hovered
    */
   onTimepointHover: PropTypes.func,
+
   /**
    * Callback when timepoint section is clicked
    */

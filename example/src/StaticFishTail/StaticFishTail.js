@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
@@ -8,9 +8,17 @@ import { CssBaseline } from "@material-ui/core";
 import { Fishtail, Sankey } from "@shahlab/planetarium";
 import _ from "lodash";
 import * as d3 from "d3";
-
+/*      {_.groupBy(data, "patient").map((d) => {
+        console.log(d);
+        return <StaticFigures data={d} cloneColor={parseCloneColor} timePointOrder={d.map(r=>r[""])}/>;
+      })}*/
 const DataWrapper = ({ data, cloneColor }) => {
   const [fileName, setFileName] = useState("steve_02.h5ad");
+  console.log(cloneColor);
+
+  const cColor = _.groupBy(Object.keys(cloneColor), function (o) {
+    return o.split("_")[0];
+  });
   const parseCloneColor = Object.keys(cloneColor).reduce((final, d) => {
     final[d] = parseFloat(cloneColor[d]);
     return final;
@@ -48,44 +56,86 @@ const DataWrapper = ({ data, cloneColor }) => {
           </button>
         </Paper>
       </div>
-
-      <StaticFigures data={data} cloneColor={parseCloneColor} />
+      <div id="tool"></div>
+      <StaticFigures data={data} cloneColor={parseCloneColor} cColor={cColor} />
     </div>
   );
 };
-const StaticFigures = ({ data, cloneColor }) => {
+const StaticFigures = ({ data, cloneColor, cColor }) => {
   const timepoints = [...new Set(data.map((item) => item.timepoint))];
   const subsetValues = ["AE_0", "AE_1", "AE_2", "AE_3", "AE_4", "AE_5"];
 
-  const colorScale = d3
-    .scaleSequential(d3.interpolateRdYlBu)
-    .domain(
-      d3.extent(Object.keys(cloneColor).map((d) => cloneColor[d])).reverse()
-    );
-
+  console.log(_.groupBy(data, "patient"));
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
       <Grid container direction="row">
         <Block>
           {data ? (
-            <Fishtail
-              width={600}
-              height={600}
-              data={data}
-              subsetParam={"clone"}
-              cloneParam={"clone"}
-              timepointOrder={timepoints}
-              colorScale={colorScale}
-              cloneColor={cloneColor}
-              legendSorting={timepoints}
-              interpolateColor={true}
-              timepointOrder={["EP-02-B", "EP-02-F"]}
-              addTwoTimepointCurve={true}
-              timepointParam={"timepoint"}
-              //    subsetParam="clone"
-              //    treatment="timepoint"
-            />
+            [
+              ..._(data)
+                .groupBy("patient")
+                .map((d) => {
+                  const patientNUm = d[0]["patient"];
+                  console.log(cColor);
+                  if (patientNUm === "P2") {
+                    console.log(patientNUm);
+                    const thisColorScale = cColor["02"];
+                    console.log(thisColorScale);
+                    const colorScale = d3
+                      .scaleSequential(d3.interpolateRdYlBu)
+                      .domain([1.42, -1.0527498]);
+                    console.log("hello");
+                    console.log(
+                      d3
+                        .extent(thisColorScale.map((d) => cloneColor[d]))
+                        .reverse()
+                    );
+                    //[1.451, 0]
+                    //
+                    /*  d3
+                          .extent(thisColorScale.map((d) => cloneColor[d]))
+                          .reverse()*/
+                    //2 - 0.92251694, -1.0527498
+                    //3 - 1.6665053, -0.6125342
+                    //4 - 1.4224248, -0.2644508
+                    console.log(colorScale.domain());
+                    const pickColorScale = _.pick(cloneColor, thisColorScale);
+                    const ordering = Object.keys(pickColorScale)
+                      .filter((c) => c.indexOf("B") !== -1)
+                      .sort((a, b) => cloneColor[b] - cloneColor[a]);
+                    console.log(ordering);
+                    console.log(ordering.map((c) => cloneColor[c]));
+                    console.log(cloneColor);
+                    console.log(pickColorScale);
+                    console.log(d);
+
+                    return (
+                      <Fishtail
+                        key={patientNUm + "fish"}
+                        width={600}
+                        height={800}
+                        data={d}
+                        subsetParam={"clone"}
+                        cloneParam={"clone"}
+                        timepointOrder={timepoints}
+                        colorScale={colorScale}
+                        cloneColor={pickColorScale}
+                        legendSorting={ordering}
+                        interpolateColor={true}
+                        normalize={false}
+                        timepointOrder={["B", "F"]}
+                        addTwoTimepointCurve={true}
+                        timepointParam={"timepoint"}
+                        //    subsetParam="clone"
+                        //    treatment="timepoint"
+                      />
+                    );
+                  } else {
+                    return <span />;
+                  }
+                }),
+            ]
           ) : (
             <span />
           )}

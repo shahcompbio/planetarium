@@ -29,7 +29,7 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 app.secret_key = "render1"
 server_session = Session(app)
 
-config = {"steve" :{"timepoint":"sample", "patient":"patient", "clone_id":"clone_phy"},
+config = {"steve" :{"timepoint":"tp", "patient":"patient", "clone_id":"clone"},
 "normal" :{"timepoint":"timepoint", "patient":"patient", "clone_id":"clone_id",},
 "peds":{"timepoint":"tp", "patient":"patient", "clone_id":"clone"},
 };
@@ -70,7 +70,10 @@ gene = "ERBB2"
 def render2(file=None):
     if file:
         print(file)
+        print("hello")
         adata = sc.read("./"+file)
+        sc.pp.scale(adata,max_value=10)
+        print(adata.obs["patient"])
         time = []
         patientsList = []
         print(adata.var_keys)
@@ -87,21 +90,24 @@ def render2(file=None):
         #        cloneList.append(new_clone_post)
         #        cloneNameList.append(clone+"-pre")
         #        cloneNameList.append(clone+"-post")
-
-
-
+        print("enterin g")
+        print(set(adata.obs["tp"]))
         for clone in set(adata.obs[config[type]["clone_id"]]):
-        #print(adata.obs[config[type]["timepoint"]])
+            #print(clone)
+            #print(adata.obs[config[type]["timepoint"]])
             for timepoint in set(adata.obs[config[type]["timepoint"]]):
                 new_clone_pre = adata[adata.obs[config[type]["clone_id"]] == clone]
                 new_clone_pre = new_clone_pre[new_clone_pre.obs[config[type]["timepoint"]] == timepoint]
 
-                       #cloneList.append(new_clone_pre)
-                       #cloneNameList.append(clone+"-"+timepoint)
+                          #cloneList.append(new_clone_pre)
+                          #cloneNameList.append(clone+"-"+timepoint)
                 mean = np.mean(new_clone_pre.X[:,new_clone_pre.var.index.tolist().index("ERBB2")])
                 clone_name = clone+"-"+timepoint
+                #if clone_name in clones:
+                #mean
+                #else:
                 clones[clone_name]=str(mean)
-                print(clone_name, mean)
+                # print(clone_name, mean)
                        #clonemean = np.mean(new_clone_pre.X[:,new_clone_pre.var.index.tolist().index(g)])
                        #print(clonemean)
                     #        new_clone_post = adata[adata.obs["clone"] == clone]
@@ -114,7 +120,7 @@ def render2(file=None):
                     #print(clone)
                     #clone1mean = np.mean(clone1.X[:,clone1.var.index.tolist().index(g)])
                     #clone2mean = np.mean(clone2.X[:,clone2.var.index.tolist().index(g)])
-
+        print(clones)
         #print(cloneNameList)
         #for idx, clone in enumerate(cloneList):
             #mean = np.mean(clone.X[:,clone.var.index.tolist().index("ERBB2")])
@@ -139,9 +145,8 @@ def render2(file=None):
         for index, row in patient.iterrows():
             clone = row[config[type]["clone_id"]]
             timepoint = row[config[type]["timepoint"]]
-            patient = row[config[type]["patient"]]
-
-            b = {"clone":clone, "timepoint":timepoint}
+            p = row[config[type]["patient"]]
+            b = {"clone":clone, "timepoint":timepoint, "patient": p}
             copy = b.copy()
             final.append(copy)
 

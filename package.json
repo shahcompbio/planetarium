@@ -1,6 +1,6 @@
 {
   "name": "@shahlab/planetarium",
-  "version": "1.1.14",
+  "version": "1.1.18",
   "description": "Shah Lab Data Viz",
   "author": "",
   "license": "MIT",
@@ -22,7 +22,7 @@
     "test:watch": "react-scripts test --env=jsdom",
     "predeploy": "cd example && yarn install && yarn run build",
     "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook -s public"
+    "build-storybook": "build-storybook -s public -h localhost"
   },
   "peerDependencies": {
     "react": "^17.0.2",
@@ -35,7 +35,6 @@
     "@storybook/addon-actions": "^6.2.9",
     "@storybook/addon-essentials": "^6.2.9",
     "@storybook/addon-links": "^6.2.9",
-    "@storybook/react": "^6.2.9",
     "cross-env": "^7.0.2",
     "csv-loader": "^3.0.3",
     "emotion-theming": "^11.0.0",
@@ -57,6 +56,9 @@
     "@mui/lab": "^5.0.0-alpha.49",
     "@mui/material": "^5.0.3",
     "@mui/styles": "^5.0.1",
+    "@react-three/drei": "^9.13.0",
+    "@react-three/fiber": "^8.0.23",
+    "@storybook/preset-create-react-app": "^4.1.2",
     "bootstrap": "^4.6.0",
     "d3": "^5.9.2",
     "d3-array": "^2.11.0",
@@ -69,7 +71,8 @@
     "prop-types": "^15.7.2",
     "react-regl": "^4.3.5",
     "react-window": "^1.8.6",
-    "regl": "^2.1.0"
+    "regl": "^2.1.0",
+    "three": "^0.141.0"
   },
   "resolutions": {
     "babel-loader": "8.1.0"

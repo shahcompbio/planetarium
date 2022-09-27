@@ -136,6 +136,7 @@ const StyledPopper = styled(Popper)({
 });
 
 const Select = ({
+  key = "select",
   options,
   value,
   onSelect = (value) => {},
@@ -144,6 +145,7 @@ const Select = ({
 }) => {
   return (
     <Autocomplete
+      id={key}
       sx={{ width: width }}
       value={value}
       size="small"

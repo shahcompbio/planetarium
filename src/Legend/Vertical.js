@@ -6,7 +6,6 @@ import { useD3 } from "../utils/useD3";
 
 const SQUARE_LENGTH = 10;
 const SQUARE_SPACING = 8;
-const STEP = SQUARE_LENGTH + SQUARE_SPACING;
 
 const PADDING = 20;
 
@@ -19,10 +18,13 @@ const Vertical = ({
   disable = false,
   reset = false,
   fontFamily = null,
+  fontSize = "12px",
   cloneColor = null,
   onClick = (value) => {},
   onHover = (value) => {},
+  squareSize = SQUARE_LENGTH,
 }) => {
+  const STEP = squareSize + SQUARE_SPACING;
   const isNumerical = typeof ticks === "number";
   const labels = isNumerical ? colorScale.ticks(Math.max(2, ticks)) : ticks;
   const stepWidth = isNumerical ? labels[1] - labels[0] : 0;
@@ -57,7 +59,7 @@ const Vertical = ({
           .attr("text-anchor", "middle")
           .attr("font-family", fontFamily ? fontFamily["bold"] : "Helvetica")
           .attr("font-weight", "500")
-          .attr("font-size", "12px")
+          .attr("font-size", fontSize)
           .attr("fill", "#000000")
           .attr("x", width / 2)
           .attr("y", PADDING)
@@ -78,8 +80,8 @@ const Vertical = ({
       subsets
         .append("rect")
         // .attr("pointer-events", "none")
-        .attr("width", SQUARE_LENGTH)
-        .attr("height", SQUARE_LENGTH)
+        .attr("width", squareSize)
+        .attr("height", squareSize)
         .attr("x", 5)
         .attr("y", (d, i) => i * STEP + offset)
         .attr("fill", (d) =>
@@ -96,9 +98,9 @@ const Vertical = ({
         .attr("text-align", "left")
         .attr("font-family", fontFamily ? fontFamily["regular"] : "Helvetica")
         .attr("font-weight", "500")
-        .attr("font-size", "12px")
+        .attr("font-size", fontSize)
         .attr("fill", "#000000")
-        .attr("x", SQUARE_LENGTH + 10)
+        .attr("x", squareSize + 10)
         .attr("y", (d, i) => i * STEP + offset + textOffset)
         .text((d) => d["label"]);
 

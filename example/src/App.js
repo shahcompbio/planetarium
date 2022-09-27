@@ -16,6 +16,9 @@ import pedsFetchData from "./StaticFigures/data/apiPeds";
 import StaticFishTail from "./StaticFishTail/StaticFishTail";
 import staticFishData from "./StaticFishTail/data/api";
 
+import Scatterplot from "./Scatterplot/Scatterplot";
+import getCloneApi from "./Scatterplot/data/getCloneApi";
+
 import PaperFormatter from "./PaperFormatter/PaperFormatter";
 
 import UMAP from "./UMAP/UMAP";
@@ -33,10 +36,10 @@ const componentList = [
   "Static FishTail",
   "Test",
   "Newick",
+  "Scatterplot",
   "Peds",
 ];
 const getAppComponent = (selection, data) => {
-  console.log(data);
   switch (selection) {
     case "UMAP":
       return (
@@ -80,6 +83,15 @@ const getAppComponent = (selection, data) => {
         />
       );
       break;
+    case "Scatterplot":
+      return (
+        <Scatterplot
+          dashboardID={"Scatter"}
+          api={"http://localhost:9200"}
+          data={data["data"]}
+        />
+      );
+      break;
     case "Peds":
       return (
         <StaticPeds
@@ -107,6 +119,9 @@ function getAppData(selection) {
       return fetchFileData();
     case "Newick":
       return fetchTree();
+      break;
+    case "Scatterplot":
+      return getCloneApi();
       break;
     case "Peds":
       return pedsFetchData();
@@ -170,7 +185,7 @@ const DevAppWrapper = () => {
 const DevApp = ({ selectedDashboard, setSelectedDashboard }) => {
   const data = getAppData(selectedDashboard);
   d3.select("iframe").style("z-index", -10);
-
+  console.log(data);
   return Object.keys(data).length === 0 ? null : (
     <div>
       <SideDrawer
